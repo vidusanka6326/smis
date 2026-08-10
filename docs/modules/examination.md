@@ -34,6 +34,7 @@ Create exams (term test, scholarship, O/L, A/L), configure subjects/max/pass mar
 - Pass/fail: marks ≥ configured pass mark.
 - Marks locked after publish; admin may unpublish to edit again.
 - Class teachers may enter all subjects in own class (assumed).
+- Mark upsert and exam publish/unpublish write `activity_logs` entries (ADR 0010).
 
 ## Edge cases
 

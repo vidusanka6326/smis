@@ -30,7 +30,11 @@ Public `/register` is **disabled** (Fortify registration feature removed).
 
 ## Permissions (seeded)
 
-See `App\Enums\PermissionName`. Admin receives all; teacher gets timetable/attendance/marks/reports view-or-enter subset; student gets view-only timetable/attendance/marks.
+See `App\Enums\PermissionName`. Admin receives all (including `view-activity-log`); teacher gets timetable/attendance/marks/reports view-or-enter subset; student gets view-only timetable/attendance/marks.
+
+## Audit trail
+
+Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogger` (ADR 0010). Admin UI: `GET /admin/activity-logs`.
 
 ## Key business rules
 

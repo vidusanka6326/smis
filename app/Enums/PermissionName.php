@@ -17,6 +17,7 @@ enum PermissionName: string
     case ManageExaminations = 'manage-examinations';
     case ViewReports = 'view-reports';
     case ManageSystemConfig = 'manage-system-config';
+    case ViewActivityLog = 'view-activity-log';
 
     /**
      * @return list<string>

@@ -6,6 +6,13 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 9 — Hardening & audit log (2026-08-10)
+
+- Custom `activity_logs` table + `ActivityLogger` (ADR 0010); no new Composer packages.
+- Audits user creation, marks upsert, exam publish/unpublish, attendance session upsert/finalize, teacher attendance.
+- Admin activity log viewer (`view-activity-log`); **228 tests** passing.
+- Line coverage ≥80% still unmeasured (pcov/xdebug not installed).
+
 ### Phase 8 — API layer (2026-08-10) — skipped
 
 - Product decision: no Sanctum `/api/v1` for the current web-only release (ADR 0009).

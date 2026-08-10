@@ -2,16 +2,21 @@
 
 namespace App\Actions\Examination;
 
+use App\Enums\ActivityAction;
 use App\Models\ExamSubject;
 use App\Models\Mark;
 use App\Models\Teacher;
+use App\Services\Audit\ActivityLogger;
 use App\Services\Examination\MarksResultCalculator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class UpsertMarks
 {
-    public function __construct(private MarksResultCalculator $calculator) {}
+    public function __construct(
+        private MarksResultCalculator $calculator,
+        private ActivityLogger $activityLogger,
+    ) {}
 
     /**
      * @param  list<array{student_id: int, marks_obtained: float|int|string}>  $records
@@ -83,7 +88,25 @@ class UpsertMarks
                     ->delete();
             }
 
-            return $examSubject->refresh()->load(['marks.student.user', 'subject', 'exam']);
+            $examSubject = $examSubject->refresh()->load(['marks.student.user', 'subject', 'exam']);
+
+            $this->activityLogger->log(
+                ActivityAction::MarksUpserted,
+                __('Updated marks for :subject on exam :exam.', [
+                    'subject' => $examSubject->subject?->name ?? (string) $examSubject->id,
+                    'exam' => $examSubject->exam?->name ?? (string) $examSubject->exam_id,
+                ]),
+                $examSubject,
+                [
+                    'exam_id' => $examSubject->exam_id,
+                    'exam_subject_id' => $examSubject->id,
+                    'student_ids' => $kept,
+                    'entered_by_teacher_id' => $enteredBy?->id,
+                    'replace_all' => $replaceAll,
+                ],
+            );
+
+            return $examSubject;
         });
     }
 }

@@ -4,7 +4,7 @@
 smis/
 ├── app/
 │   ├── Actions/           # Prefer for multi-step writes
-│   ├── Services/          # Calculators, report builders
+│   ├── Services/          # Calculators, report builders, Audit/ActivityLogger
 │   ├── Policies/          # Model authorization
 │   ├── Enums/             # Backed enums for domain values
 │   ├── Http/
@@ -28,7 +28,7 @@ smis/
 ├── resources/views/
 ├── routes/
 │   ├── web.php
-│   └── (api.php — Phase 8)
+│   └── (api.php — Phase 8 skipped; ADR 0009)
 ├── tests/
 │   ├── Feature/
 │   └── Unit/
