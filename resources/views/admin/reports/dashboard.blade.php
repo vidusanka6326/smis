@@ -14,44 +14,30 @@
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Students') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ $studentCount }}</p>
-            </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Attendance rows (month)') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ count($attendance['student_rows']) }}</p>
-            </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Latest exam pass rate') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ $examStats['pass_rate'] ?? 0 }}%</p>
-            </div>
+            <x-dashboard.stat :label="__('Students')" :value="$studentCount" />
+            <x-dashboard.stat :label="__('Attendance rows (month)')" :value="count($attendance['student_rows'])" />
+            <x-dashboard.stat :label="__('Latest exam pass rate')" :value="($examStats['pass_rate'] ?? 0).'%'" />
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:heading size="sm">{{ __('Gender mix') }}</flux:heading>
-                <canvas id="genderChart" class="mt-4 max-h-64"></canvas>
-            </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:heading size="sm">{{ __('Grade letters (latest exam)') }}</flux:heading>
-                <canvas id="lettersChart" class="mt-4 max-h-64"></canvas>
-            </div>
+            <x-dashboard.chart-card :title="__('Gender mix')" canvas-id="genderChart" />
+            <x-dashboard.chart-card :title="__('Grade letters (latest exam)')" canvas-id="lettersChart" />
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-        <script>
-            const gender = @json($chartGender);
-            const letters = @json($chartGradeLetters);
-            new Chart(document.getElementById('genderChart'), {
-                type: 'doughnut',
-                data: { labels: gender.labels, datasets: [{ data: gender.data, backgroundColor: ['#2563eb', '#db2777'] }] },
-            });
-            new Chart(document.getElementById('lettersChart'), {
-                type: 'bar',
-                data: { labels: letters.labels, datasets: [{ label: @json(__('Count')), data: letters.data, backgroundColor: '#0f766e' }] },
-                options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
-            });
-        </script>
+        <x-charts.render :charts="[
+            [
+                'id' => 'genderChart',
+                'type' => 'doughnut',
+                'data' => $chartGender,
+                'colors' => ['#2563eb', '#db2777'],
+            ],
+            [
+                'id' => 'lettersChart',
+                'type' => 'bar',
+                'label' => __('Count'),
+                'data' => $chartGradeLetters,
+                'colors' => ['#0f766e'],
+            ],
+        ]" />
     </div>
 </x-layouts::app>

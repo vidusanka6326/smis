@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AttendanceMonthlySummaryController as AdminAttendanceMonthlySummaryController;
 use App\Http\Controllers\Admin\AttendanceReportController as AdminAttendanceReportController;
 use App\Http\Controllers\Admin\AttendanceSessionController as AdminAttendanceSessionController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemographicsReportController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExaminationReportController as AdminExaminationReportController;
@@ -48,7 +49,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::view('dashboard', 'admin.dashboard')->name('dashboard');
+        Route::get('dashboard', AdminDashboardController::class)->name('dashboard');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');

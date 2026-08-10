@@ -3,7 +3,7 @@
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
                 <flux:heading size="xl">{{ __('Class timetables') }}</flux:heading>
-                <flux:text class="mt-1">{{ __('Build weekly grids with conflict detection (teacher cannot be in two places).') }}</flux:text>
+                <flux:text class="mt-1">{{ __('Weekly period grid with conflict detection (a teacher cannot be in two places).') }}</flux:text>
             </div>
             <flux:button :href="route('admin.relief-assignments.index')" variant="filled" wire:navigate>
                 {{ __('Relief assignments') }}
@@ -41,48 +41,22 @@
         </form>
 
         @if ($schoolClass)
-            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-zinc-50 dark:bg-zinc-900">
-                        <tr>
-                            <th class="px-3 py-2 text-left">{{ __('Period') }}</th>
-                            @foreach ($days as $day)
-                                <th class="px-3 py-2 text-left">{{ $day->label() }}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($periods as $period)
-                            <tr class="border-t border-zinc-200 dark:border-zinc-700 align-top">
-                                <td class="px-3 py-3 font-medium">{{ $period }}</td>
-                                @foreach ($days as $day)
-                                    @php($slot = $grid[$day->value][$period] ?? null)
-                                    <td class="px-3 py-3">
-                                        @if ($slot)
-                                            <div class="space-y-1">
-                                                <div>{{ $slot->subject?->name }}</div>
-                                                <div class="text-zinc-500">{{ $slot->teacher?->user?->name }}</div>
-                                                <div class="flex gap-2">
-                                                    <a class="text-xs underline" href="{{ route('admin.timetables.edit', $slot) }}">{{ __('Edit') }}</a>
-                                                    <form method="POST" action="{{ route('admin.timetables.destroy', $slot) }}" onsubmit="return confirm(@js(__('Delete this slot?')))">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-xs text-red-600 underline">{{ __('Delete') }}</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        @else
-                                            <span class="text-zinc-400">—</span>
-                                        @endif
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="flex flex-wrap items-end justify-between gap-2">
+                <div>
+                    <flux:heading size="lg">{{ $schoolClass->code }}</flux:heading>
+                    <flux:text>{{ __('Mon–Fri · 8 periods · times are school defaults') }}</flux:text>
+                </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.timetables.store') }}" class="grid gap-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700 md:grid-cols-3">
+            <x-timetable.grid
+                :days="$days"
+                :periods="$periods"
+                :grid="$grid"
+                :period-times="$periodTimes"
+                variant="admin"
+            />
+
+            <form method="POST" action="{{ route('admin.timetables.store') }}" class="grid gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 md:grid-cols-3">
                 @csrf
                 <input type="hidden" name="academic_year_id" value="{{ $selectedAcademicYearId }}">
                 <input type="hidden" name="school_class_id" value="{{ $selectedSchoolClassId }}">
@@ -98,7 +72,10 @@
                 <flux:select name="period_number" :label="__('Period')" required>
                     @foreach ($periods as $period)
                         <flux:select.option :value="$period" :selected="(string) old('period_number') === (string) $period">
-                            {{ $period }}
+                            P{{ $period }}
+                            @if (! empty($periodTimes[$period]['label']))
+                                ({{ $periodTimes[$period]['label'] }})
+                            @endif
                         </flux:select.option>
                     @endforeach
                 </flux:select>

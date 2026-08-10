@@ -2,24 +2,24 @@
 
 ## Current Phase
 
-**Phase 9 — Hardening & polish** (Done for audit log + regression)
+**UI polish — Dashboard analytics + timetable grid** (Done)
 
-Web product Phases 1–7 + Phase 9 audit trail complete. Phase 8 API skipped. Overall ≥80% line coverage still unmeasured (no pcov/xdebug).
+Role dashboards use Chart.js KPIs via `RoleDashboardMetrics`. Timetables use shared `x-timetable.grid` with period clock times (ADR 0011).
 
 ## Module Tracker
 
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
 | Auth | Done | 100% | Feature + policy tests passing | 2026-08-10 | Roles/permissions, admin user creation, inactive gate, role dashboards |
-| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log | 2026-08-10 | Activity log viewer (`view-activity-log`) |
-| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports | 2026-08-10 | Scoped analytics |
-| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report | 2026-08-10 | Read-only own report |
+| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + dashboard charts | 2026-08-10 | `/admin/dashboard` analytics |
+| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-10 | Scoped dashboard charts |
+| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-10 | Own KPIs + grade-letter chart |
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries; audited upserts |
-| Timetable | Done | 100% | Feature + policy + conflict unit coverage | 2026-08-10 | Class builder, teacher/student views, relief workflow |
+| Timetable | Done | 100% | Feature + policy + conflict + period schedule unit | 2026-08-10 | Visual period×day grid + default times |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock; audited marks/publish |
 | Reporting | Done | 100% | Feature + policy + ranking/stats unit coverage | 2026-08-10 | Charts, CSV, print/PDF, best/poor |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
-| Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010); 228 tests |
+| Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
 
 ## Deliverables Checklist
 
@@ -38,6 +38,7 @@ Web product Phases 1–7 + Phase 9 audit trail complete. Phase 8 API skipped. Ov
 
 ## Changelog
 
+- **2026-08-10** — Dashboard/timetable UI: Chart.js KPIs on admin/teacher/student dashboards (`RoleDashboardMetrics`); shared `x-timetable.grid` with period clock times (ADR 0011); **233 tests** passing.
 - **2026-08-10** — Phase 9: custom `activity_logs` + `ActivityLogger`; wired into user create, marks, exam publish, attendance; admin viewer; ADR 0010; **228 tests** passing. Coverage % still blocked without pcov/xdebug.
 - **2026-08-10** — Phase 8 skipped by product decision: no Sanctum `/api/v1` for current release (ADR 0009).
 - **2026-08-10** — Phase 7 complete: demographics/attendance/exam analytics; best/poor rankings; Chart.js dashboards; CSV + print export; 217 tests passing.
@@ -66,7 +67,7 @@ Web product Phases 1–7 + Phase 9 audit trail complete. Phase 8 API skipped. Ov
 | Local DB: SQLite vs MySQL | SQLite for local/tests; MySQL production | Assumed |
 | Default admin seed credentials | `admin@smis.test` / `password` (local only) | Assumed |
 | Demo teacher/student seeds | `class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password` | Assumed |
-| Periods per day | 8 periods, Monday–Friday | Assumed |
+| Periods per day | 8 periods, Monday–Friday; default times via PeriodSchedule (ADR 0011) | Assumed |
 | Relief teacher allocation | Manual assignment with conflict detection | Assumed |
 | Subject-teacher attendance | Enabled by default for assigned subject/class | Assumed |
 | Attendance % formula | Present+Late attended; Excused excluded from denominator | Assumed |
