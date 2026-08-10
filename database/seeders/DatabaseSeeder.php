@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             AcademicStructureSeeder::class,
             TeacherStudentSeeder::class,
             TimetableSeeder::class,
+            AttendanceSeeder::class,
         ]);
     }
 }

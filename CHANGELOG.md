@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 5 — Attendance module (2026-08-10)
+
+- Added `attendance_sessions`, `student_attendance`, `teacher_attendance` with role-scoped capture.
+- Monthly percentage summaries; finalize lock for teachers; AttendanceSeeder demo data; 160 tests passing.
+
 ### Phase 4 — Timetable module (2026-08-10)
 
 - Added `timetables` and `relief_teacher_assignments` with conflict detection service.

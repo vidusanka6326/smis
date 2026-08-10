@@ -6,25 +6,45 @@ Capture student and teacher attendance; monthly summaries; present/absent/late/e
 
 ## User roles involved
 
-Admin, Class Teacher (own class), Subject Teacher (own periods if enabled), PT/PD (own sessions), Student (own view only).
+- Admin — manage all sessions and teacher attendance (`manage-attendance`)
+- Class teacher — class-level and subject sessions in own class
+- Subject teacher — assigned subject sessions (enabled by default)
+- PT/PD — assigned class/subject sessions
+- Student — own history + monthly % (`view-attendance`)
 
 ## DB tables used
 
-_Placeholder — `attendance_sessions`, `student_attendance`, `teacher_attendance` (Phase 5)._
+- `attendance_sessions` — academic year, class, optional subject, date, `scope` (`class` or `subject:{id}`), taken_by_teacher_id, finalized_at
+- `student_attendance` — session, student, status
+- `teacher_attendance` — teacher, date, status, recorded_by
 
 ## Routes
 
-_Placeholder — Phase 5._
+| Method | Path | Name | Notes |
+|---|---|---|---|
+| GET/POST/PUT/DELETE | `/admin/attendance/sessions*` | `admin.attendance.sessions.*` | Admin capture |
+| POST | `/admin/attendance/sessions/{id}/finalize` | `admin.attendance.sessions.finalize` | Lock session |
+| GET | `/admin/attendance/monthly` | `admin.attendance.monthly` | Class monthly % |
+| GET/POST/DELETE | `/admin/attendance/teachers*` | `admin.attendance.teachers.*` | Teacher daily |
+| GET/POST/PUT | `/teacher/attendance/sessions*` | `teacher.attendance.sessions.*` | Scoped capture |
+| GET | `/teacher/attendance/monthly` | `teacher.attendance.monthly` | Scoped monthly |
+| GET/POST | `/teacher/attendance/self*` | `teacher.attendance.self.*` | Self daily |
+| GET | `/student/attendance` | `student.attendance` | Own summary |
 
 ## Key business rules
 
-- Scoped by teacher assignment.
-- Edits after finalization audited.
+- Unique session per class + date + scope.
+- Students in a session must belong to the class.
+- Teachers cannot edit finalized sessions; admins can.
+- Attendance %: Present + Late = attended; Excused excluded from denominator.
+- Subject-teacher period attendance is enabled (assumption).
 
 ## Edge cases
 
-_TBD in Phase 5._
+- Duplicate session/date rejected with validation error.
+- Subject teacher cannot take class-level attendance without class-teacher/PT-PD assignment.
+- Students without a profile get 403 on attendance view.
 
 ## Status
 
-Not Started.
+Done (Phase 5).
