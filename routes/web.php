@@ -4,9 +4,15 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\StreamController;
+use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherAssignmentController;
+use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -26,14 +32,23 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::resource('classes', SchoolClassController::class)
             ->except(['show'])
             ->parameters(['classes' => 'school_class']);
+
+        Route::resource('teachers', TeacherController::class);
+        Route::get('teachers/{teacher}/assignments', [TeacherAssignmentController::class, 'edit'])
+            ->name('teachers.assignments.edit');
+        Route::put('teachers/{teacher}/assignments', [TeacherAssignmentController::class, 'update'])
+            ->name('teachers.assignments.update');
+
+        Route::resource('students', AdminStudentController::class);
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
-        Route::view('dashboard', 'teacher.dashboard')->name('dashboard');
+        Route::get('dashboard', TeacherDashboardController::class)->name('dashboard');
+        Route::resource('students', TeacherStudentController::class)->except(['show', 'destroy']);
     });
 
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::view('dashboard', 'student.dashboard')->name('dashboard');
+        Route::get('dashboard', StudentDashboardController::class)->name('dashboard');
     });
 });
 

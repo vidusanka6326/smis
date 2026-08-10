@@ -50,8 +50,9 @@ This runs:
 1. `RolesAndPermissionsSeeder` — roles `admin` / `teacher` / `student` and granular permissions
 2. `AdminUserSeeder` — default admin `admin@smis.test` / `password` (skipped if an admin already exists)
 3. `AcademicStructureSeeder` — grades 1–13, A/L streams, sample subjects, current academic year `2025/2026`, sample classes
+4. `TeacherStudentSeeder` — demo class/subject teachers and a student in `10-A` (`class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password`)
 
-There is **no public registration**. Create additional users while logged in as admin via **Create user**. Academic structure is managed under Admin → Academic years / Grades / Streams / Subjects / Classes.
+There is **no public registration**. Create additional users while logged in as admin via **Create user**, or use Admin → Teachers / Students. Academic structure is managed under Admin → Academic years / Grades / Streams / Subjects / Classes.
 
 ## Tests
 

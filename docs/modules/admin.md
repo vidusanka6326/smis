@@ -48,4 +48,4 @@ Admin only for management; others use separate role dashboards.
 
 ## Status
 
-Done for Phase 2 academic structure. Teacher/student management UI expands in Phase 3.
+Done for Phase 2 academic structure and Phase 3 teacher/student admin management.

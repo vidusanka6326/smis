@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 3
+
+Command: `php artisan test --compact` — **117 passed** (461 assertions)
+
+Notable suites:
+- Admin teacher/student CRUD + assignment sync
+- Class-teacher scoped student create (allow own class / deny other)
+- `TeacherPolicy` / `StudentPolicy` ability coverage including `createInClass` and `manageAssignments`
+- Unit: `TeacherAssignmentRole::requiresSubject`
+
+Notes: Full `--coverage` percentage still deferred.
+
 ## 2026-08-10 — Phase 2
 
 Command: `php artisan test --compact` — **99 passed** (395 assertions)

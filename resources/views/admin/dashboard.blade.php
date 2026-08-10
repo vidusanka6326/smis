@@ -15,6 +15,12 @@
             <flux:button :href="route('admin.users.create')" variant="primary" wire:navigate>
                 {{ __('Create user') }}
             </flux:button>
+            <flux:button :href="route('admin.teachers.index')" variant="filled" wire:navigate>
+                {{ __('Teachers') }}
+            </flux:button>
+            <flux:button :href="route('admin.students.index')" variant="filled" wire:navigate>
+                {{ __('Students') }}
+            </flux:button>
             <flux:button :href="route('admin.academic-years.index')" variant="filled" wire:navigate>
                 {{ __('Academic years') }}
             </flux:button>

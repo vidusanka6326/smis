@@ -6,26 +6,38 @@ Student CRUD, guardian info, enrollment history, categorization (grade/class/sub
 
 ## User roles involved
 
-Admin (full), Class Teacher (own class, limited fields), Student (own read-only).
+- Admin — full manage (`manage-students`)
+- Class Teacher — create/update students in own class (limited fields)
+- Student — view own profile/dashboard only
 
 ## DB tables used
 
-_Placeholder — `students`, `student_enrollments` (Phase 3)._
+- `students` (SoftDeletes; admission, DOB, gender G/B, guardian fields, `current_class_id`)
+- `student_enrollments` (unique per student + academic year; status active/completed/transferred/withdrawn)
+- `users` (login + Spatie role `student`)
+- Academic tables for filters (`grades`, `classes`, `subjects`)
 
 ## Routes
 
-_Placeholder — Phase 3._
+| Method | Path | Name | Notes |
+|---|---|---|---|
+| resource | `/admin/students` | `admin.students.*` | Filters on index |
+| resource | `/teacher/students` | `teacher.students.*` | Scoped; limited update |
+| GET | `/student/dashboard` | `student.dashboard` | Read-only |
 
 ## Key business rules
 
-- Grades 1–13; streams for Grades 12–13.
-- Gender values: G / B (per spec).
-- Creating a student uses a DB transaction (profile + enrollment + guardian as applicable).
+- Creating a student uses a DB transaction: user + profile + active enrollment.
+- Gender values: `G` / `B`.
+- Admin index filters: search, gender, grade, class, subject (via class subjects).
+- Class teacher create requires `createInClass` for the selected class.
+- Class teacher update cannot change password/status/class (limited Form Request).
 
 ## Edge cases
 
-_TBD in Phase 3._
+- Enrollment class must belong to the selected academic year.
+- Soft-deleting a student also soft-deletes the linked user (admin destroy).
 
 ## Status
 
-Not Started (Phase 3). Empty student dashboard shell shipped in Phase 1 (`/student/dashboard`).
+Done for Phase 3 core. Attendance/results surfaces arrive later.

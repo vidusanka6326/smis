@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SchoolClass extends Model
 {
@@ -66,11 +67,27 @@ class SchoolClass extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Teacher, $this>
      */
     public function classTeacher(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'class_teacher_id');
+        return $this->belongsTo(Teacher::class, 'class_teacher_id');
+    }
+
+    /**
+     * @return HasMany<Student, $this>
+     */
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'current_class_id');
+    }
+
+    /**
+     * @return HasMany<TeacherAssignment, $this>
+     */
+    public function teacherAssignments(): HasMany
+    {
+        return $this->hasMany(TeacherAssignment::class, 'school_class_id');
     }
 
     /**

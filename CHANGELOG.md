@@ -6,6 +6,13 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 3 — Teacher & Student modules (2026-08-10)
+
+- Added `teachers`, `students`, `teacher_class_subject_assignments`, `student_enrollments`.
+- Admin teacher/student CRUD; assignment sync; class-teacher scoped student management.
+- Student categorization filters (grade/class/subject/gender); role dashboards show profile data.
+- Retargeted `classes.class_teacher_id` to `teachers`; 117 tests passing.
+
 ### Phase 2 — Academic structure & Admin core (2026-08-10)
 
 - Added `academic_years`, `grades`, `streams`, `subjects`, `classes`, and `class_subject` tables.
