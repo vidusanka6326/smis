@@ -6,6 +6,13 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 2 — Academic structure & Admin core (2026-08-10)
+
+- Added `academic_years`, `grades`, `streams`, `subjects`, `classes`, and `class_subject` tables.
+- Admin CRUD UI + policies gated by `manage-system-config`.
+- Stream eligibility rules for grades 12–13; auto class codes; subject sync per class grade.
+- `AcademicStructureSeeder` demo data; 99 tests passing.
+
 ### Phase 1 — Auth & Authorization (2026-08-10)
 
 - Seeded Spatie roles (`admin`, `teacher`, `student`) and permissions.
