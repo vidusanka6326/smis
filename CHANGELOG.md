@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 8 — API layer (2026-08-10) — skipped
+
+- Product decision: no Sanctum `/api/v1` for the current web-only release (ADR 0009).
+- Domain Actions/Policies remain reusable if an API is added later.
+
 ### Phase 7 — Reporting & analytics (2026-08-10)
 
 - Added demographics, attendance, examination, and performance reports with role scoping.

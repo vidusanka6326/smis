@@ -2,7 +2,9 @@
 
 ## Current Phase
 
-**Phase 7 — Reporting & analytics** (complete — awaiting review before Phase 8)
+**Phase 8 — API layer** (Skipped — web-only release)
+
+**Next candidate:** Phase 9 (audit/activity log), coverage measurement, or product hardening — pick when ready.
 
 ## Module Tracker
 
@@ -16,10 +18,11 @@
 | Timetable | Done | 100% | Feature + policy + conflict unit coverage | 2026-08-10 | Class builder, teacher/student views, relief workflow |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock |
 | Reporting | Done | 100% | Feature + policy + ranking/stats unit coverage | 2026-08-10 | Charts, CSV, print/PDF, best/poor |
+| API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 
 ## Deliverables Checklist
 
-- [ ] Functional centralized school management web system
+- [x] Functional centralized school management web system (Phases 1–7)
 - [x] Role-based authentication (Admin / Teacher / Student)
 - [x] Student management module (grade/class/subject/gender filters; streams via class)
 - [x] Teacher management module (class/subject/PT-PD assignments)
@@ -27,13 +30,14 @@
 - [x] Timetable management module (class/teacher views, relief, conflict detection)
 - [x] Examination management module (term tests, scholarship, O/L, A/L)
 - [x] Reporting & analytics module (grade/class/subject/gender-wise, best/poor performers)
-- [ ] REST API mirroring web functionality
-- [ ] Automated test suite meeting coverage targets
-- [x] Complete `/docs` documentation set (skeleton + Phase 1–7 updates)
+- [x] REST API mirroring web functionality — **Skipped** (web-only; ADR 0009)
+- [ ] Automated test suite meeting coverage targets (≥80% line coverage not yet measured)
+- [x] Complete `/docs` documentation set (skeleton + Phase 1–7 updates + Phase 8 skip)
 - [x] `docs/PROJECT_STATUS.md` kept current
 
 ## Changelog
 
+- **2026-08-10** — Phase 8 skipped by product decision: no Sanctum `/api/v1` for current release (ADR 0009). Next: Phase 9 audit log or coverage/hardening.
 - **2026-08-10** — Phase 7 complete: demographics/attendance/exam analytics; best/poor rankings; Chart.js dashboards; CSV + print export; 217 tests passing.
 - **2026-08-10** — Phase 6 complete: exams + exam subjects + marks entry; grade-letter/pass-fail calculators; publish lock; 196 tests passing.
 - **2026-08-10** — Phase 5 complete: attendance sessions + student/teacher attendance; role-scoped capture; monthly % summaries; 160 tests passing.
@@ -45,7 +49,7 @@
 
 ## Known Issues / TODO
 
-- Sanctum / API layer deferred to Phase 8.
+- Sanctum / `/api/v1` **skipped** for current release (can revisit later without rewriting Policies/Actions).
 - Overall ≥80% line coverage not yet measured with `--coverage`.
 - Activity/audit log package not yet installed (Phase 9).
 - `admins` profile extension table still deferred.
@@ -70,6 +74,7 @@
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
 | Report exports | CSV download + browser print-to-PDF (no DomPDF/Excel packages yet) | Assumed |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
+| REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |
 | Stream names for Grades 12–13 | Science, Commerce, Arts, Technology | Assumed |
 | Class code format | `{grade}-{section}` or `{grade}-{STREAM}-{section}` | Assumed |
 | Class teacher limited student fields | Name, email, admission, DOB, gender, guardian; no status/password/class move | Assumed |
