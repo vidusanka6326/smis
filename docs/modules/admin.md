@@ -50,4 +50,4 @@ Admin only for management; others use separate role dashboards.
 
 ## Status
 
-Done for Phase 2 academic structure, Phase 3 teacher/student admin management, and Phase 9 activity log viewer.
+Done for Phase 2 academic structure, Phase 3 teacher/student admin management, Phase 9 activity log viewer, and dashboard analytics (Chart.js KPIs on `/admin/dashboard`).

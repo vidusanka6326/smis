@@ -6,13 +6,14 @@ use App\Enums\DayOfWeek;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\TimetableEntry;
+use App\Services\Timetable\PeriodSchedule;
 use App\Services\Timetable\TimetableConflictDetector;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TimetableController extends Controller
 {
-    public function __invoke(Request $request, TimetableConflictDetector $detector): View
+    public function __invoke(Request $request, TimetableConflictDetector $detector, PeriodSchedule $periodSchedule): View
     {
         $this->authorize('viewAny', TimetableEntry::class);
 
@@ -46,6 +47,7 @@ class TimetableController extends Controller
             'grid' => $grid,
             'days' => DayOfWeek::schoolDays(),
             'periods' => range(1, TimetableEntry::MAX_PERIODS),
+            'periodTimes' => $periodSchedule->all(),
             'teacher' => $teacher,
         ]);
     }

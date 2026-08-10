@@ -13,32 +13,20 @@
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Students in scope') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ $demographics['total'] }}</p>
-            </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Attendance rows') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ count($attendance['student_rows']) }}</p>
-            </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:text>{{ __('Exam pass rate') }}</flux:text>
-                <p class="mt-2 text-3xl font-semibold">{{ $examStats['pass_rate'] ?? 0 }}%</p>
-            </div>
+            <x-dashboard.stat :label="__('Students in scope')" :value="$demographics['total']" />
+            <x-dashboard.stat :label="__('Attendance rows')" :value="count($attendance['student_rows'])" />
+            <x-dashboard.stat :label="__('Exam pass rate')" :value="($examStats['pass_rate'] ?? 0).'%'" />
         </div>
 
-        <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-            <flux:heading size="sm">{{ __('Gender mix') }}</flux:heading>
-            <canvas id="genderChart" class="mt-4 max-h-64"></canvas>
-        </div>
+        <x-dashboard.chart-card :title="__('Gender mix')" canvas-id="genderChart" class="max-w-xl" />
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-        <script>
-            const gender = @json($chartGender);
-            new Chart(document.getElementById('genderChart'), {
-                type: 'doughnut',
-                data: { labels: gender.labels, datasets: [{ data: gender.data, backgroundColor: ['#2563eb', '#db2777'] }] },
-            });
-        </script>
+        <x-charts.render :charts="[
+            [
+                'id' => 'genderChart',
+                'type' => 'doughnut',
+                'data' => $chartGender,
+                'colors' => ['#2563eb', '#db2777'],
+            ],
+        ]" />
     </div>
 </x-layouts::app>

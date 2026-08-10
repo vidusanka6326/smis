@@ -12,6 +12,7 @@ use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\TimetableEntry;
+use App\Services\Timetable\PeriodSchedule;
 use App\Services\Timetable\TimetableConflictDetector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ use Illuminate\View\View;
 
 class TimetableController extends Controller
 {
-    public function index(Request $request, TimetableConflictDetector $detector): View
+    public function index(Request $request, TimetableConflictDetector $detector, PeriodSchedule $periodSchedule): View
     {
         $this->authorize('viewAny', TimetableEntry::class);
 
@@ -64,6 +65,7 @@ class TimetableController extends Controller
             'grid' => $grid,
             'days' => DayOfWeek::schoolDays(),
             'periods' => range(1, TimetableEntry::MAX_PERIODS),
+            'periodTimes' => $periodSchedule->all(),
             'subjects' => Subject::query()->orderBy('name')->get(),
             'teachers' => Teacher::query()->with('user')->orderBy('employee_no')->get(),
         ]);

@@ -6,6 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Dashboard analytics + timetable UI (2026-08-10)
+
+- Role dashboards (admin/teacher/student) show Chart.js KPIs and quick links via `RoleDashboardMetrics`.
+- Shared `x-timetable.grid` period×day visual timetable with default period clock times (ADR 0011).
+- Report dashboards reuse shared chart/stat Blade components.
+
 ### Phase 9 — Hardening & audit log (2026-08-10)
 
 - Custom `activity_logs` table + `ActivityLogger` (ADR 0010); no new Composer packages.

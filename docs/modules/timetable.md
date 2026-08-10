@@ -30,6 +30,8 @@ Class timetable builder, teacher timetable view, relief teacher allocation, conf
 - Subject must be linked to the class and apply to its grade.
 - Relief assignment is manual; date must match the entry weekday; relief teacher ≠ original; relief teacher cannot already be busy that period/date.
 - Period count assumed **8**; school days **Monday–Friday**.
+- Wall-clock times for periods come from `PeriodSchedule` (07:30 start, 40 min, break after P4) — ADR 0011.
+- Shared Blade component `x-timetable.grid` renders a color-coded period×day school timetable for admin/teacher/student.
 
 ## Edge cases
 
@@ -39,4 +41,4 @@ Class timetable builder, teacher timetable view, relief teacher allocation, conf
 
 ## Status
 
-Done (Phase 4).
+Done (Phase 4). UI grid polish + period times added in dashboard/timetable UI pass.

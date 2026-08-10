@@ -1,5 +1,16 @@
 # Coverage Log
 
+## 2026-08-10 — Dashboard analytics + timetable UI
+
+Command: `php artisan test --compact` — **233 passed** (722 assertions)
+
+Notable suites:
+- Admin/Teacher/Student dashboard analytics feature tests
+- PeriodSchedule unit (clock ranges + break after P4)
+- Existing role dashboard + timetable view regressions
+
+Notes: Chart.js KPIs on role dashboards; shared timetable grid. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-10 — Phase 9
 
 Command: `php artisan test --compact` — **228 passed** (701 assertions)
