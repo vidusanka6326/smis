@@ -5,6 +5,7 @@ use App\Models\Grade;
 use App\Models\SchoolClass;
 use App\Models\Stream;
 use App\Models\Subject;
+use App\Models\Teacher;
 use App\Models\User;
 
 test('admin can create a class for grades without streams', function () {
@@ -61,7 +62,7 @@ test('grades below 12 cannot have a stream', function () {
 
 test('admin can create a streamed a-level class and assign a teacher', function () {
     $admin = User::factory()->admin()->create();
-    $teacher = User::factory()->teacher()->create();
+    $teacher = Teacher::factory()->create();
     $year = AcademicYear::factory()->create();
     $grade = Grade::factory()->number(13)->create();
     $stream = Stream::factory()->create(['code' => 'COM']);
@@ -101,7 +102,7 @@ test('subjects outside the class grade cannot be attached', function () {
         ->assertSessionHasErrors(['subject_ids']);
 });
 
-test('class teacher must have the teacher role', function () {
+test('class teacher must be a teacher profile', function () {
     $admin = User::factory()->admin()->create();
     $student = User::factory()->student()->create();
     $year = AcademicYear::factory()->create();

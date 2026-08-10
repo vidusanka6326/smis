@@ -33,7 +33,7 @@
                             <td class="px-4 py-3">{{ $schoolClass->academicYear?->name }}</td>
                             <td class="px-4 py-3">{{ $schoolClass->grade?->name }}</td>
                             <td class="px-4 py-3">{{ $schoolClass->stream?->name ?? '—' }}</td>
-                            <td class="px-4 py-3">{{ $schoolClass->classTeacher?->name ?? '—' }}</td>
+                            <td class="px-4 py-3">{{ $schoolClass->classTeacher?->user?->name ?? '—' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-wrap gap-2">
                                     <flux:button size="sm" :href="route('admin.classes.edit', $schoolClass)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>

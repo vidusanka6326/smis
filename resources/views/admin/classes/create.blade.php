@@ -37,7 +37,7 @@
             <flux:select name="class_teacher_id" :label="__('Class teacher')" :placeholder="__('Unassigned')">
                 @foreach ($teachers as $teacher)
                     <flux:select.option :value="$teacher->id" :selected="(string) old('class_teacher_id') === (string) $teacher->id">
-                        {{ $teacher->name }}
+                        {{ $teacher->user?->name }} ({{ $teacher->employee_no }})
                     </flux:select.option>
                 @endforeach
             </flux:select>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Academic\SyncClassSubjects;
-use App\Enums\RoleName;
+use App\Enums\TeacherAssignmentRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreSchoolClassRequest;
 use App\Http\Requests\Admin\UpdateSchoolClassRequest;
@@ -12,7 +12,8 @@ use App\Models\Grade;
 use App\Models\SchoolClass;
 use App\Models\Stream;
 use App\Models\Subject;
-use App\Models\User;
+use App\Models\Teacher;
+use App\Models\TeacherAssignment;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class SchoolClassController extends Controller
 
         return view('admin.classes.index', [
             'schoolClasses' => SchoolClass::query()
-                ->with(['academicYear', 'grade', 'stream', 'classTeacher'])
+                ->with(['academicYear', 'grade', 'stream', 'classTeacher.user'])
                 ->latest('id')
                 ->paginate(20),
         ]);
@@ -58,6 +59,7 @@ class SchoolClassController extends Controller
             ]);
 
             $syncClassSubjects->handle($schoolClass, $subjectIds);
+            $this->syncHomeroomAssignment($schoolClass);
 
             return $schoolClass;
         });
@@ -101,6 +103,7 @@ class SchoolClassController extends Controller
             ]);
 
             $syncClassSubjects->handle($schoolClass, $subjectIds);
+            $this->syncHomeroomAssignment($schoolClass->fresh());
         });
 
         return redirect()
@@ -120,12 +123,36 @@ class SchoolClassController extends Controller
     }
 
     /**
+     * Keep class_teacher_id and class_teacher assignment rows aligned.
+     */
+    private function syncHomeroomAssignment(SchoolClass $schoolClass): void
+    {
+        TeacherAssignment::query()
+            ->where('school_class_id', $schoolClass->id)
+            ->where('academic_year_id', $schoolClass->academic_year_id)
+            ->where('role_in_assignment', TeacherAssignmentRole::ClassTeacher)
+            ->delete();
+
+        if ($schoolClass->class_teacher_id === null) {
+            return;
+        }
+
+        TeacherAssignment::query()->create([
+            'teacher_id' => $schoolClass->class_teacher_id,
+            'school_class_id' => $schoolClass->id,
+            'subject_id' => null,
+            'academic_year_id' => $schoolClass->academic_year_id,
+            'role_in_assignment' => TeacherAssignmentRole::ClassTeacher,
+        ]);
+    }
+
+    /**
      * @return array{
      *     academicYears: Collection<int, AcademicYear>,
      *     grades: Collection<int, Grade>,
      *     streams: Collection<int, Stream>,
      *     subjects: Collection<int, Subject>,
-     *     teachers: Collection<int, User>
+     *     teachers: Collection<int, Teacher>
      * }
      */
     private function formOptions(): array
@@ -135,7 +162,7 @@ class SchoolClassController extends Controller
             'grades' => Grade::query()->orderBy('number')->get(),
             'streams' => Stream::query()->orderBy('name')->get(),
             'subjects' => Subject::query()->orderBy('name')->get(),
-            'teachers' => User::query()->role(RoleName::Teacher)->orderBy('name')->get(),
+            'teachers' => Teacher::query()->with('user')->orderBy('employee_no')->get(),
         ];
     }
 }

@@ -20,6 +20,12 @@
                         <flux:sidebar.item icon="user-plus" :href="route('admin.users.create')" :current="request()->routeIs('admin.users.*')" wire:navigate>
                             {{ __('Create user') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="academic-cap" :href="route('admin.teachers.index')" :current="request()->routeIs('admin.teachers.*')" wire:navigate>
+                            {{ __('Teachers') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="users" :href="route('admin.students.index')" :current="request()->routeIs('admin.students.*')" wire:navigate>
+                            {{ __('Students') }}
+                        </flux:sidebar.item>
                         <flux:sidebar.item icon="calendar-days" :href="route('admin.academic-years.index')" :current="request()->routeIs('admin.academic-years.*')" wire:navigate>
                             {{ __('Academic years') }}
                         </flux:sidebar.item>
@@ -34,6 +40,12 @@
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="building-library" :href="route('admin.classes.index')" :current="request()->routeIs('admin.classes.*')" wire:navigate>
                             {{ __('Classes') }}
+                        </flux:sidebar.item>
+                    @endrole
+
+                    @role('teacher')
+                        <flux:sidebar.item icon="users" :href="route('teacher.students.index')" :current="request()->routeIs('teacher.students.*')" wire:navigate>
+                            {{ __('My students') }}
                         </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>

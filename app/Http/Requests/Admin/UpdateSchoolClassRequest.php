@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Enums\RoleName;
 use App\Models\Grade;
 use App\Models\SchoolClass;
-use App\Models\User;
+use App\Models\Teacher;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -30,7 +29,7 @@ class UpdateSchoolClassRequest extends FormRequest
             'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
             'grade_id' => ['required', 'integer', 'exists:grades,id'],
             'stream_id' => ['nullable', 'integer', 'exists:streams,id'],
-            'class_teacher_id' => ['nullable', 'integer', 'exists:users,id'],
+            'class_teacher_id' => ['nullable', 'integer', 'exists:teachers,id'],
             'subject_ids' => ['nullable', 'array'],
             'subject_ids.*' => ['integer', 'exists:subjects,id'],
         ];
@@ -55,12 +54,8 @@ class UpdateSchoolClassRequest extends FormRequest
                 $validator->errors()->add('stream_id', __('Streams may only be assigned to grades 12 and 13.'));
             }
 
-            if ($this->filled('class_teacher_id')) {
-                $teacher = User::query()->find($this->input('class_teacher_id'));
-
-                if ($teacher === null || ! $teacher->hasRole(RoleName::Teacher)) {
-                    $validator->errors()->add('class_teacher_id', __('The class teacher must be a user with the teacher role.'));
-                }
+            if ($this->filled('class_teacher_id') && ! Teacher::query()->whereKey($this->input('class_teacher_id'))->exists()) {
+                $validator->errors()->add('class_teacher_id', __('The selected class teacher is invalid.'));
             }
         });
     }

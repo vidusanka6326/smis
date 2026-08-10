@@ -1,6 +1,6 @@
 # ER Diagram
 
-> Updated through Phase 2 (academic structure). Teacher/student profiles arrive in Phase 3.
+> Updated through Phase 3 (teachers, students, assignments, enrollments).
 
 ## Current schema
 
@@ -12,38 +12,26 @@ erDiagram
         string email UK
         string password
         string status
-        timestamp email_verified_at
         timestamp deleted_at
-        timestamps created_updated
     }
 
-    roles {
+    teachers {
         bigint id PK
-        string name
-        string guard_name
+        bigint user_id FK
+        string employee_no UK
+        string phone
+        timestamp deleted_at
     }
 
-    permissions {
+    students {
         bigint id PK
-        string name
-        string guard_name
-    }
-
-    model_has_roles {
-        bigint role_id FK
-        string model_type
-        bigint model_id
-    }
-
-    model_has_permissions {
-        bigint permission_id FK
-        string model_type
-        bigint model_id
-    }
-
-    role_has_permissions {
-        bigint permission_id FK
-        bigint role_id FK
+        bigint user_id FK
+        string admission_no UK
+        date date_of_birth
+        string gender
+        string guardian_name
+        bigint current_class_id FK
+        timestamp deleted_at
     }
 
     academic_years {
@@ -52,21 +40,18 @@ erDiagram
         date starts_on
         date ends_on
         boolean is_current
-        timestamps created_updated
     }
 
     grades {
         bigint id PK
         tinyint number UK
         string name
-        timestamps created_updated
     }
 
     streams {
         bigint id PK
         string name
         string code UK
-        timestamps created_updated
     }
 
     subjects {
@@ -75,7 +60,6 @@ erDiagram
         string code UK
         tinyint min_grade
         tinyint max_grade
-        timestamps created_updated
     }
 
     classes {
@@ -86,31 +70,49 @@ erDiagram
         bigint grade_id FK
         bigint stream_id FK
         bigint class_teacher_id FK
-        timestamps created_updated
     }
 
     class_subject {
         bigint id PK
         bigint school_class_id FK
         bigint subject_id FK
-        timestamps created_updated
     }
 
-    users ||--o{ model_has_roles : "has"
-    roles ||--o{ model_has_roles : "assigned"
-    roles ||--o{ role_has_permissions : "grants"
-    permissions ||--o{ role_has_permissions : "granted_by"
-    permissions ||--o{ model_has_permissions : "direct"
-    users ||--o{ model_has_permissions : "has"
+    teacher_class_subject_assignments {
+        bigint id PK
+        bigint teacher_id FK
+        bigint school_class_id FK
+        bigint subject_id FK
+        bigint academic_year_id FK
+        string role_in_assignment
+    }
 
+    student_enrollments {
+        bigint id PK
+        bigint student_id FK
+        bigint school_class_id FK
+        bigint academic_year_id FK
+        string status
+    }
+
+    users ||--o| teachers : "profile"
+    users ||--o| students : "profile"
+    teachers ||--o{ teacher_class_subject_assignments : "has"
+    teachers ||--o{ classes : "homeroom"
+    students ||--o{ student_enrollments : "history"
+    classes ||--o{ students : "current"
     academic_years ||--o{ classes : "contains"
     grades ||--o{ classes : "groups"
     streams ||--o{ classes : "optional"
-    users ||--o{ classes : "class_teacher"
     classes ||--o{ class_subject : "has"
     subjects ||--o{ class_subject : "taught_in"
+    classes ||--o{ teacher_class_subject_assignments : "assigned"
+    subjects ||--o{ teacher_class_subject_assignments : "optional"
+    academic_years ||--o{ teacher_class_subject_assignments : "year"
+    academic_years ||--o{ student_enrollments : "year"
+    classes ||--o{ student_enrollments : "placed_in"
 ```
 
-## Planned entities (Phases 3–7)
+## Planned entities (Phases 4–7)
 
-admins, teachers, students, teacher_class_subject_assignments, student_enrollments, timetables, relief_teacher_assignments, attendance_sessions, student_attendance, teacher_attendance, exams, exam_subjects, marks, activity_log.
+timetables, relief_teacher_assignments, attendance_sessions, student_attendance, teacher_attendance, exams, exam_subjects, marks, activity_log, admins profile.
