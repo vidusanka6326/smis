@@ -42,6 +42,7 @@ Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogge
 - Rate-limited login (Fortify); password rules via `Password::defaults()`.
 - Inactive users cannot authenticate (`Fortify::authenticateUsing`) and are logged out by `EnsureUserIsActive`.
 - Authorization via Policies + Spatie permissions; route middleware enforces role shells.
+- Optional TOTP 2FA remains; WebAuthn passkeys are **not** enabled (ADR 0012).
 
 ## Edge cases
 

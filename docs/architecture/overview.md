@@ -9,7 +9,7 @@
 | Layer | Choice |
 |---|---|
 | Framework | Laravel 13 (PHP 8.4) |
-| Auth | Laravel Fortify (login, password reset, 2FA/passkeys) |
+| Auth | Laravel Fortify (login, password reset, 2FA) |
 | Authorization | Spatie `laravel-permission` + Laravel Policies |
 | UI | Livewire 4 + Flux UI + Tailwind CSS 4 |
 | Database | MySQL (production); SQLite (local/tests default) |
