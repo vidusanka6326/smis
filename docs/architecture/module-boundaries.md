@@ -11,6 +11,6 @@
 | Attendance | Student/teacher attendance, monthly summaries | Academic, Teacher, Student | 5 |
 | Examination | Exams, marks entry, pass/fail, grade letters | Academic, Teacher, Student | 6 |
 | Reporting | Analytics dashboards, exports | All domain modules | 7 |
-| API | `/api/v1` Sanctum surface reusing Policies/Requests | All modules | 8 |
+| API | `/api/v1` Sanctum surface reusing Policies/Requests | All modules | 8 — **skipped** (ADR 0009) |
 
 **Rule:** authorization = Spatie role/permission **AND** assignment-based scope, both enforced in Policies — never only in the UI.

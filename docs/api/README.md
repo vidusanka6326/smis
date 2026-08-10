@@ -1,18 +1,20 @@
 # API Documentation Index
 
-Versioned REST API at `/api/v1/...` (Sanctum) is introduced in **Phase 8**.
+## Status
 
-Until then, this folder holds placeholders per module. Each endpoint doc should list: method, path, auth/role required, request/response shape.
+**Phase 8 (Sanctum `/api/v1`) was skipped** for the current web-only release — see [ADR 0009](../decisions/0009-skip-phase-8-rest-api.md).
+
+Files in this folder document **web routes** used by the Blade/Livewire UI (and remain ready if an API is added later). They are not a live Sanctum surface today.
 
 | File | Module | Status |
 |---|---|---|
-| [auth.md](auth.md) | Auth | Placeholder |
-| [admin.md](admin.md) | Admin | Placeholder |
-| [teacher.md](teacher.md) | Teacher | Placeholder |
-| [student.md](student.md) | Student | Placeholder |
-| [attendance.md](attendance.md) | Attendance | Placeholder |
-| [timetable.md](timetable.md) | Timetable | Placeholder |
-| [examination.md](examination.md) | Examination | Placeholder |
-| [reporting.md](reporting.md) | Reporting | Placeholder |
+| [auth.md](auth.md) | Auth | Web routes |
+| [admin.md](admin.md) | Admin | Web routes |
+| [teacher.md](teacher.md) | Teacher | Web routes |
+| [student.md](student.md) | Student | Web routes |
+| [attendance.md](attendance.md) | Attendance | Web routes (Phase 5) |
+| [timetable.md](timetable.md) | Timetable | Web routes (Phase 4) |
+| [examination.md](examination.md) | Examination | Web routes (Phase 6) |
+| [reporting.md](reporting.md) | Reporting | Web routes (Phase 7) |
 
-**Rule:** API controllers reuse the same Policies and Form Requests as the web UI — do not duplicate authorization logic.
+**If/when an API is added:** controllers should reuse the same Policies and Form Requests as the web UI — do not duplicate authorization logic.

@@ -14,7 +14,7 @@
 | UI | Livewire 4 + Flux UI + Tailwind CSS 4 |
 | Database | MySQL (production); SQLite (local/tests default) |
 | Testing | Pest 5 |
-| API (Phase 8) | Laravel Sanctum, `/api/v1` |
+| API (Phase 8) | Laravel Sanctum, `/api/v1` — **skipped** for current release (ADR 0009) |
 
 ## High-level module boundaries
 
