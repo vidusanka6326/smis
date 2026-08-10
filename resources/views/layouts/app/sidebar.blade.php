@@ -20,6 +20,21 @@
                         <flux:sidebar.item icon="user-plus" :href="route('admin.users.create')" :current="request()->routeIs('admin.users.*')" wire:navigate>
                             {{ __('Create user') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="calendar-days" :href="route('admin.academic-years.index')" :current="request()->routeIs('admin.academic-years.*')" wire:navigate>
+                            {{ __('Academic years') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="queue-list" :href="route('admin.grades.index')" :current="request()->routeIs('admin.grades.*')" wire:navigate>
+                            {{ __('Grades') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="squares-2x2" :href="route('admin.streams.index')" :current="request()->routeIs('admin.streams.*')" wire:navigate>
+                            {{ __('Streams') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="book-open" :href="route('admin.subjects.index')" :current="request()->routeIs('admin.subjects.*')" wire:navigate>
+                            {{ __('Subjects') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="building-library" :href="route('admin.classes.index')" :current="request()->routeIs('admin.classes.*')" wire:navigate>
+                            {{ __('Classes') }}
+                        </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>
             </flux:sidebar.nav>

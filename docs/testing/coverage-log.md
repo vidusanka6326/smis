@@ -1,6 +1,15 @@
 # Coverage Log
 
-# Coverage Log
+## 2026-08-10 — Phase 2
+
+Command: `php artisan test --compact` — **99 passed** (395 assertions)
+
+Notable suites:
+- Admin academic CRUD: academic years, grades, streams, subjects, classes (validation + 403s)
+- `AcademicStructurePolicyTest` — every ability × admin/teacher/student for all five academic models
+- Unit: grade stream eligibility; class code builder
+
+Notes: Full `--coverage` percentage still deferred; academic structure policy abilities meet pass/fail coverage via shared `ChecksSystemConfigPermission` trait.
 
 ## 2026-08-10 — Phase 1
 
