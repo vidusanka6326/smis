@@ -1,6 +1,6 @@
 # ER Diagram
 
-> Updated through Phase 3 (teachers, students, assignments, enrollments).
+> Updated through Phase 4 (timetables, relief teacher assignments).
 
 ## Current schema
 
@@ -95,6 +95,25 @@ erDiagram
         string status
     }
 
+    timetables {
+        bigint id PK
+        bigint academic_year_id FK
+        bigint school_class_id FK
+        tinyint day_of_week
+        tinyint period_number
+        bigint subject_id FK
+        bigint teacher_id FK
+    }
+
+    relief_teacher_assignments {
+        bigint id PK
+        bigint timetable_entry_id FK
+        bigint relief_teacher_id FK
+        date date
+        string reason
+        bigint assigned_by FK
+    }
+
     users ||--o| teachers : "profile"
     users ||--o| students : "profile"
     teachers ||--o{ teacher_class_subject_assignments : "has"
@@ -111,8 +130,15 @@ erDiagram
     academic_years ||--o{ teacher_class_subject_assignments : "year"
     academic_years ||--o{ student_enrollments : "year"
     classes ||--o{ student_enrollments : "placed_in"
+    academic_years ||--o{ timetables : "schedules"
+    classes ||--o{ timetables : "has"
+    subjects ||--o{ timetables : "slot"
+    teachers ||--o{ timetables : "teaches"
+    timetables ||--o{ relief_teacher_assignments : "relieved"
+    teachers ||--o{ relief_teacher_assignments : "covers"
+    users ||--o{ relief_teacher_assignments : "assigned_by"
 ```
 
-## Planned entities (Phases 4–7)
+## Planned entities (Phases 5–7)
 
-timetables, relief_teacher_assignments, attendance_sessions, student_attendance, teacher_attendance, exams, exam_subjects, marks, activity_log, admins profile.
+attendance_sessions, student_attendance, teacher_attendance, exams, exam_subjects, marks, activity_log, admins profile.

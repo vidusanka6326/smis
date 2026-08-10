@@ -19,16 +19,44 @@ class SchoolClassFactory extends Factory
      */
     public function definition(): array
     {
-        $grade = Grade::factory()->create();
-        $name = fake()->randomElement(['A', 'B', 'C', 'D']);
-
         return [
-            'name' => $name,
-            'code' => SchoolClass::buildCode($grade, $name),
+            'name' => strtoupper(fake()->unique()->bothify('?###')),
+            'code' => 'TMP',
             'academic_year_id' => AcademicYear::factory(),
-            'grade_id' => $grade->id,
+            'grade_id' => Grade::factory(),
             'stream_id' => null,
             'class_teacher_id' => null,
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (SchoolClass $schoolClass): void {
+            if ($schoolClass->code !== 'TMP') {
+                return;
+            }
+
+            $grade = Grade::query()->find($schoolClass->grade_id);
+
+            if ($grade === null) {
+                return;
+            }
+
+            $schoolClass->code = SchoolClass::buildCode($grade, $schoolClass->name);
+        })->afterCreating(function (SchoolClass $schoolClass): void {
+            if ($schoolClass->code !== 'TMP') {
+                return;
+            }
+
+            $grade = $schoolClass->grade()->first();
+
+            if ($grade === null) {
+                return;
+            }
+
+            $schoolClass->forceFill([
+                'code' => SchoolClass::buildCode($grade, $schoolClass->name),
+            ])->saveQuietly();
+        });
     }
 }

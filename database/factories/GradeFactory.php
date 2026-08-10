@@ -17,7 +17,8 @@ class GradeFactory extends Factory
      */
     public function definition(): array
     {
-        $number = fake()->unique()->numberBetween(1, 200);
+        // Keep random numbers outside 1–13 so explicit ->number() states used in tests never collide.
+        $number = fake()->unique()->numberBetween(50, 9999);
 
         return [
             'number' => $number,
