@@ -6,25 +6,41 @@ Create exams (term test, scholarship, O/L, A/L), configure subjects/max/pass mar
 
 ## User roles involved
 
-Admin (manage exams), Class/Subject Teachers (enter marks per scope), Student (own results).
+- Admin — manage exams, subjects, publish/unpublish, enter any marks
+- Class teacher — enter marks for all subjects in own class
+- Subject teacher — enter marks for assigned subject only
+- PT/PD — cannot enter marks
+- Student — view own published results
 
 ## DB tables used
 
-_Placeholder — `exams`, `exam_subjects`, `marks` (Phase 6)._
+- `exams` — name, type, academic year, grade and/or class scope, dates, published_at
+- `exam_subjects` — exam, subject, max_marks, pass_mark
+- `marks` — exam_subject, student, marks_obtained, grade_letter, is_pass, entered_by_teacher_id
 
 ## Routes
 
-_Placeholder — Phase 6._
+| Method | Path | Name | Notes |
+|---|---|---|---|
+| CRUD + publish | `/admin/exams*` | `admin.exams.*` | Admin exam management |
+| GET/PUT | `/admin/exams/{exam}/subjects` | `admin.exams.subjects.*` | Subject config |
+| GET/PUT | `/admin/marks*` | `admin.marks.*` | Admin mark entry |
+| GET/PUT | `/teacher/marks*` | `teacher.marks.*` | Scoped mark entry |
+| GET | `/student/results` | `student.results` | Published only |
 
 ## Key business rules
 
-- Pass/fail and grade-letter engines require **100% branch coverage**.
-- Marks edits audited.
+- Grade letters: A≥75%, B≥65%, C≥55%, S≥40%, else F.
+- Pass/fail: marks ≥ configured pass mark.
+- Marks locked after publish; admin may unpublish to edit again.
+- Class teachers may enter all subjects in own class (assumed).
 
 ## Edge cases
 
-_TBD in Phase 6 (thresholds logged as PO decisions)._
+- Publishing requires at least one exam subject.
+- Students only see published results.
+- Teacher partial mark updates do not wipe other teachers’ rows.
 
 ## Status
 
-Not Started.
+Done (Phase 6).

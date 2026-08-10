@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\AcademicYear;
+use App\Models\Grade;
+use App\Models\SchoolClass;
+use App\Models\Student;
+use App\Models\Subject;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -51,4 +56,27 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * @return array{0: AcademicYear, 1: SchoolClass, 2: Subject, 3?: Student}
+ */
+function examFixtures(bool $withStudent = false): array
+{
+    $year = AcademicYear::factory()->current()->create();
+    $grade = Grade::factory()->number(10)->create();
+    $schoolClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+    ]);
+    $subject = Subject::factory()->forGradeRange(1, 13)->create();
+    $schoolClass->subjects()->sync([$subject->id]);
+
+    if (! $withStudent) {
+        return [$year, $schoolClass, $subject];
+    }
+
+    $student = Student::factory()->create(['current_class_id' => $schoolClass->id]);
+
+    return [$year, $schoolClass, $subject, $student];
 }

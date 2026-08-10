@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 6
+
+Command: `php artisan test --compact` — **196 passed** (623 assertions)
+
+Notable suites:
+- Admin exam create/subjects/publish; mark entry lock after publish
+- Teacher subject-scoped mark entry denial for other subjects
+- Student published-only results; Exam/ExamSubject/Mark policies
+- GradeLetterCalculator + PassFailCalculator boundary unit coverage
+
+Notes: Full `--coverage` percentage still deferred. Marks audit log deferred to Phase 9.
+
 ## 2026-08-10 — Phase 5
 
 Command: `php artisan test --compact` — **160 passed** (565 assertions)

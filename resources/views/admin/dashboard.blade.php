@@ -27,6 +27,9 @@
             <flux:button :href="route('admin.attendance.sessions.index')" variant="filled" wire:navigate>
                 {{ __('Attendance') }}
             </flux:button>
+            <flux:button :href="route('admin.exams.index')" variant="filled" wire:navigate>
+                {{ __('Exams') }}
+            </flux:button>
             <flux:button :href="route('admin.academic-years.index')" variant="filled" wire:navigate>
                 {{ __('Academic years') }}
             </flux:button>

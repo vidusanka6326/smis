@@ -1,6 +1,6 @@
 # ER Diagram
 
-> Updated through Phase 5 (attendance sessions, student/teacher attendance).
+> Updated through Phase 6 (exams, exam subjects, marks).
 
 ## Current schema
 
@@ -140,6 +140,37 @@ erDiagram
         bigint recorded_by FK
     }
 
+    exams {
+        bigint id PK
+        string name
+        string type
+        bigint academic_year_id FK
+        bigint grade_id FK
+        bigint school_class_id FK
+        date starts_on
+        date ends_on
+        timestamp published_at
+        bigint created_by FK
+    }
+
+    exam_subjects {
+        bigint id PK
+        bigint exam_id FK
+        bigint subject_id FK
+        decimal max_marks
+        decimal pass_mark
+    }
+
+    marks {
+        bigint id PK
+        bigint exam_subject_id FK
+        bigint student_id FK
+        decimal marks_obtained
+        string grade_letter
+        boolean is_pass
+        bigint entered_by_teacher_id FK
+    }
+
     users ||--o| teachers : "profile"
     users ||--o| students : "profile"
     teachers ||--o{ teacher_class_subject_assignments : "has"
@@ -171,8 +202,17 @@ erDiagram
     students ||--o{ student_attendance : "marked"
     teachers ||--o{ teacher_attendance : "daily"
     users ||--o{ teacher_attendance : "recorded_by"
+    academic_years ||--o{ exams : "year"
+    grades ||--o{ exams : "scope"
+    classes ||--o{ exams : "optional"
+    users ||--o{ exams : "created_by"
+    exams ||--o{ exam_subjects : "includes"
+    subjects ||--o{ exam_subjects : "assessed"
+    exam_subjects ||--o{ marks : "has"
+    students ||--o{ marks : "scored"
+    teachers ||--o{ marks : "entered_by"
 ```
 
-## Planned entities (Phases 6–7)
+## Planned entities (Phase 7+)
 
-exams, exam_subjects, marks, activity_log, admins profile.
+activity_log, admins profile, reporting caches (optional).

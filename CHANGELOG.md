@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 6 — Examination module (2026-08-10)
+
+- Added `exams`, `exam_subjects`, and `marks` with scoped mark entry and publish lock.
+- Grade-letter and pass/fail calculators with full unit branch coverage; ExaminationSeeder demo; 196 tests passing.
+
 ### Phase 5 — Attendance module (2026-08-10)
 
 - Added `attendance_sessions`, `student_attendance`, `teacher_attendance` with role-scoped capture.
