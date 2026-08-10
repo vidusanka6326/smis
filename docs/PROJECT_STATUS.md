@@ -38,6 +38,7 @@ Branded SMIS landing page at `/` with full-bleed hero, sign-in CTA, and module o
 
 ## Changelog
 
+- **2026-08-10** — Added root `README.md` (stack, setup, demo accounts, docs index).
 - **2026-08-10** — Replaced starter welcome page with branded SMIS homepage (hero + module overview + auth CTAs).
 - **2026-08-10** — Removed Fortify passkeys (login/settings UI, `@laravel/passkeys`, `passkeys` table); password + 2FA remain (ADR 0012).
 - **2026-08-10** — Dashboard/timetable UI: Chart.js KPIs on admin/teacher/student dashboards (`RoleDashboardMetrics`); shared `x-timetable.grid` with period clock times (ADR 0011); **233 tests** passing.
