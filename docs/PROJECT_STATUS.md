@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-**Chore — remove passkeys** (Done)
+**UI — marketing homepage** (Done)
 
-Fortify WebAuthn passkeys removed; password + optional 2FA remain (ADR 0012).
+Branded SMIS landing page at `/` with full-bleed hero, sign-in CTA, and module overview.
 
 ## Module Tracker
 
@@ -38,6 +38,7 @@ Fortify WebAuthn passkeys removed; password + optional 2FA remain (ADR 0012).
 
 ## Changelog
 
+- **2026-08-10** — Replaced starter welcome page with branded SMIS homepage (hero + module overview + auth CTAs).
 - **2026-08-10** — Removed Fortify passkeys (login/settings UI, `@laravel/passkeys`, `passkeys` table); password + 2FA remain (ADR 0012).
 - **2026-08-10** — Dashboard/timetable UI: Chart.js KPIs on admin/teacher/student dashboards (`RoleDashboardMetrics`); shared `x-timetable.grid` with period clock times (ADR 0011); **233 tests** passing.
 - **2026-08-10** — Phase 9: custom `activity_logs` + `ActivityLogger`; wired into user create, marks, exam publish, attendance; admin viewer; ADR 0010; **228 tests** passing. Coverage % still blocked without pcov/xdebug.

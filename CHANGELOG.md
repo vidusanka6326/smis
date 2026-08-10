@@ -17,6 +17,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 - Disabled Fortify passkeys; removed login/settings passkey UI and `@laravel/passkeys` (ADR 0012).
 - Dropped `passkeys` table; authentication is password (+ optional 2FA) only.
 
+### Marketing homepage (2026-08-10)
+
+- Replaced Laravel starter welcome page with a branded SMIS landing page at `/`.
+- Full-bleed classroom hero, Sora/Source Serif typography, sign-in or dashboard CTA.
+
 ### Phase 9 — Hardening & audit log (2026-08-10)
 
 - Custom `activity_logs` table + `ActivityLogger` (ADR 0010); no new Composer packages.
