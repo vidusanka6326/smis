@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 4
+
+Command: `php artisan test --compact` — **133 passed** (510 assertions)
+
+Notable suites:
+- Admin timetable create + teacher/class conflict rejection
+- Relief assignment weekday + identity + busy checks
+- Teacher/student timetable views; TimetableEntry/Relief policies
+- Conflict detector feature coverage
+
+Notes: Full `--coverage` percentage still deferred. Periods fixed at 8 (Mon–Fri).
+
 ## 2026-08-10 — Phase 3
 
 Command: `php artisan test --compact` — **117 passed** (461 assertions)

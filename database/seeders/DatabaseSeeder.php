@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             AcademicStructureSeeder::class,
             TeacherStudentSeeder::class,
+            TimetableSeeder::class,
         ]);
     }
 }

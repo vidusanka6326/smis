@@ -41,11 +41,26 @@
                         <flux:sidebar.item icon="building-library" :href="route('admin.classes.index')" :current="request()->routeIs('admin.classes.*')" wire:navigate>
                             {{ __('Classes') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="table-cells" :href="route('admin.timetables.index')" :current="request()->routeIs('admin.timetables.*')" wire:navigate>
+                            {{ __('Timetables') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="arrows-right-left" :href="route('admin.relief-assignments.index')" :current="request()->routeIs('admin.relief-assignments.*')" wire:navigate>
+                            {{ __('Relief') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('teacher')
                         <flux:sidebar.item icon="users" :href="route('teacher.students.index')" :current="request()->routeIs('teacher.students.*')" wire:navigate>
                             {{ __('My students') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="table-cells" :href="route('teacher.timetable')" :current="request()->routeIs('teacher.timetable')" wire:navigate>
+                            {{ __('My timetable') }}
+                        </flux:sidebar.item>
+                    @endrole
+
+                    @role('student')
+                        <flux:sidebar.item icon="table-cells" :href="route('student.timetable')" :current="request()->routeIs('student.timetable')" wire:navigate>
+                            {{ __('My timetable') }}
                         </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>

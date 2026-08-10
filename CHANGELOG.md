@@ -6,6 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 4 — Timetable module (2026-08-10)
+
+- Added `timetables` and `relief_teacher_assignments` with conflict detection service.
+- Admin class timetable builder + manual relief workflow.
+- Teacher/student timetable views; TimetableSeeder demo slots; 133 tests passing.
+
 ### Phase 3 — Teacher & Student modules (2026-08-10)
 
 - Added `teachers`, `students`, `teacher_class_subject_assignments`, `student_enrollments`.
