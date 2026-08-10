@@ -109,4 +109,31 @@ class Teacher extends Model
             ->where('subject_id', $subjectId)
             ->exists();
     }
+
+    /**
+     * Whether this teacher may enter marks for a subject in a given class.
+     *
+     * Assumption: class teachers may enter marks for all subjects in their own class.
+     * Subject teachers enter only their assigned subject. PT/PD cannot enter marks.
+     */
+    public function canEnterMarksFor(SchoolClass $schoolClass, int $subjectId): bool
+    {
+        if ($this->isClassTeacherOf($schoolClass)) {
+            return true;
+        }
+
+        return $this->assignments()
+            ->where('school_class_id', $schoolClass->id)
+            ->where('subject_id', $subjectId)
+            ->where('role_in_assignment', TeacherAssignmentRole::SubjectTeacher)
+            ->exists();
+    }
+
+    /**
+     * Whether this teacher may view marks for a subject in a given class.
+     */
+    public function canViewMarksFor(SchoolClass $schoolClass, int $subjectId): bool
+    {
+        return $this->canEnterMarksFor($schoolClass, $subjectId);
+    }
 }

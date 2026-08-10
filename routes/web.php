@@ -3,7 +3,10 @@
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AttendanceMonthlySummaryController as AdminAttendanceMonthlySummaryController;
 use App\Http\Controllers\Admin\AttendanceSessionController as AdminAttendanceSessionController;
+use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\ExamSubjectController;
 use App\Http\Controllers\Admin\GradeController;
+use App\Http\Controllers\Admin\MarkEntryController as AdminMarkEntryController;
 use App\Http\Controllers\Admin\ReliefTeacherAssignmentController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\StreamController;
@@ -17,10 +20,12 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\ResultController as StudentResultController;
 use App\Http\Controllers\Student\TimetableController as StudentTimetableController;
 use App\Http\Controllers\Teacher\AttendanceMonthlySummaryController as TeacherAttendanceMonthlySummaryController;
 use App\Http\Controllers\Teacher\AttendanceSessionController as TeacherAttendanceSessionController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\MarkEntryController as TeacherMarkEntryController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherAttendanceController as TeacherSelfAttendanceController;
 use App\Http\Controllers\Teacher\TimetableController as TeacherTimetableController;
@@ -75,6 +80,20 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('attendance/teachers', [AdminTeacherAttendanceController::class, 'index'])->name('attendance.teachers.index');
         Route::post('attendance/teachers', [AdminTeacherAttendanceController::class, 'store'])->name('attendance.teachers.store');
         Route::delete('attendance/teachers/{teacher_attendance}', [AdminTeacherAttendanceController::class, 'destroy'])->name('attendance.teachers.destroy');
+
+        Route::get('exams', [ExamController::class, 'index'])->name('exams.index');
+        Route::get('exams/create', [ExamController::class, 'create'])->name('exams.create');
+        Route::post('exams', [ExamController::class, 'store'])->name('exams.store');
+        Route::get('exams/{exam}/edit', [ExamController::class, 'edit'])->name('exams.edit');
+        Route::put('exams/{exam}', [ExamController::class, 'update'])->name('exams.update');
+        Route::delete('exams/{exam}', [ExamController::class, 'destroy'])->name('exams.destroy');
+        Route::post('exams/{exam}/publish', [ExamController::class, 'publish'])->name('exams.publish');
+        Route::post('exams/{exam}/unpublish', [ExamController::class, 'unpublish'])->name('exams.unpublish');
+        Route::get('exams/{exam}/subjects', [ExamSubjectController::class, 'edit'])->name('exams.subjects.edit');
+        Route::put('exams/{exam}/subjects', [ExamSubjectController::class, 'update'])->name('exams.subjects.update');
+        Route::get('marks', [AdminMarkEntryController::class, 'index'])->name('marks.index');
+        Route::get('marks/{exam_subject}/edit', [AdminMarkEntryController::class, 'edit'])->name('marks.edit');
+        Route::put('marks/{exam_subject}', [AdminMarkEntryController::class, 'update'])->name('marks.update');
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
@@ -91,12 +110,17 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('attendance/monthly', TeacherAttendanceMonthlySummaryController::class)->name('attendance.monthly');
         Route::get('attendance/self', [TeacherSelfAttendanceController::class, 'index'])->name('attendance.self.index');
         Route::post('attendance/self', [TeacherSelfAttendanceController::class, 'store'])->name('attendance.self.store');
+
+        Route::get('marks', [TeacherMarkEntryController::class, 'index'])->name('marks.index');
+        Route::get('marks/{exam_subject}/edit', [TeacherMarkEntryController::class, 'edit'])->name('marks.edit');
+        Route::put('marks/{exam_subject}', [TeacherMarkEntryController::class, 'update'])->name('marks.update');
     });
 
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('dashboard', StudentDashboardController::class)->name('dashboard');
         Route::get('timetable', StudentTimetableController::class)->name('timetable');
         Route::get('attendance', StudentAttendanceController::class)->name('attendance');
+        Route::get('results', StudentResultController::class)->name('results');
     });
 });
 
