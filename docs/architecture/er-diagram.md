@@ -213,6 +213,6 @@ erDiagram
     teachers ||--o{ marks : "entered_by"
 ```
 
-## Planned entities (Phase 7+)
+## Planned entities (Phase 8+)
 
-activity_log, admins profile, reporting caches (optional).
+activity_log, admins profile, optional reporting caches, Sanctum API resources.

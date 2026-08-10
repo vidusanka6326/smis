@@ -1,0 +1,40 @@
+<x-layouts::app :title="__('Demographics')">
+    <div class="flex h-full w-full flex-1 flex-col gap-6">
+        <div>
+            <flux:heading size="xl">{{ __('Student demographics') }}</flux:heading>
+            <flux:text class="mt-1">{{ __('Grade, class, subject, and gender breakdowns.') }}</flux:text>
+        </div>
+
+        <x-report-toolbar :print="$print">
+            <flux:button :href="route('admin.reports.demographics', ['export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
+            <flux:button :href="route('admin.reports.demographics', ['print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
+            <flux:button :href="route('admin.reports.dashboard')" variant="ghost" wire:navigate>{{ __('Dashboard') }}</flux:button>
+        </x-report-toolbar>
+
+        <p class="text-sm">{{ __('Total students: :n', ['n' => $data['total']]) }}</p>
+
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-zinc-50 dark:bg-zinc-900"><tr><th class="px-3 py-2 text-left">{{ __('Gender') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
+                    <tbody>
+                        <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ __('Boys') }}</td><td class="px-3 py-2">{{ $data['by_gender']['B'] ?? 0 }}</td></tr>
+                        <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ __('Girls') }}</td><td class="px-3 py-2">{{ $data['by_gender']['G'] ?? 0 }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-zinc-50 dark:bg-zinc-900"><tr><th class="px-3 py-2 text-left">{{ __('Class') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
+                    <tbody>
+                        @forelse ($data['by_class'] as $row)
+                            <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ $row['code'] }}</td><td class="px-3 py-2">{{ $row['count'] }}</td></tr>
+                        @empty
+                            <tr><td colspan="2" class="px-3 py-4 text-zinc-500">{{ __('No data.') }}</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</x-layouts::app>

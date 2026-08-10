@@ -30,6 +30,9 @@
             <flux:button :href="route('admin.exams.index')" variant="filled" wire:navigate>
                 {{ __('Exams') }}
             </flux:button>
+            <flux:button :href="route('admin.reports.dashboard')" variant="filled" wire:navigate>
+                {{ __('Reports') }}
+            </flux:button>
             <flux:button :href="route('admin.academic-years.index')" variant="filled" wire:navigate>
                 {{ __('Academic years') }}
             </flux:button>

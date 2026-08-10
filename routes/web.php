@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AttendanceMonthlySummaryController as AdminAttendanceMonthlySummaryController;
+use App\Http\Controllers\Admin\AttendanceReportController as AdminAttendanceReportController;
 use App\Http\Controllers\Admin\AttendanceSessionController as AdminAttendanceSessionController;
+use App\Http\Controllers\Admin\DemographicsReportController;
 use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\ExaminationReportController as AdminExaminationReportController;
 use App\Http\Controllers\Admin\ExamSubjectController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\MarkEntryController as AdminMarkEntryController;
+use App\Http\Controllers\Admin\PerformanceReportController as AdminPerformanceReportController;
 use App\Http\Controllers\Admin\ReliefTeacherAssignmentController;
+use App\Http\Controllers\Admin\ReportDashboardController as AdminReportDashboardController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\StreamController;
 use App\Http\Controllers\Admin\StudentController as AdminStudentController;
@@ -20,12 +25,17 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\OwnReportController as StudentOwnReportController;
 use App\Http\Controllers\Student\ResultController as StudentResultController;
 use App\Http\Controllers\Student\TimetableController as StudentTimetableController;
 use App\Http\Controllers\Teacher\AttendanceMonthlySummaryController as TeacherAttendanceMonthlySummaryController;
+use App\Http\Controllers\Teacher\AttendanceReportController as TeacherAttendanceReportController;
 use App\Http\Controllers\Teacher\AttendanceSessionController as TeacherAttendanceSessionController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\ExaminationReportController as TeacherExaminationReportController;
 use App\Http\Controllers\Teacher\MarkEntryController as TeacherMarkEntryController;
+use App\Http\Controllers\Teacher\PerformanceReportController as TeacherPerformanceReportController;
+use App\Http\Controllers\Teacher\ReportDashboardController as TeacherReportDashboardController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherAttendanceController as TeacherSelfAttendanceController;
 use App\Http\Controllers\Teacher\TimetableController as TeacherTimetableController;
@@ -94,6 +104,12 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('marks', [AdminMarkEntryController::class, 'index'])->name('marks.index');
         Route::get('marks/{exam_subject}/edit', [AdminMarkEntryController::class, 'edit'])->name('marks.edit');
         Route::put('marks/{exam_subject}', [AdminMarkEntryController::class, 'update'])->name('marks.update');
+
+        Route::get('reports', AdminReportDashboardController::class)->name('reports.dashboard');
+        Route::get('reports/demographics', DemographicsReportController::class)->name('reports.demographics');
+        Route::get('reports/attendance', AdminAttendanceReportController::class)->name('reports.attendance');
+        Route::get('reports/examination', AdminExaminationReportController::class)->name('reports.examination');
+        Route::get('reports/performance', AdminPerformanceReportController::class)->name('reports.performance');
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
@@ -114,6 +130,11 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('marks', [TeacherMarkEntryController::class, 'index'])->name('marks.index');
         Route::get('marks/{exam_subject}/edit', [TeacherMarkEntryController::class, 'edit'])->name('marks.edit');
         Route::put('marks/{exam_subject}', [TeacherMarkEntryController::class, 'update'])->name('marks.update');
+
+        Route::get('reports', TeacherReportDashboardController::class)->name('reports.dashboard');
+        Route::get('reports/attendance', TeacherAttendanceReportController::class)->name('reports.attendance');
+        Route::get('reports/examination', TeacherExaminationReportController::class)->name('reports.examination');
+        Route::get('reports/performance', TeacherPerformanceReportController::class)->name('reports.performance');
     });
 
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
@@ -121,6 +142,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('timetable', StudentTimetableController::class)->name('timetable');
         Route::get('attendance', StudentAttendanceController::class)->name('attendance');
         Route::get('results', StudentResultController::class)->name('results');
+        Route::get('report', StudentOwnReportController::class)->name('report');
     });
 });
 
