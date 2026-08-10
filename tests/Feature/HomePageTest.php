@@ -6,7 +6,13 @@ test('homepage presents smis branding and sign-in call to action', function () {
         ->assertSee(config('app.name', 'SMIS'), false)
         ->assertSee(__('School data, gathered and managed in one place.'), false)
         ->assertSee(__('Sign in to SMIS'), false)
-        ->assertSee(route('login'), false);
+        ->assertSee(route('login'), false)
+        ->assertSee(__('What SMIS runs every day'), false)
+        ->assertSee(__('Built around three school roles'), false)
+        ->assertSee(__('How a school week moves through SMIS'), false)
+        ->assertSee(__('Admin'), false)
+        ->assertSee(__('Teacher'), false)
+        ->assertSee(__('Student'), false);
 });
 
 test('authenticated users see dashboard call to action on homepage', function () {
