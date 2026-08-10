@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 5
+
+Command: `php artisan test --compact` — **160 passed** (565 assertions)
+
+Notable suites:
+- Admin/teacher student attendance sessions + finalize lock
+- Teacher self attendance + subject-teacher scope denial for class-level
+- Student own attendance view; AttendanceSession/TeacherAttendance policies
+- AttendancePercentageCalculator unit branch coverage
+
+Notes: Full `--coverage` percentage still deferred. Audit log for post-finalization admin edits deferred to Phase 9.
+
 ## 2026-08-10 — Phase 4
 
 Command: `php artisan test --compact` — **133 passed** (510 assertions)
