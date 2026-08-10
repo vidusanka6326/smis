@@ -161,7 +161,7 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Public registration is disabled — only admins may create accounts.
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([

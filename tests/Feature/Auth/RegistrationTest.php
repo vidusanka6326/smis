@@ -1,27 +1,22 @@
 <?php
 
+use App\Models\User;
 use Laravel\Fortify\Features;
 
-beforeEach(function () {
-    $this->skipUnlessFortifyHas(Features::registration());
+test('public registration routes are not available', function () {
+    expect(Features::enabled(Features::registration()))->toBeFalse();
+
+    $this->get('/register')->assertNotFound();
 });
 
-test('registration screen can be rendered', function () {
-    $response = $this->get(route('register'));
-
-    $response->assertOk();
-});
-
-test('new users can register', function () {
-    $response = $this->post(route('register.store'), [
+test('guests cannot register via fortify store endpoint', function () {
+    $this->post('/register', [
         'name' => 'John Doe',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
+    ])->assertNotFound();
 
-    $response->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
-
-    $this->assertAuthenticated();
+    $this->assertGuest();
+    expect(User::query()->where('email', 'test@example.com')->exists())->toBeFalse();
 });

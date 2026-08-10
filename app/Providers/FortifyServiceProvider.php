@@ -2,13 +2,17 @@
 
 namespace App\Providers;
 
-use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Enums\UserStatus;
+use App\Http\Responses\LoginResponse;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -18,7 +22,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
 
     /**
@@ -37,7 +41,22 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureActions(): void
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
-        Fortify::createUsersUsing(CreateNewUser::class);
+
+        Fortify::authenticateUsing(function (Request $request): ?User {
+            $user = User::query()
+                ->where(Fortify::username(), $request->input(Fortify::username()))
+                ->first();
+
+            if (
+                $user
+                && $user->status === UserStatus::Active
+                && Hash::check((string) $request->input('password'), $user->password)
+            ) {
+                return $user;
+            }
+
+            return null;
+        });
     }
 
     /**
@@ -49,7 +68,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::verifyEmailView(fn () => view('livewire.auth.verify-email'));
         Fortify::twoFactorChallengeView(fn () => view('livewire.auth.two-factor-challenge'));
         Fortify::confirmPasswordView(fn () => view('livewire.auth.confirm-password'));
-        Fortify::registerView(fn () => view('livewire.auth.register'));
         Fortify::resetPasswordView(fn () => view('livewire.auth.reset-password'));
         Fortify::requestPasswordResetLinkView(fn () => view('livewire.auth.forgot-password'));
     }

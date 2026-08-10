@@ -1,0 +1,26 @@
+# Changelog
+
+All notable phase-level changes for **Smart School Data Gathering & Management System (SMIS)**.
+
+Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
+
+## [Unreleased]
+
+### Phase 1 — Auth & Authorization (2026-08-10)
+
+- Seeded Spatie roles (`admin`, `teacher`, `student`) and permissions.
+- Extended `users` with `status` + SoftDeletes; wired `HasRoles`.
+- Disabled public registration; admin-only user creation flow.
+- Role-specific dashboard shells and login redirects.
+- `EnsureUserIsActive` middleware; inactive users cannot log in.
+- `UserPolicy` with full ability coverage tests.
+
+### Phase 0 — Scaffolding (2026-08-10)
+
+- Initialized documentation tree under `/docs` (architecture, modules, api, decisions, testing, setup).
+- Added Cursor operating rules (`.cursor/rules/project.mdc`).
+- Installed and published `spatie/laravel-permission`.
+- Created base application folders: `app/Actions`, `app/Services`, `app/Policies`, `app/Enums`.
+- Confirmed CI workflow (`.github/workflows/tests.yml`).
+- Documented ADRs: Spatie permission, Fortify/Livewire vs Breeze, SQLite local / MySQL production.
+- Added Phase 0 scaffolding feature test.

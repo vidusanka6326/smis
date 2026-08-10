@@ -1,0 +1,135 @@
+---
+description: Global project rules for Smart School Data Gathering & Management System
+alwaysApply: true
+---
+
+# Project Operating Rules
+
+You are building a production-grade Laravel application called "Smart School Data
+Gathering & Management System". Follow these rules for EVERY task in this repo,
+without exception.
+
+## A. Documentation discipline
+
+1. All application documentation lives under `/docs` at the project root. Never put
+   design docs, ERDs, module specs, or API docs anywhere else.
+2. Required structure (create it if missing):
+   - `docs/PROJECT_STATUS.md` — living status tracker (see rule C below).
+   - `docs/architecture/` — architecture overview, ER diagrams (as Mermaid), module
+     boundaries, folder structure explanation.
+   - `docs/modules/` — one `.md` file per module (auth.md, admin.md, teacher.md,
+     student.md, attendance.md, timetable.md, examination.md, reporting.md). Each
+     file documents: purpose, user roles involved, DB tables used, routes, key
+     business rules, and edge cases handled.
+   - `docs/api/` — API endpoint documentation grouped by module (method, path,
+     auth/role required, request/response shape).
+   - `docs/decisions/` — one short ADR (Architecture Decision Record) markdown file
+     per notable technical decision (e.g. `0001-use-spatie-permission.md`). Use the
+     format: Context / Decision / Consequences.
+   - `docs/testing/` — testing strategy and current coverage notes.
+   - `docs/setup/` — local dev setup, `.env` variables explained, seeding
+     instructions.
+3. Whenever you create or modify a module, controller, migration, or route group,
+   update the corresponding file(s) under `docs/`. Documentation updates are NOT
+   optional and are part of the definition of "done" for any task.
+4. Never let `docs/` drift from the actual code. If you rename/remove something,
+   update or delete the relevant doc in the same change.
+
+## B. Project status tracking
+
+1. `docs/PROJECT_STATUS.md` is the single source of truth for progress. It must
+   always contain, kept up to date after every task:
+   - A table of all modules (Auth, Admin, Teacher, Student, Attendance, Timetable,
+     Examination, Reporting) with columns: `Status` (Not Started / In Progress /
+     Done / Blocked), `% Complete`, `Test Coverage`, `Last Updated`, `Notes`.
+   - A "Current Phase" section stating which phase from the build plan is active.
+   - A running "Changelog" section (most recent entry at the top) — one bullet per
+     meaningful change, dated, e.g. `2026-08-10 — Added Student CRUD + policies +
+     feature tests (coverage: 92%)`.
+   - A "Known Issues / TODO" section.
+   - A "Decisions Needed From Product Owner" section for anything ambiguous — do not
+     silently guess on business rules that affect grading, pass/fail logic, or
+     access control; log the question here and pick the most reasonable default,
+     clearly marked as an assumption.
+2. Update `docs/PROJECT_STATUS.md` at the START of a task (mark it In Progress) and
+   at the END of a task (mark it Done/Blocked, log the changelog entry, update
+   coverage numbers). Never skip this step, even for small changes.
+3. Before starting any new task, read `docs/PROJECT_STATUS.md` first to understand
+   current state and avoid rebuilding or conflicting with existing work.
+
+## C. Testing & coverage discipline
+
+1. Every module MUST ship with automated tests before it is marked "Done" in
+   PROJECT_STATUS.md. No feature is complete without tests.
+2. Required test types per module:
+   - **Unit tests** for models, form requests, custom validation rules, and helper
+     classes (e.g. attendance percentage calculator, pass/fail calculator, GPA/
+     average calculators).
+   - **Feature tests** for every controller/route: happy path, validation failures,
+     and — critically — authorization failures (assert a Teacher cannot access
+     Admin routes, a Student cannot write data, a Class Teacher cannot touch another
+     class's data, etc.).
+   - **Policy tests** for every Laravel Policy class, covering every ability for
+     every role.
+   - At least one **integration/browser test** (Pest v3 browser testing, Dusk, or an
+     HTTP test hitting multiple endpoints in sequence) per major user journey (e.g.
+     "Admin creates teacher → assigns class → teacher logs in → uploads marks →
+     student views result").
+3. Minimum coverage targets (enforced, not aspirational):
+   - Overall project: **≥ 80% line coverage**.
+   - Authorization/policy code: **100% of ability methods must have a passing and a
+     failing test.**
+   - Any code that computes grades, pass/fail status, attendance percentages, or
+     GPA/averages: **100% branch coverage**, since these are business-critical and
+     hard to eyeball-verify.
+4. Run the test suite (`php artisan test --coverage` or `pest --coverage`) before
+   marking any task complete. Paste/record the resulting coverage summary into
+   `docs/testing/coverage-log.md` with a date stamp.
+5. If a task cannot reach the coverage target, do NOT mark it Done — mark it
+   "In Progress — coverage gap" in PROJECT_STATUS.md and list exactly which cases
+   are missing under Known Issues.
+6. Never delete or weaken a test to make the suite pass. If a test seems wrong,
+   flag it in PROJECT_STATUS.md instead of silently deleting it.
+7. Use Laravel Model Factories + Seeders for all test data — never hand-craft
+   ad-hoc DB rows in tests.
+
+## D. Code & architecture conventions
+
+1. Follow Laravel conventions: thin controllers, business logic in Action classes
+   or Service classes under `app/Services/` or `app/Actions/`, validation in Form
+   Request classes, authorization in Policy classes (never inline `if
+   (auth()->user()->role...)` checks scattered through controllers).
+2. Use Spatie `laravel-permission` for roles (`admin`, `teacher`, `student`) and
+   granular permissions (e.g. `manage-timetable`, `enter-marks`, `view-reports`).
+   Layer teacher-type distinctions (Class/Subject/PT-PD) and class-scoping on top
+   of this via a dedicated pivot/assignment table, not by inventing new "roles" per
+   class.
+3. Use Laravel Policies for every model that has role-dependent access (Student,
+   Attendance, Mark, Timetable, Report).
+4. Use database transactions for any multi-table write (e.g. creating a student
+   also creates a guardian record and enrollment record).
+5. Use Form Request classes for all validation; never validate inline in a
+   controller.
+6. Name migrations, models, and tables consistently and in English, following
+   Laravel naming conventions (snake_case tables/columns, singular model names).
+7. Every table that can be soft-deleted (students, teachers, users) should use
+   `SoftDeletes`.
+8. Write PHPDoc blocks on non-trivial methods, especially calculation logic
+   (attendance %, pass/fail, averages).
+9. Keep a `CHANGELOG.md` at the project root that summarizes releases/phases (this
+   is separate from and higher-level than `docs/PROJECT_STATUS.md`'s changelog).
+
+## E. Workflow rules
+
+1. Work in small, reviewable increments corresponding to the phases in the build
+   plan I gave you. Do not silently jump ahead to a later phase.
+2. At the end of every phase: run the full test suite, update
+   `docs/PROJECT_STATUS.md`, update relevant `docs/modules/*.md` and
+   `docs/api/*.md`, then summarize what changed and stop for review.
+3. If a requirement is ambiguous (e.g. exact pass mark thresholds, exact stream
+   names for Grade 12–13, whether relief teacher allocation is manual or
+   auto-suggested), do not block — implement the most reasonable default, clearly
+   label it as an assumption in code comments AND in the "Decisions Needed From
+   Product Owner" section of PROJECT_STATUS.md.
+4. Never invent scope creep (no unrelated modules, no premature SPA rewrite, no
+   third-party services) without flagging it first.
