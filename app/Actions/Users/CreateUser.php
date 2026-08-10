@@ -2,14 +2,18 @@
 
 namespace App\Actions\Users;
 
+use App\Enums\ActivityAction;
 use App\Enums\RoleName;
 use App\Enums\UserStatus;
 use App\Models\User;
+use App\Services\Audit\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class CreateUser
 {
+    public function __construct(private ActivityLogger $activityLogger) {}
+
     /**
      * Create a user and assign a Spatie role inside a transaction.
      *
@@ -36,7 +40,23 @@ class CreateUser
 
             $user->assignRole($role);
 
-            return $user->refresh();
+            $user = $user->refresh();
+
+            $this->activityLogger->log(
+                ActivityAction::UserCreated,
+                __('Created user :email with role :role.', [
+                    'email' => $user->email,
+                    'role' => $role->value,
+                ]),
+                $user,
+                [
+                    'email' => $user->email,
+                    'role' => $role->value,
+                    'status' => $user->status->value,
+                ],
+            );
+
+            return $user;
         });
     }
 }

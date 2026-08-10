@@ -1,6 +1,6 @@
 # ER Diagram
 
-> Updated through Phase 6 (exams, exam subjects, marks).
+> Updated through Phase 9 (activity_logs audit trail).
 
 ## Current schema
 
@@ -13,6 +13,18 @@ erDiagram
         string password
         string status
         timestamp deleted_at
+    }
+
+    activity_logs {
+        bigint id PK
+        bigint causer_id FK
+        string action
+        string subject_type
+        bigint subject_id
+        string description
+        json properties
+        string ip_address
+        timestamp created_at
     }
 
     teachers {
@@ -211,8 +223,9 @@ erDiagram
     exam_subjects ||--o{ marks : "has"
     students ||--o{ marks : "scored"
     teachers ||--o{ marks : "entered_by"
+    users ||--o{ activity_logs : "causer"
 ```
 
 ## Planned entities (later)
 
-activity_log, admins profile, optional reporting caches. Sanctum API resources deferred (Phase 8 skipped).
+admins profile, optional reporting caches. Sanctum API resources deferred (Phase 8 skipped).

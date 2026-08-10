@@ -35,9 +35,10 @@ Capture student and teacher attendance; monthly summaries; present/absent/late/e
 
 - Unique session per class + date + scope.
 - Students in a session must belong to the class.
-- Teachers cannot edit finalized sessions; admins can.
+- Teachers cannot edit finalized sessions; admins can (admin edits are audited with `post_finalization_edit` in `activity_logs`).
 - Attendance %: Present + Late = attended; Excused excluded from denominator.
 - Subject-teacher period attendance is enabled (assumption).
+- Upsert/finalize of sessions and teacher attendance writes audit rows via `ActivityLogger`.
 
 ## Edge cases
 

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Attendance;
 
+use App\Enums\ActivityAction;
 use App\Enums\AttendanceStatus;
 use App\Models\AttendanceSession;
 use App\Models\SchoolClass;
@@ -9,11 +10,14 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Services\Audit\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class UpsertAttendanceSession
 {
+    public function __construct(private ActivityLogger $activityLogger) {}
+
     /**
      * Create or update an attendance session and sync per-student statuses.
      *
@@ -87,7 +91,9 @@ class UpsertAttendanceSession
             ]);
         }
 
-        return DB::transaction(function () use ($data, $existing, $schoolClass, $subjectId, $scope, $records): AttendanceSession {
+        $wasFinalized = $existing?->isFinalized() ?? false;
+
+        return DB::transaction(function () use ($data, $existing, $schoolClass, $subjectId, $scope, $records, $wasFinalized): AttendanceSession {
             $payload = [
                 'academic_year_id' => $data['academic_year_id'],
                 'school_class_id' => $schoolClass->id,
@@ -132,7 +138,29 @@ class UpsertAttendanceSession
                     ->delete();
             }
 
-            return $session->load(['schoolClass', 'subject', 'takenByTeacher.user', 'studentAttendances.student.user']);
+            $session = $session->load(['schoolClass', 'subject', 'takenByTeacher.user', 'studentAttendances.student.user']);
+
+            $this->activityLogger->log(
+                ActivityAction::AttendanceSessionUpserted,
+                __('Saved attendance for class :class on :date.', [
+                    'class' => $schoolClass->code,
+                    'date' => $data['date'],
+                ]),
+                $session,
+                [
+                    'attendance_session_id' => $session->id,
+                    'school_class_id' => $schoolClass->id,
+                    'subject_id' => $subjectId,
+                    'date' => $data['date'],
+                    'record_count' => count($keptStudentIds),
+                    'was_finalized' => $wasFinalized,
+                    'post_finalization_edit' => $wasFinalized,
+                    'finalize_requested' => ! empty($data['finalize']),
+                    'is_finalized' => $session->isFinalized(),
+                ],
+            );
+
+            return $session;
         });
     }
 
@@ -147,6 +175,19 @@ class UpsertAttendanceSession
             'taken_by_teacher_id' => $teacher?->id ?? $session->taken_by_teacher_id,
         ]);
 
-        return $session->refresh();
+        $session = $session->refresh();
+
+        $this->activityLogger->log(
+            ActivityAction::AttendanceSessionFinalized,
+            __('Finalized attendance session :id.', ['id' => $session->id]),
+            $session,
+            [
+                'attendance_session_id' => $session->id,
+                'school_class_id' => $session->school_class_id,
+                'taken_by_teacher_id' => $session->taken_by_teacher_id,
+            ],
+        );
+
+        return $session;
     }
 }

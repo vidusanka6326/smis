@@ -12,6 +12,7 @@ Admin only for management; others use separate role dashboards.
 
 - `users` (account creation)
 - Spatie roles/permissions
+- `activity_logs` (audit trail; ADR 0010)
 - `academic_years`
 - `grades`
 - `streams`
@@ -25,6 +26,7 @@ Admin only for management; others use separate role dashboards.
 |---|---|---|---|
 | GET | `/admin/dashboard` | `admin.dashboard` | Shell + shortcuts |
 | GET/POST | `/admin/users/create`, `/admin/users` | `admin.users.*` | `StoreUserRequest` + `CreateUser` |
+| GET | `/admin/activity-logs` | `admin.activity-logs.index` | Admin-only audit viewer (`view-activity-log`) |
 | resource | `/admin/academic-years` | `admin.academic-years.*` | except show |
 | resource | `/admin/grades` | `admin.grades.*` | except show |
 | resource | `/admin/streams` | `admin.streams.*` | except show |
@@ -48,4 +50,4 @@ Admin only for management; others use separate role dashboards.
 
 ## Status
 
-Done for Phase 2 academic structure and Phase 3 teacher/student admin management.
+Done for Phase 2 academic structure, Phase 3 teacher/student admin management, and Phase 9 activity log viewer.

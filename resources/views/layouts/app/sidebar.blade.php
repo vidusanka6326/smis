@@ -56,6 +56,9 @@
                         <flux:sidebar.item icon="chart-bar" :href="route('admin.reports.dashboard')" :current="request()->routeIs('admin.reports.*')" wire:navigate>
                             {{ __('Reports') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.activity-logs.index')" :current="request()->routeIs('admin.activity-logs.*')" wire:navigate>
+                            {{ __('Activity log') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('teacher')

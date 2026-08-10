@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AcademicYearController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AttendanceMonthlySummaryController as AdminAttendanceMonthlySummaryController;
 use App\Http\Controllers\Admin\AttendanceReportController as AdminAttendanceReportController;
 use App\Http\Controllers\Admin\AttendanceSessionController as AdminAttendanceSessionController;
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::view('dashboard', 'admin.dashboard')->name('dashboard');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('users', [UserController::class, 'store'])->name('users.store');
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
         Route::resource('academic-years', AcademicYearController::class)->except(['show']);
         Route::resource('grades', GradeController::class)->except(['show']);

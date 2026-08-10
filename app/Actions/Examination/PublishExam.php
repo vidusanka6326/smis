@@ -2,11 +2,15 @@
 
 namespace App\Actions\Examination;
 
+use App\Enums\ActivityAction;
 use App\Models\Exam;
+use App\Services\Audit\ActivityLogger;
 use Illuminate\Validation\ValidationException;
 
 class PublishExam
 {
+    public function __construct(private ActivityLogger $activityLogger) {}
+
     public function handle(Exam $exam, bool $publish = true): Exam
     {
         if ($publish) {
@@ -17,10 +21,26 @@ class PublishExam
             }
 
             $exam->update(['published_at' => now()]);
+            $action = ActivityAction::ExamPublished;
+            $description = __('Published exam :name.', ['name' => $exam->name]);
         } else {
             $exam->update(['published_at' => null]);
+            $action = ActivityAction::ExamUnpublished;
+            $description = __('Unpublished exam :name.', ['name' => $exam->name]);
         }
 
-        return $exam->refresh();
+        $exam = $exam->refresh();
+
+        $this->activityLogger->log(
+            $action,
+            $description,
+            $exam,
+            [
+                'exam_id' => $exam->id,
+                'published' => $publish,
+            ],
+        );
+
+        return $exam;
     }
 }

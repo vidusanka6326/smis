@@ -1,5 +1,19 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 9
+
+Command: `php artisan test --compact` — **228 passed** (701 assertions)
+
+Command: `php artisan test --compact --coverage` — **failed**: Code coverage driver not available (Xdebug/PCOV missing).
+
+Notable suites:
+- Admin activity log viewer + action filter; teacher denied
+- ActivityLogPolicy admin allow / teacher+student deny
+- ActivityLogger unit persistence
+- Indirect: user create, marks, exam publish, post-finalization attendance edit write logs
+
+Notes: Custom audit log shipped (ADR 0010). ≥80% line coverage still blocked until pcov or xdebug is installed in the environment.
+
 ## 2026-08-10 — Phase 7
 
 Command: `php artisan test --compact` — **217 passed** (670 assertions)
