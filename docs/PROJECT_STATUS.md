@@ -2,20 +2,20 @@
 
 ## Current Phase
 
-**Phase 6 — Examination module** (complete — awaiting review before Phase 7)
+**Phase 7 — Reporting & analytics** (complete — awaiting review before Phase 8)
 
 ## Module Tracker
 
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
 | Auth | Done | 100% | Feature + policy tests passing | 2026-08-10 | Roles/permissions, admin user creation, inactive gate, role dashboards |
-| Admin | Done | 95% | Academic + people + attendance + exams covered | 2026-08-10 | Includes timetable, relief, attendance, exams |
-| Teacher | Done | 95% | Profiles, assignments, students, timetable, attendance, marks | 2026-08-10 | Reporting next |
-| Student | Done | 95% | CRUD, enrollment, filters, timetable, attendance, results | 2026-08-10 | Reporting later |
+| Admin | Done | 100% | Academic + people + attendance + exams + reports | 2026-08-10 | Reporting dashboards included |
+| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports | 2026-08-10 | Scoped analytics |
+| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report | 2026-08-10 | Read-only own report |
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries |
 | Timetable | Done | 100% | Feature + policy + conflict unit coverage | 2026-08-10 | Class builder, teacher/student views, relief workflow |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock |
-| Reporting | Not Started | 0% | — | 2026-08-10 | Phase 7 |
+| Reporting | Done | 100% | Feature + policy + ranking/stats unit coverage | 2026-08-10 | Charts, CSV, print/PDF, best/poor |
 
 ## Deliverables Checklist
 
@@ -26,14 +26,15 @@
 - [x] Attendance management module (student + teacher, monthly summaries)
 - [x] Timetable management module (class/teacher views, relief, conflict detection)
 - [x] Examination management module (term tests, scholarship, O/L, A/L)
-- [ ] Reporting & analytics module
+- [x] Reporting & analytics module (grade/class/subject/gender-wise, best/poor performers)
 - [ ] REST API mirroring web functionality
 - [ ] Automated test suite meeting coverage targets
-- [x] Complete `/docs` documentation set (skeleton + Phase 1–6 updates)
+- [x] Complete `/docs` documentation set (skeleton + Phase 1–7 updates)
 - [x] `docs/PROJECT_STATUS.md` kept current
 
 ## Changelog
 
+- **2026-08-10** — Phase 7 complete: demographics/attendance/exam analytics; best/poor rankings; Chart.js dashboards; CSV + print export; 217 tests passing.
 - **2026-08-10** — Phase 6 complete: exams + exam subjects + marks entry; grade-letter/pass-fail calculators; publish lock; 196 tests passing.
 - **2026-08-10** — Phase 5 complete: attendance sessions + student/teacher attendance; role-scoped capture; monthly % summaries; 160 tests passing.
 - **2026-08-10** — Phase 4 complete: `timetables` + `relief_teacher_assignments`; admin class timetable builder with conflict detection; teacher/student timetable views; manual relief workflow; 133 tests passing.
@@ -46,9 +47,10 @@
 
 - Sanctum / API layer deferred to Phase 8.
 - Overall ≥80% line coverage not yet measured with `--coverage`.
-- Activity/audit log package not yet installed (Phase 9) — marks edits not audited yet.
+- Activity/audit log package not yet installed (Phase 9).
 - `admins` profile extension table still deferred.
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
+- True DomPDF / XLSX packages not installed — CSV + browser print used instead.
 
 ## Decisions Needed From Product Owner
 
@@ -66,6 +68,8 @@
 | Grade letters | A≥75, B≥65, C≥55, S≥40, else F (of max marks) | Assumed |
 | Pass/fail | `marks_obtained >= pass_mark` (per exam subject; default pass 40/100) | Assumed |
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
+| Report exports | CSV download + browser print-to-PDF (no DomPDF/Excel packages yet) | Assumed |
+| Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
 | Stream names for Grades 12–13 | Science, Commerce, Arts, Technology | Assumed |
 | Class code format | `{grade}-{section}` or `{grade}-{STREAM}-{section}` | Assumed |
 | Class teacher limited student fields | Name, email, admission, DOB, gender, guardian; no status/password/class move | Assumed |

@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers\Teacher;
+
+use App\Http\Controllers\Controller;
+use App\Models\Report;
+use App\Services\Reporting\AttendanceAnalyticsReport;
+use App\Services\Reporting\ReportCsvExporter;
+use App\Services\Reporting\TeacherReportScope;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+class AttendanceReportController extends Controller
+{
+    public function __invoke(
+        Request $request,
+        TeacherReportScope $scope,
+        AttendanceAnalyticsReport $report,
+        ReportCsvExporter $csv,
+    ): View|StreamedResponse {
+        $this->authorize('viewAny', Report::class);
+
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher !== null, 403);
+
+        $month = $request->string('month')->toString() ?: now()->format('Y-m');
+        $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $end = (clone $start)->endOfMonth();
+        $data = $report->forMonth($start, $end, $scope->accessibleClassIds($teacher));
+
+        if ($request->string('export')->toString() === 'csv') {
+            $rows = collect($data['student_rows'])->map(fn (array $row): array => [
+                $row['name'],
+                $row['class'],
+                $row['percentage'],
+            ]);
+
+            return $csv->download("teacher-attendance-{$month}.csv", [__('Student'), __('Class'), __('%')], $rows);
+        }
+
+        return view('teacher.reports.attendance', [
+            'data' => $data,
+            'month' => $month,
+            'print' => $request->boolean('print'),
+        ]);
+    }
+}

@@ -1,5 +1,16 @@
 # Coverage Log
 
+## 2026-08-10 — Phase 7
+
+Command: `php artisan test --compact` — **217 passed** (670 assertions)
+
+Notable suites:
+- Admin/teacher report dashboards and CSV export
+- Student own report; ReportPolicy viewAny vs viewOwn
+- PerformanceRankingService + ExaminationStatisticsReport unit coverage
+
+Notes: DomPDF/XLSX deferred (CSV + browser print). Full `--coverage` still deferred.
+
 ## 2026-08-10 — Phase 6
 
 Command: `php artisan test --compact` — **196 passed** (623 assertions)

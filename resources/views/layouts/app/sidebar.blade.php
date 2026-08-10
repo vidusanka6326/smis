@@ -53,6 +53,9 @@
                         <flux:sidebar.item icon="document-text" :href="route('admin.exams.index')" :current="request()->routeIs(['admin.exams.*', 'admin.marks.*'])" wire:navigate>
                             {{ __('Exams') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="chart-bar" :href="route('admin.reports.dashboard')" :current="request()->routeIs('admin.reports.*')" wire:navigate>
+                            {{ __('Reports') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('teacher')
@@ -68,6 +71,9 @@
                         <flux:sidebar.item icon="document-text" :href="route('teacher.marks.index')" :current="request()->routeIs('teacher.marks.*')" wire:navigate>
                             {{ __('Marks') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="chart-bar" :href="route('teacher.reports.dashboard')" :current="request()->routeIs('teacher.reports.*')" wire:navigate>
+                            {{ __('Reports') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('student')
@@ -79,6 +85,9 @@
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="document-text" :href="route('student.results')" :current="request()->routeIs('student.results')" wire:navigate>
                             {{ __('My results') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="chart-bar" :href="route('student.report')" :current="request()->routeIs('student.report')" wire:navigate>
+                            {{ __('My report') }}
                         </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>

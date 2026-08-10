@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Phase 7 — Reporting & analytics (2026-08-10)
+
+- Added demographics, attendance, examination, and performance reports with role scoping.
+- Chart.js dashboards; CSV + print exports; ranking/stats unit coverage; 217 tests passing.
+
 ### Phase 6 — Examination module (2026-08-10)
 
 - Added `exams`, `exam_subjects`, and `marks` with scoped mark entry and publish lock.
