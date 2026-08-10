@@ -1,5 +1,7 @@
 # SMIS — Smart School Data Gathering & Management System
 
+![SMIS — School data, gathered and managed in one place.](docs/images/smis-hero.png)
+
 Laravel web application for day-to-day school operations: academic structure, teachers and students, attendance, timetables, examinations, reporting, and an admin activity log.
 
 There is **no public registration**. Admins create accounts. A REST API layer was intentionally skipped for the current web-only release.
