@@ -46,10 +46,16 @@ class PerformanceReportController extends Controller
 
         if ($request->string('export')->toString() === 'csv') {
             $rows = collect($ranks['best'])->map(fn (array $row): array => [
-                'best', $row['rank'], $row['name'], $row['percentage'],
-            ]);
+                'best', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
+            ])->merge(collect($ranks['poor'])->map(fn (array $row): array => [
+                'poor', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
+            ]));
 
-            return $csv->download('teacher-performance.csv', [__('Band'), __('Rank'), __('Student'), __('%')], $rows);
+            return $csv->download(
+                'teacher-performance.csv',
+                [__('Band'), __('Rank'), __('Student'), __('Class'), __('%')],
+                $rows,
+            );
         }
 
         return view('teacher.reports.performance', [

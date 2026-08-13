@@ -1,3 +1,7 @@
+@php
+    $chartColors = ['#72e3ad', '#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'];
+@endphp
+
 <x-layouts::app :title="__('Admin Dashboard')">
     <div class="flex h-full w-full flex-1 flex-col gap-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
@@ -18,7 +22,7 @@
             </flux:callout>
         @endif
 
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <x-dashboard.stat :label="__('Students')" :value="$stats['students']" />
             <x-dashboard.stat :label="__('Teachers')" :value="$stats['teachers']" />
             <x-dashboard.stat :label="__('Classes')" :value="$stats['classes']" />
@@ -26,6 +30,13 @@
                 :label="__('Avg attendance (month)')"
                 :value="$stats['avg_attendance'] !== null ? $stats['avg_attendance'].'%' : '—'"
                 :hint="__('Across :count students tracked', ['count' => $stats['attendance_tracked']])"
+                tone="success"
+            />
+            <x-dashboard.stat
+                :label="__('Attendance at risk')"
+                :value="$stats['at_risk_count']"
+                :hint="__('Below :pct% this month', ['pct' => 80])"
+                :tone="$stats['at_risk_count'] > 0 ? 'warning' : 'default'"
             />
         </div>
 
@@ -36,6 +47,7 @@
                 :label="__('Latest exam pass rate')"
                 :value="$stats['pass_rate'] !== null ? $stats['pass_rate'].'%' : '—'"
                 :hint="$exam?->name"
+                tone="success"
             />
         </div>
 
@@ -60,28 +72,28 @@
                 'id' => 'adminGenderChart',
                 'type' => 'doughnut',
                 'data' => $charts['gender'],
-                'colors' => ['#2563eb', '#db2777'],
+                'colors' => ['#3b82f6', '#f59e0b'],
             ],
             [
                 'id' => 'adminGradesChart',
                 'type' => 'bar',
                 'label' => __('Students'),
                 'data' => $charts['grades'],
-                'colors' => ['#0f766e'],
+                'colors' => ['#72e3ad'],
             ],
             [
                 'id' => 'adminAttendanceChart',
                 'type' => 'bar',
                 'label' => __('%'),
                 'data' => $charts['attendance_by_class'],
-                'colors' => ['#2563eb'],
+                'colors' => ['#3b82f6'],
             ],
             [
                 'id' => 'adminLettersChart',
                 'type' => 'bar',
                 'label' => __('Count'),
                 'data' => $charts['letters'],
-                'colors' => ['#ca8a04'],
+                'colors' => $chartColors,
             ],
         ]" />
     </div>

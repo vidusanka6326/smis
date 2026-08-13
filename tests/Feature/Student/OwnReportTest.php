@@ -36,7 +36,9 @@ test('student can view own combined report', function () {
         ->get(route('student.report'))
         ->assertOk()
         ->assertSee(__('My report'))
-        ->assertSee($exam->name);
+        ->assertSee($exam->name)
+        ->assertSee(__('Overall exam average'))
+        ->assertSee(__('Pass'));
 });
 
 test('teacher cannot open student own report', function () {

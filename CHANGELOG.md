@@ -6,6 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Reports enrichment + shad theme (2026-08-14)
+
+- Attendance reports flag students below 80% with class summaries; exam reports add by-class comparison.
+- Student report card shows P/A/L/E, exam averages, and results grouped by exam.
+- App theme: mint primary / Outfit from shad tokens; Flux accent mapped to primary; dashboard cards restyled.
+
 ### Dashboard analytics + timetable UI (2026-08-10)
 
 - Role dashboards (admin/teacher/student) show Chart.js KPIs and quick links via `RoleDashboardMetrics`.

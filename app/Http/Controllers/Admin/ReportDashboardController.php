@@ -46,6 +46,13 @@ class ReportDashboardController extends Controller
                 'labels' => array_keys($examStats['by_grade_letter'] ?? []),
                 'data' => array_values($examStats['by_grade_letter'] ?? []),
             ],
+            'chartAttendanceByClass' => [
+                'labels' => array_column($attendanceSummary['class_rows'], 'code'),
+                'data' => array_map(
+                    fn (array $row): float => (float) ($row['percentage'] ?? 0),
+                    $attendanceSummary['class_rows'],
+                ),
+            ],
         ]);
     }
 }

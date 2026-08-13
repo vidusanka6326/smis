@@ -17,8 +17,8 @@ class PerformanceRankingService
     public const DEFAULT_LIMIT = 5;
 
     /**
-     * @param  list<array{student_id: int, name: string, percentage: float, average_marks: float, is_pass_all?: bool}>  $rows
-     * @return array{best: list<array{student_id: int, name: string, percentage: float, average_marks: float, rank: int}>, poor: list<array{student_id: int, name: string, percentage: float, average_marks: float, rank: int}>}
+     * @param  list<array{student_id: int, name: string, percentage: float, average_marks: float, class?: string, is_pass_all?: bool}>  $rows
+     * @return array{best: list<array{student_id: int, name: string, percentage: float, average_marks: float, class: string, rank: int}>, poor: list<array{student_id: int, name: string, percentage: float, average_marks: float, class: string, rank: int}>}
      */
     public function rank(array $rows, int $limit = self::DEFAULT_LIMIT): array
     {
@@ -43,6 +43,7 @@ class PerformanceRankingService
                 'name' => $row['name'],
                 'percentage' => $row['percentage'],
                 'average_marks' => $row['average_marks'],
+                'class' => $row['class'] ?? '—',
                 'rank' => $index + 1,
             ];
         }
@@ -64,6 +65,7 @@ class PerformanceRankingService
                 'name' => $row['name'],
                 'percentage' => $row['percentage'],
                 'average_marks' => $row['average_marks'],
+                'class' => $row['class'] ?? '—',
                 'rank' => $index + 1,
             ];
         }
@@ -76,7 +78,7 @@ class PerformanceRankingService
 
     /**
      * @param  list<int>|null  $studentIds
-     * @return array{best: list<array{student_id: int, name: string, percentage: float, average_marks: float, rank: int}>, poor: list<array{student_id: int, name: string, percentage: float, average_marks: float, rank: int}>}
+     * @return array{best: list<array{student_id: int, name: string, percentage: float, average_marks: float, class: string, rank: int}>, poor: list<array{student_id: int, name: string, percentage: float, average_marks: float, class: string, rank: int}>}
      */
     public function forExam(Exam $exam, ?int $subjectId = null, ?array $studentIds = null, int $limit = self::DEFAULT_LIMIT): array
     {
@@ -87,7 +89,7 @@ class PerformanceRankingService
             ->pluck('id');
 
         $marks = Mark::query()
-            ->with(['student.user', 'examSubject'])
+            ->with(['student.user', 'student.currentClass', 'examSubject'])
             ->whereIn('exam_subject_id', $examSubjectIds)
             ->when($studentIds !== null, fn ($q) => $q->whereIn('student_id', $studentIds))
             ->get()
@@ -106,9 +108,11 @@ class PerformanceRankingService
                 $sumMarks += $obtained;
             }
             $count = $group->count();
+            $student = $group->first()?->student;
             $rows[] = [
                 'student_id' => (int) $studentId,
-                'name' => $group->first()?->student?->user?->name ?? (string) $studentId,
+                'name' => $student?->user?->name ?? (string) $studentId,
+                'class' => $student?->currentClass?->code ?? '—',
                 'percentage' => round($sumPct / $count, 2),
                 'average_marks' => round($sumMarks / $count, 2),
             ];

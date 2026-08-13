@@ -49,7 +49,9 @@ class RoleDashboardMetrics
                 'published_exams' => Exam::query()->whereNotNull('published_at')->count(),
                 'draft_exams' => Exam::query()->whereNull('published_at')->count(),
                 'attendance_tracked' => count($attendanceSummary['student_rows']),
-                'avg_attendance' => $this->averageAttendance($attendanceSummary['student_rows']),
+                'avg_attendance' => $attendanceSummary['summary']['class_average']
+                    ?? $this->averageAttendance($attendanceSummary['student_rows']),
+                'at_risk_count' => $attendanceSummary['summary']['at_risk_count'],
                 'pass_rate' => $examStats['pass_rate'] ?? null,
             ],
             'exam' => $latestExam,
@@ -120,7 +122,9 @@ class RoleDashboardMetrics
                 'assignments' => $teacher->assignments->count(),
                 'homerooms' => $teacher->homeroomClasses->count(),
                 'attendance_tracked' => count($attendanceSummary['student_rows']),
-                'avg_attendance' => $this->averageAttendance($attendanceSummary['student_rows']),
+                'avg_attendance' => $attendanceSummary['summary']['class_average']
+                    ?? $this->averageAttendance($attendanceSummary['student_rows']),
+                'at_risk_count' => $attendanceSummary['summary']['at_risk_count'],
                 'pass_rate' => $examStats['pass_rate'] ?? null,
             ],
             'exam' => $latestExam,

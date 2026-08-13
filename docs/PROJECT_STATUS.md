@@ -2,22 +2,22 @@
 
 ## Current Phase
 
-**UI — marketing homepage** (Done)
+**UI — reports enrichment + shad theme** (Done)
 
-Branded SMIS landing page at `/` with full-bleed hero, sign-in CTA, and module overview.
+Actionable report depth (at-risk attendance, class exam comparison, student report card) and mint/Outfit theme from shad.css tokens.
 
 ## Module Tracker
 
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
 | Auth | Done | 100% | Feature + policy tests passing | 2026-08-10 | Roles/permissions, admin user creation, inactive gate, role dashboards |
-| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + dashboard charts | 2026-08-10 | `/admin/dashboard` analytics |
-| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-10 | Scoped dashboard charts |
-| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-10 | Own KPIs + grade-letter chart |
+| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + dashboard charts | 2026-08-14 | Themed dashboard + richer report hub |
+| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-14 | Scoped reports enrichment + theme |
+| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-14 | Report-card depth + theme |
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries; audited upserts |
 | Timetable | Done | 100% | Feature + policy + conflict + period schedule unit | 2026-08-10 | Visual period×day grid + default times |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock; audited marks/publish |
-| Reporting | Done | 100% | Feature + policy + ranking/stats unit coverage | 2026-08-10 | Charts, CSV, print/PDF, best/poor |
+| Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class unit coverage | 2026-08-14 | At-risk attendance, by_class exam stats, themed UI |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
 
@@ -38,6 +38,7 @@ Branded SMIS landing page at `/` with full-bleed hero, sign-in CTA, and module o
 
 ## Changelog
 
+- **2026-08-14** — Reports enrichment + shad theme: at-risk attendance (&lt;80%), exam by-class stats, student report card (P/A/L/E + grouped exams), mint/Outfit Flux accent; reporting unit/feature tests updated.
 - **2026-08-10** — Added root `README.md` (stack, setup, demo accounts, docs index).
 - **2026-08-10** — Replaced starter welcome page with branded SMIS homepage (hero + module overview + auth CTAs).
 - **2026-08-10** — Removed Fortify passkeys (login/settings UI, `@laravel/passkeys`, `passkeys` table); password + 2FA remain (ADR 0012).
@@ -80,6 +81,7 @@ Branded SMIS landing page at `/` with full-bleed hero, sign-in CTA, and module o
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
 | Report exports | CSV download + browser print-to-PDF (no DomPDF/Excel packages yet) | Assumed |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
+| Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |
 | Audit log implementation | Custom `activity_logs` (no Spatie Activitylog package) | **Decided — ADR 0010** |
 | Stream names for Grades 12–13 | Science, Commerce, Arts, Technology | Assumed |
