@@ -78,7 +78,10 @@ test('admin can filter students by gender grade class and subject', function () 
         ]))
         ->assertOk()
         ->assertSee($girl->user->name)
-        ->assertDontSee('ADM-BOY');
+        ->assertDontSee('ADM-BOY')
+        ->assertSee('data-flux-dropdown', false)
+        ->assertSee('data-flux-select', false)
+        ->assertDontSee('@if="@if"', false);
 });
 
 test('teacher cannot access admin student routes', function () {

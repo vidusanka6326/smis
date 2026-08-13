@@ -53,6 +53,7 @@ test('admin assignment form uses flux selects for class and role', function () {
         ->get(route('admin.teachers.assignments.edit', $teacher))
         ->assertOk()
         ->assertSee('data-flux-select-native', false)
+        ->assertSee('data-flux-dropdown', false)
         ->assertSee($schoolClass->code)
         ->assertSee(TeacherAssignmentRole::ClassTeacher->label())
         ->assertDontSee('<select class="mt-1 w-full rounded-lg', false);

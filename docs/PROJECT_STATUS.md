@@ -4,7 +4,7 @@
 
 **UI — Flux selectors** (Done)
 
-Dropdowns, month filters, attendance finalize checkboxes, and marks grids now use Flux controls. Date fields stay as `flux:input type="date"` (Flux calendar datepicker is Pro-only).
+`flux:select` now opens a Flux dropdown menu (not the browser’s native picker). Hidden native `<select>` remains for form submit. Date fields stay `flux:input type="date"` (calendar picker is Pro-only).
 
 **Auth — Officer role** (Done)
 
@@ -42,6 +42,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Flux selects open a custom dropdown menu (ADR 0014); native OS picker is hidden. Fixed Blade `@if` leaking into the trigger button.
 - **2026-08-14** — Dashboard sidebar brand shows muted subtitle “Never miss a class” under SMIS.
 - **2026-08-14** — Finished Flux form controls: month filters (`x-form.month-select`), attendance finalize checkboxes, marks number inputs, remaining native action buttons.
 - **2026-08-14** — Replaced remaining native HTML selects with Flux `flux:select` (teacher assignment rows, attendance roster status, activity-log filter).

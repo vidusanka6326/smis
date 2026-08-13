@@ -1,5 +1,15 @@
 # Coverage Log
 
+## 2026-08-14 — Flux select dropdown override
+
+Command: `php artisan test --compact` — **261 passed** (874 assertions)
+
+Notable suites:
+- Student filters assert Flux dropdown markup and no leaked `@if="@if"` Blade
+- Teacher assignment form asserts `data-flux-dropdown`
+
+Notes: Free Flux `flux:select` is a native `<select>`; published override uses `flux:dropdown` + `flux:menu`. Date inputs unchanged (Pro datepicker). Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Flux selectors (complete pass)
 
 Command: `php artisan test --compact` — **261 passed** (868 assertions)

@@ -11,6 +11,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 - Replaced remaining native HTML `<select>` controls with Flux `flux:select`.
 - Covers teacher assignment rows (Alpine), attendance roster status, and the activity-log action filter.
 - Month filters now use Flux `x-form.month-select`; marks grids use `flux:input`; finalize uses `flux:checkbox`.
+- Override Flux free select to a dropdown menu (ADR 0014) so Grade/Gender/Class filters no longer open the browser picker.
 
 ### Officer role (2026-08-14)
 
