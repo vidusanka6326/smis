@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Authentication and authorization foundation: login, logout, password reset, roles/permissions, middleware, policies. No public registration — admins create accounts.
+Authentication and authorization foundation: login, logout, password reset, roles/permissions, middleware, policies. No public registration — admins create officers; teachers/students via dedicated modules.
 
 ## User roles involved
 
-Admin, Teacher, Student (Spatie roles). Teacher subtypes (class / subject / PT-PD) via assignment tables in Phase 3 — not extra Spatie roles.
+Admin, Officer, Teacher, Student (Spatie roles). Teacher subtypes (class / subject / PT-PD) via assignment tables — not extra Spatie roles. Officers are school office staff for data entry (ADR 0013).
 
 ## DB tables used
 
@@ -21,24 +21,25 @@ Admin, Teacher, Student (Spatie roles). Teacher subtypes (class / subject / PT-P
 | POST | `/logout` | `logout` | auth | Fortify |
 | GET/POST | password reset | Fortify routes | guest | Enabled |
 | GET | `/dashboard` | `dashboard` | auth, verified, active | Redirects to role dashboard |
-| GET | `/admin/dashboard` | `admin.dashboard` | auth, verified, active, role:admin | Admin shell |
+| GET | `/admin/dashboard` | `admin.dashboard` | auth, verified, active, role:admin\|officer | Admin/officer shell |
 | GET | `/teacher/dashboard` | `teacher.dashboard` | auth, verified, active, role:teacher | Teacher shell |
 | GET | `/student/dashboard` | `student.dashboard` | auth, verified, active, role:student | Student shell |
-| GET/POST | `/admin/users/create`, `/admin/users` | `admin.users.*` | role:admin + UserPolicy | Admin-only account creation |
+| resource | `/admin/officers` | `admin.officers.*` | role:admin + `manage-officers` | Officers CRUD (ADR 0013) |
 
 Public `/register` is **disabled** (Fortify registration feature removed).
 
 ## Permissions (seeded)
 
-See `App\Enums\PermissionName`. Admin receives all (including `view-activity-log`); teacher gets timetable/attendance/marks/reports view-or-enter subset; student gets view-only timetable/attendance/marks.
+See `App\Enums\PermissionName`. Admin receives all (including `manage-officers` + `view-activity-log`); officer gets operational data-entry + activity log; teacher gets timetable/attendance/marks/reports subset; student gets view-only timetable/attendance/marks.
 
 ## Audit trail
 
-Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogger` (ADR 0010). Admin UI: `GET /admin/activity-logs`.
+Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogger` (ADR 0010). UI: `GET /admin/activity-logs` (admin + officer).
 
 ## Key business rules
 
-- Only Admin may create user accounts (`UserPolicy::create` + `manage-users` permission).
+- Only Admin may manage officer accounts (`UserPolicy::manageOfficers` + `manage-officers`).
+- Teachers/students are created via Admin/Teacher student & teacher modules — not a generic Create user form.
 - Rate-limited login (Fortify); password rules via `Password::defaults()`.
 - Inactive users cannot authenticate (`Fortify::authenticateUsing`) and are logged out by `EnsureUserIsActive`.
 - Authorization via Policies + Spatie permissions; route middleware enforces role shells.
@@ -47,9 +48,9 @@ Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogge
 ## Edge cases
 
 - Cross-role dashboard access returns 403 (tested).
-- Teacher/student cannot hit admin user-creation routes (403).
+- Officer cannot open Officers section (403); teacher/student cannot hit admin routes (403).
 - Soft-deleted users are excluded from default queries; account self-delete soft-deletes.
 
 ## Status
 
-Done (Phase 1).
+Done (Phase 1 + Officer role ADR 0013).

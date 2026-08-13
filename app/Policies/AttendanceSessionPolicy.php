@@ -17,7 +17,7 @@ class AttendanceSessionPolicy
 
     public function view(User $user, AttendanceSession $attendanceSession): bool
     {
-        if ($user->can(PermissionName::ManageAttendance->value) && $user->isAdmin()) {
+        if ($user->can(PermissionName::ManageAttendance->value) && $user->isSchoolOffice()) {
             return true;
         }
 
@@ -54,7 +54,7 @@ class AttendanceSessionPolicy
             return false;
         }
 
-        if ($user->isAdmin()) {
+        if ($user->isSchoolOffice()) {
             return true;
         }
 
@@ -64,11 +64,11 @@ class AttendanceSessionPolicy
 
     public function update(User $user, AttendanceSession $attendanceSession): bool
     {
-        if ($attendanceSession->isFinalized() && ! $user->isAdmin()) {
+        if ($attendanceSession->isFinalized() && ! $user->isSchoolOffice()) {
             return false;
         }
 
-        if ($user->isAdmin() && $user->can(PermissionName::ManageAttendance->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::ManageAttendance->value)) {
             return true;
         }
 
@@ -90,7 +90,7 @@ class AttendanceSessionPolicy
 
     public function delete(User $user, AttendanceSession $attendanceSession): bool
     {
-        return $user->isAdmin() && $user->can(PermissionName::ManageAttendance->value);
+        return $user->isSchoolOffice() && $user->can(PermissionName::ManageAttendance->value);
     }
 
     public function restore(User $user, AttendanceSession $attendanceSession): bool

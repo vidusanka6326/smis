@@ -17,7 +17,7 @@ test('admin create forms use sectioned multi-column layouts', function (string $
 })->with([
     'students' => ['admin.students.create', ['Account', 'Student profile', 'Guardian', 'Enrollment']],
     'teachers' => ['admin.teachers.create', ['Account', 'Employment']],
-    'users' => ['admin.users.create', ['Account details', 'Access']],
+    'officers' => ['admin.officers.create', ['Account']],
     'classes' => ['admin.classes.create', ['Class identity', 'Subjects']],
     'subjects' => ['admin.subjects.create', ['Subject details', 'Grade range']],
     'exams' => ['admin.exams.create', ['Exam details', 'Scope', 'Schedule']],

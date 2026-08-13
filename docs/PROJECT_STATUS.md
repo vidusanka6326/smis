@@ -2,16 +2,16 @@
 
 ## Current Phase
 
-**UI — split form layouts** (Done)
+**Auth — Officer role** (Done)
 
-Create/edit forms use shared `x-form.*` components: sectioned cards + responsive multi-column grids instead of single-column stacks.
+Admin-only Officers CRUD replaces Create user; officers get school data-entry access + activity log (ADR 0013).
 
 ## Module Tracker
 
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
-| Auth | Done | 100% | Feature + policy tests passing | 2026-08-10 | Roles/permissions, admin user creation, inactive gate, role dashboards |
-| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + dashboard charts | 2026-08-14 | Themed dashboard + richer report hub |
+| Auth | Done | 100% | Feature + policy tests passing | 2026-08-14 | Roles incl. officer; Officers CRUD; inactive gate; role dashboards |
+| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + officers + dashboard | 2026-08-14 | Shared with officers for data entry |
 | Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-14 | Scoped reports enrichment + theme |
 | Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-14 | Report-card depth + theme |
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries; audited upserts |
@@ -38,6 +38,7 @@ Create/edit forms use shared `x-form.*` components: sectioned cards + responsive
 
 ## Changelog
 
+- **2026-08-14** — Officer role + admin-only Officers section; removed Create user; officers share data-entry routes + activity log (ADR 0013).
 - **2026-08-14** — Split form layouts: shared `x-form` page/section/grid components; all create/edit screens sectioned + multi-column.
 - **2026-08-14** — Decluttered role dashboards: hero + few KPIs + one chart + action lists (cut widget spam).
 - **2026-08-14** — Aligned system colors to the SMIS logo (teal → mint primary, light/dark).
@@ -67,7 +68,7 @@ Create/edit forms use shared `x-form.*` components: sectioned cards + responsive
 - `admins` profile extension table still deferred.
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
 - True DomPDF / XLSX packages not installed — CSV + browser print used instead.
-- Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log`.
+- Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log` and `manage-officers` / `officer` role.
 
 ## Decisions Needed From Product Owner
 
@@ -77,6 +78,7 @@ Create/edit forms use shared `x-form.*` components: sectioned cards + responsive
 | Local DB: SQLite vs MySQL | SQLite for local/tests; MySQL production | Assumed |
 | Default admin seed credentials | `admin@smis.test` / `password` (local only) | Assumed |
 | Demo teacher/student seeds | `class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password` | Assumed |
+| Demo officer seed | `officer@smis.test` / `password` (local only) | Assumed |
 | Periods per day | 8 periods, Monday–Friday; default times via PeriodSchedule (ADR 0011) | Assumed |
 | Relief teacher allocation | Manual assignment with conflict detection | Assumed |
 | Subject-teacher attendance | Enabled by default for assigned subject/class | Assumed |

@@ -63,6 +63,19 @@ class User extends Authenticatable
         return $this->hasRole(RoleName::Admin);
     }
 
+    public function isOfficer(): bool
+    {
+        return $this->hasRole(RoleName::Officer);
+    }
+
+    /**
+     * Admin or officer — school-office staff with school-wide data-entry access.
+     */
+    public function isSchoolOffice(): bool
+    {
+        return $this->isAdmin() || $this->isOfficer();
+    }
+
     public function isTeacher(): bool
     {
         return $this->hasRole(RoleName::Teacher);
@@ -95,7 +108,7 @@ class User extends Authenticatable
     public function dashboardRoute(): string
     {
         return match (true) {
-            $this->isAdmin() => 'admin.dashboard',
+            $this->isAdmin(), $this->isOfficer() => 'admin.dashboard',
             $this->isTeacher() => 'teacher.dashboard',
             $this->isStudent() => 'student.dashboard',
             default => 'dashboard',

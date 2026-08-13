@@ -45,7 +45,7 @@ class ExamSubjectPolicy
             return false;
         }
 
-        if ($user->isAdmin() && $user->can(PermissionName::EnterMarks->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::EnterMarks->value)) {
             return true;
         }
 

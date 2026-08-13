@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Admin dashboard, manage admins/teachers/students, academic structure configuration, system settings.
+Admin dashboard, Officers (office staff accounts), teachers/students, academic structure configuration, system settings.
 
 ## User roles involved
 
-Admin only for management; others use separate role dashboards.
+Admin manages Officers and all school data. Officers share operational admin routes for data entry (ADR 0013). Teachers/students use separate role shells.
 
 ## DB tables used
 
@@ -24,9 +24,9 @@ Admin only for management; others use separate role dashboards.
 
 | Method | Path | Name | Notes |
 |---|---|---|---|
-| GET | `/admin/dashboard` | `admin.dashboard` | School glance hero, 3 KPIs, 2 charts, attention + activity |
-| GET/POST | `/admin/users/create`, `/admin/users` | `admin.users.*` | `StoreUserRequest` + `CreateUser` |
-| GET | `/admin/activity-logs` | `admin.activity-logs.index` | Admin-only audit viewer (`view-activity-log`) |
+| GET | `/admin/dashboard` | `admin.dashboard` | School glance hero, 3 KPIs, 2 charts, attention + activity (`role:admin\|officer`) |
+| resource | `/admin/officers` | `admin.officers.*` | Admin-only Officers CRUD (`manage-officers`; ADR 0013) |
+| GET | `/admin/activity-logs` | `admin.activity-logs.index` | Audit viewer for admin + officer (`view-activity-log`) |
 | resource | `/admin/academic-years` | `admin.academic-years.*` | except show |
 | resource | `/admin/grades` | `admin.grades.*` | except show |
 | resource | `/admin/streams` | `admin.streams.*` | except show |
@@ -35,7 +35,8 @@ Admin only for management; others use separate role dashboards.
 
 ## Key business rules
 
-- Academic CRUD requires `manage-system-config` (admin) via policies.
+- Academic CRUD requires `manage-system-config` (admin/officer) via policies.
+- Officers section is **admin-only**; officers cannot create or manage other officers (ADR 0013).
 - Create/edit screens use shared `x-form.*` sectioned multi-column layouts (not single-column field stacks).
 - Grades 12–13 **require** a stream; grades 1–11 **must not** have a stream.
 - Class codes are auto-built: `10-A` or `12-SCI-A`.

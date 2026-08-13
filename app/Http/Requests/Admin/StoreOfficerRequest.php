@@ -4,20 +4,19 @@ namespace App\Http\Requests\Admin;
 
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
-use App\Enums\RoleName;
 use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreUserRequest extends FormRequest
+class StoreOfficerRequest extends FormRequest
 {
     use PasswordValidationRules, ProfileValidationRules;
 
     public function authorize(): bool
     {
-        return $this->user()?->can('create', User::class) ?? false;
+        return $this->user()?->can('manageOfficers', User::class) ?? false;
     }
 
     /**
@@ -28,7 +27,6 @@ class StoreUserRequest extends FormRequest
         return [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
-            'role' => ['required', 'string', Rule::enum(RoleName::class)],
             'status' => ['required', 'string', Rule::enum(UserStatus::class)],
         ];
     }
