@@ -3,53 +3,53 @@
 @endphp
 
 <x-layouts::app :title="__('Edit class')">
-    <div class="mx-auto flex w-full max-w-2xl flex-col gap-6">
-        <div>
-            <flux:heading size="xl">{{ __('Edit class') }}</flux:heading>
-            <flux:text class="mt-1">{{ $schoolClass->code }}</flux:text>
-        </div>
-
+    <x-form.page
+        :title="__('Edit class')"
+        :description="$schoolClass->code"
+        wide
+    >
         <form method="POST" action="{{ route('admin.classes.update', $schoolClass) }}" class="flex flex-col gap-6">
             @csrf
             @method('PUT')
 
-            <flux:select name="academic_year_id" :label="__('Academic year')" required>
-                @foreach ($academicYears as $year)
-                    <flux:select.option :value="$year->id" :selected="(string) old('academic_year_id', $schoolClass->academic_year_id) === (string) $year->id">
-                        {{ $year->name }}
-                    </flux:select.option>
-                @endforeach
-            </flux:select>
+            <x-form.section :title="__('Class identity')">
+                <x-form.grid>
+                    <flux:select name="academic_year_id" :label="__('Academic year')" required>
+                        @foreach ($academicYears as $year)
+                            <flux:select.option :value="$year->id" :selected="(string) old('academic_year_id', $schoolClass->academic_year_id) === (string) $year->id">
+                                {{ $year->name }}
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:select name="grade_id" :label="__('Grade')" required>
+                        @foreach ($grades as $grade)
+                            <flux:select.option :value="$grade->id" :selected="(string) old('grade_id', $schoolClass->grade_id) === (string) $grade->id">
+                                {{ $grade->name }}
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:select name="stream_id" :label="__('Stream')" :placeholder="__('None (grades 1–11)')">
+                        @foreach ($streams as $stream)
+                            <flux:select.option :value="$stream->id" :selected="(string) old('stream_id', $schoolClass->stream_id) === (string) $stream->id">
+                                {{ $stream->name }}
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:input name="name" :label="__('Section name')" :value="old('name', $schoolClass->name)" required />
+                    <x-form.full>
+                        <flux:select name="class_teacher_id" :label="__('Class teacher')" :placeholder="__('Unassigned')">
+                            @foreach ($teachers as $teacher)
+                                <flux:select.option :value="$teacher->id" :selected="(string) old('class_teacher_id', $schoolClass->class_teacher_id) === (string) $teacher->id">
+                                    {{ $teacher->user?->name }} ({{ $teacher->employee_no }})
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </x-form.full>
+                </x-form.grid>
+            </x-form.section>
 
-            <flux:select name="grade_id" :label="__('Grade')" required>
-                @foreach ($grades as $grade)
-                    <flux:select.option :value="$grade->id" :selected="(string) old('grade_id', $schoolClass->grade_id) === (string) $grade->id">
-                        {{ $grade->name }}
-                    </flux:select.option>
-                @endforeach
-            </flux:select>
-
-            <flux:select name="stream_id" :label="__('Stream')" :placeholder="__('None (grades 1–11)')">
-                @foreach ($streams as $stream)
-                    <flux:select.option :value="$stream->id" :selected="(string) old('stream_id', $schoolClass->stream_id) === (string) $stream->id">
-                        {{ $stream->name }}
-                    </flux:select.option>
-                @endforeach
-            </flux:select>
-
-            <flux:input name="name" :label="__('Section name')" :value="old('name', $schoolClass->name)" required />
-
-            <flux:select name="class_teacher_id" :label="__('Class teacher')" :placeholder="__('Unassigned')">
-                @foreach ($teachers as $teacher)
-                    <flux:select.option :value="$teacher->id" :selected="(string) old('class_teacher_id', $schoolClass->class_teacher_id) === (string) $teacher->id">
-                        {{ $teacher->user?->name }} ({{ $teacher->employee_no }})
-                    </flux:select.option>
-                @endforeach
-            </flux:select>
-
-            <div class="flex flex-col gap-2">
-                <flux:heading size="sm">{{ __('Subjects') }}</flux:heading>
-                <div class="grid gap-2 sm:grid-cols-2">
+            <x-form.section :title="__('Subjects')" :description="__('Subjects offered by this class.')">
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($subjects as $subject)
                         <flux:checkbox
                             name="subject_ids[]"
@@ -59,12 +59,12 @@
                         />
                     @endforeach
                 </div>
-            </div>
+            </x-form.section>
 
-            <div class="flex gap-3">
+            <x-form.actions>
                 <flux:button type="submit" variant="primary">{{ __('Save changes') }}</flux:button>
                 <flux:button :href="route('admin.classes.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
-            </div>
+            </x-form.actions>
         </form>
-    </div>
+    </x-form.page>
 </x-layouts::app>

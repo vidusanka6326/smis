@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Split form layouts (2026-08-14)
+
+- Shared Blade form kit (`x-form.page`, `section`, `grid`, `full`, `actions`) for sectioned, multi-column create/edit screens.
+- Applied across admin/teacher CRUD, attendance, exams/marks, settings, and auth register/reset.
+
 ### Reports enrichment + shad theme (2026-08-14)
 
 - Attendance reports flag students below 80% with class summaries; exam reports add by-class comparison.
