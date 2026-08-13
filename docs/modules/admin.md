@@ -43,6 +43,7 @@ Admin manages Officers and all school data. Officers share operational admin rou
 - Grades 12–13 **require** a stream; grades 1–11 **must not** have a stream.
 - Class codes are auto-built: `10-A` or `12-SCI-A`.
 - Subjects attached to a class must apply to that class’s grade number.
+- Demo seed (ADR 0015): grades 6–9 attach 12 junior-secondary subjects; 10–11 attach 9 O/L subjects; 12–13 attach 3 A/L subjects for the class stream (Science A = physical, Science B = biological).
 - Optional `class_teacher_id` must reference a user with the `teacher` role.
 - Only one academic year may be marked `is_current` (enforced via `SetCurrentAcademicYear`).
 - Deleting academic years/grades/streams/subjects is blocked while related classes (or attachments) exist.

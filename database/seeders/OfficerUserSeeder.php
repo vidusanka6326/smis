@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Actions\Officers\CreateOfficer;
-use App\Enums\RoleName;
 use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -11,20 +10,28 @@ use Illuminate\Database\Seeder;
 class OfficerUserSeeder extends Seeder
 {
     /**
-     * Seed a default officer account for local development.
+     * Seed five office-staff accounts for local development.
      */
     public function run(): void
     {
-        if (User::query()->role(RoleName::Officer)->exists()) {
-            return;
-        }
+        $createOfficer = app(CreateOfficer::class);
 
-        app(CreateOfficer::class)->handle([
-            'name' => 'Office Staff',
-            'email' => 'officer@smis.test',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'status' => UserStatus::Active->value,
-        ]);
+        foreach (SriLankanDemoCatalog::officers() as $officer) {
+            $existing = User::query()->where('email', $officer['email'])->first();
+
+            if ($existing !== null) {
+                $existing->forceFill(['name' => $officer['name']])->save();
+
+                continue;
+            }
+
+            $createOfficer->handle([
+                'name' => $officer['name'],
+                'email' => $officer['email'],
+                'password' => SriLankanDemoCatalog::PASSWORD,
+                'password_confirmation' => SriLankanDemoCatalog::PASSWORD,
+                'status' => UserStatus::Active->value,
+            ]);
+        }
     }
 }

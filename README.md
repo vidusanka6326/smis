@@ -53,15 +53,15 @@ php artisan db:seed --class=RolesAndPermissionsSeeder
 
 ## Demo accounts
 
-Seeded by `php artisan migrate:fresh --seed` (password for all: `password`):
+Seeded by `php artisan migrate:fresh --seed` (password for all: `password`). Dataset is a Type 1AB-style school: **1 admin, 5 officers, 30 teachers, 600 students** (ADR 0015).
 
-| Role | Email |
-|---|---|
-| Admin | `admin@smis.test` |
-| Officer | `officer@smis.test` |
-| Class teacher | `class.teacher@smis.test` |
-| Subject teacher | `subject.teacher@smis.test` |
-| Student | `student@smis.test` |
+| Role | Email | Notes |
+|---|---|---|
+| Admin | `admin@smis.test` | Udana Vidushanka |
+| Officer | `officer@smis.test` | Tharushi Fernando (4 more officers seeded) |
+| Class teacher | `class.teacher@smis.test` | Nimal Perera, homeroom `10-A` |
+| Subject teacher | `subject.teacher@smis.test` | Chaminda Jayasinghe, O/L Mathematics |
+| Student | `student@smis.test` | Kasun Perera, class `10-A` |
 
 ## Documentation
 
