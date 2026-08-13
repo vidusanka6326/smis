@@ -78,6 +78,13 @@ class UserFactory extends Factory
         });
     }
 
+    public function officer(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->assignRole(RoleName::Officer);
+        });
+    }
+
     public function teacher(): static
     {
         return $this->afterCreating(function (User $user): void {

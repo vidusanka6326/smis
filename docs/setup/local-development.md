@@ -47,15 +47,16 @@ php artisan migrate:fresh --seed
 
 This runs:
 
-1. `RolesAndPermissionsSeeder` — roles `admin` / `teacher` / `student` and granular permissions
+1. `RolesAndPermissionsSeeder` — roles `admin` / `officer` / `teacher` / `student` and granular permissions
 2. `AdminUserSeeder` — default admin `admin@smis.test` / `password` (skipped if an admin already exists)
-3. `AcademicStructureSeeder` — grades 1–13, A/L streams, sample subjects, current academic year `2025/2026`, sample classes
-4. `TeacherStudentSeeder` — demo class/subject teachers and a student in `10-A` (`class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password`)
-5. `TimetableSeeder` — sample weekly slots for `10-A`
-6. `AttendanceSeeder` — today’s class attendance for the demo student + class teacher self attendance
-7. `ExaminationSeeder` — Demo Term 1 Test for `10-A` MATH (published sample mark for demo student)
+3. `OfficerUserSeeder` — default officer `officer@smis.test` / `password` (skipped if an officer already exists)
+4. `AcademicStructureSeeder` — grades 1–13, A/L streams, sample subjects, current academic year `2025/2026`, sample classes
+5. `TeacherStudentSeeder` — demo class/subject teachers and a student in `10-A` (`class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password`)
+6. `TimetableSeeder` — sample weekly slots for `10-A`
+7. `AttendanceSeeder` — today’s class attendance for the demo student + class teacher self attendance
+8. `ExaminationSeeder` — Demo Term 1 Test for `10-A` MATH (published sample mark for demo student)
 
-There is **no public registration**. Create additional users while logged in as admin via **Create user**, or use Admin → Teachers / Students. Academic structure is managed under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). Analytics live under **Reports** (admin/teacher) and **My report** (student). Export with `CSV` or use **Print / PDF** in the browser.
+There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). Analytics live under **Reports** (admin/teacher) and **My report** (student). Export with `CSV` or use **Print / PDF** in the browser.
 
 ## Tests
 

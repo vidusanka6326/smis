@@ -16,7 +16,7 @@ class StudentAttendancePolicy
 
     public function view(User $user, StudentAttendance $studentAttendance): bool
     {
-        if ($user->isAdmin() && $user->can(PermissionName::ViewAttendance->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::ViewAttendance->value)) {
             return true;
         }
 

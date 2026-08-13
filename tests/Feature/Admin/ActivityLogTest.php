@@ -59,23 +59,22 @@ test('teacher cannot view activity logs', function () {
         ->assertForbidden();
 });
 
-test('creating a user writes an activity log', function () {
+test('creating an officer writes an activity log', function () {
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($admin)->post(route('admin.users.store'), [
-        'name' => 'Audited Teacher',
-        'email' => 'audited.teacher@example.com',
+    $this->actingAs($admin)->post(route('admin.officers.store'), [
+        'name' => 'Audited Officer',
+        'email' => 'audited.officer@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'role' => RoleName::Teacher->value,
         'status' => UserStatus::Active->value,
-    ])->assertRedirect(route('admin.dashboard'));
+    ])->assertRedirect(route('admin.officers.index'));
 
     $log = ActivityLog::query()->where('action', ActivityAction::UserCreated)->first();
 
     expect($log)->not->toBeNull()
         ->and($log->causer_id)->toBe($admin->id)
-        ->and($log->properties['role'] ?? null)->toBe(RoleName::Teacher->value);
+        ->and($log->properties['role'] ?? null)->toBe(RoleName::Officer->value);
 });
 
 test('mark entry writes an activity log', function () {

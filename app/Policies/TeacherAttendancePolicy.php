@@ -16,7 +16,7 @@ class TeacherAttendancePolicy
 
     public function view(User $user, TeacherAttendance $teacherAttendance): bool
     {
-        if ($user->isAdmin() && $user->can(PermissionName::ViewAttendance->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::ViewAttendance->value)) {
             return true;
         }
 
@@ -32,7 +32,7 @@ class TeacherAttendancePolicy
 
     public function update(User $user, TeacherAttendance $teacherAttendance): bool
     {
-        if ($user->isAdmin() && $user->can(PermissionName::ManageAttendance->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::ManageAttendance->value)) {
             return true;
         }
 
@@ -43,6 +43,6 @@ class TeacherAttendancePolicy
 
     public function delete(User $user, TeacherAttendance $teacherAttendance): bool
     {
-        return $user->isAdmin() && $user->can(PermissionName::ManageAttendance->value);
+        return $user->isSchoolOffice() && $user->can(PermissionName::ManageAttendance->value);
     }
 }

@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Officer role (2026-08-14)
+
+- Removed generic Create user; admins manage Officers under Admin → Officers.
+- New `officer` role for school office data entry with shared `/admin` operational routes + activity log (ADR 0013).
+
 ### Split form layouts (2026-08-14)
 
 - Shared Blade form kit (`x-form.page`, `section`, `grid`, `full`, `actions`) for sectioned, multi-column create/edit screens.

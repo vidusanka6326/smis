@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ExaminationReportController as AdminExaminationRe
 use App\Http\Controllers\Admin\ExamSubjectController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\MarkEntryController as AdminMarkEntryController;
+use App\Http\Controllers\Admin\OfficerController;
 use App\Http\Controllers\Admin\PerformanceReportController as AdminPerformanceReportController;
 use App\Http\Controllers\Admin\ReliefTeacherAssignmentController;
 use App\Http\Controllers\Admin\ReportDashboardController as AdminReportDashboardController;
@@ -23,7 +24,6 @@ use App\Http\Controllers\Admin\TeacherAssignmentController;
 use App\Http\Controllers\Admin\TeacherAttendanceController as AdminTeacherAttendanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TimetableController as AdminTimetableController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
@@ -48,11 +48,13 @@ Route::view('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('role:admin|officer')->prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', AdminDashboardController::class)->name('dashboard');
-        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('users', [UserController::class, 'store'])->name('users.store');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('officers', OfficerController::class)->except(['show']);
+        });
 
         Route::resource('academic-years', AcademicYearController::class)->except(['show']);
         Route::resource('grades', GradeController::class)->except(['show']);

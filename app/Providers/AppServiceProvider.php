@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Enums\RoleName;
 use App\Models\Report;
+use App\Models\User;
 use App\Policies\ReportPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -29,6 +32,13 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
 
         Gate::policy(Report::class, ReportPolicy::class);
+
+        Route::bind('officer', function (string $value): User {
+            return User::query()
+                ->role(RoleName::Officer)
+                ->whereKey($value)
+                ->firstOrFail();
+        });
     }
 
     /**

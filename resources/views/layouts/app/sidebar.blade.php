@@ -16,10 +16,12 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
-                    @role('admin')
-                        <flux:sidebar.item icon="user-plus" :href="route('admin.users.create')" :current="request()->routeIs('admin.users.*')" wire:navigate>
-                            {{ __('Create user') }}
-                        </flux:sidebar.item>
+                    @role('admin|officer')
+                        @role('admin')
+                            <flux:sidebar.item icon="briefcase" :href="route('admin.officers.index')" :current="request()->routeIs('admin.officers.*')" wire:navigate>
+                                {{ __('Officers') }}
+                            </flux:sidebar.item>
+                        @endrole
                         <flux:sidebar.item icon="academic-cap" :href="route('admin.teachers.index')" :current="request()->routeIs('admin.teachers.*')" wire:navigate>
                             {{ __('Teachers') }}
                         </flux:sidebar.item>

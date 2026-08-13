@@ -5,6 +5,7 @@ namespace App\Enums;
 enum PermissionName: string
 {
     case ManageAdmins = 'manage-admins';
+    case ManageOfficers = 'manage-officers';
     case ManageTeachers = 'manage-teachers';
     case ManageStudents = 'manage-students';
     case ManageUsers = 'manage-users';
@@ -36,6 +37,20 @@ enum PermissionName: string
     {
         return [
             RoleName::Admin->value => self::cases(),
+            RoleName::Officer->value => [
+                self::ManageTeachers,
+                self::ManageStudents,
+                self::ManageTimetable,
+                self::ViewTimetable,
+                self::ManageAttendance,
+                self::ViewAttendance,
+                self::EnterMarks,
+                self::ViewMarks,
+                self::ManageExaminations,
+                self::ViewReports,
+                self::ManageSystemConfig,
+                self::ViewActivityLog,
+            ],
             RoleName::Teacher->value => [
                 self::ViewTimetable,
                 self::ManageAttendance,

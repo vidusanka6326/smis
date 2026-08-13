@@ -81,6 +81,34 @@ class UserPolicy
     }
 
     /**
+     * Determine whether the user may manage officer accounts (admin-only Officers section).
+     */
+    public function manageOfficers(User $user): bool
+    {
+        return $user->hasRole(RoleName::Admin) && $user->can(PermissionName::ManageOfficers->value);
+    }
+
+    /**
+     * Determine whether the user may update a specific officer account.
+     */
+    public function updateOfficer(User $user, User $officer): bool
+    {
+        return $this->manageOfficers($user) && $officer->isOfficer();
+    }
+
+    /**
+     * Determine whether the user may delete a specific officer account.
+     */
+    public function deleteOfficer(User $user, User $officer): bool
+    {
+        if ($user->is($officer)) {
+            return false;
+        }
+
+        return $this->manageOfficers($user) && $officer->isOfficer();
+    }
+
+    /**
      * Determine whether the user may assign roles when creating accounts.
      */
     public function assignRole(User $user): bool

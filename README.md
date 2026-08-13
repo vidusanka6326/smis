@@ -17,7 +17,8 @@ There is **no public registration**. Admins create accounts. A REST API layer wa
 
 ## Features
 
-- **Admin** — users, academic years/grades/streams/subjects/classes, teachers & assignments, students, timetables & relief, attendance, exams & marks, reports, activity log
+- **Admin** — officers, academic years/grades/streams/subjects/classes, teachers & assignments, students, timetables & relief, attendance, exams & marks, reports, activity log
+- **Officer** — school office data entry (same operational modules as admin) + activity log; cannot manage officers
 - **Teacher** — scoped students, timetable, attendance, marks, class analytics
 - **Student** — own timetable, attendance, published results, personal report
 - **Dashboards** — role-specific KPIs and Chart.js charts
@@ -57,6 +58,7 @@ Seeded by `php artisan migrate:fresh --seed` (password for all: `password`):
 | Role | Email |
 |---|---|
 | Admin | `admin@smis.test` |
+| Officer | `officer@smis.test` |
 | Class teacher | `class.teacher@smis.test` |
 | Subject teacher | `subject.teacher@smis.test` |
 | Student | `student@smis.test` |

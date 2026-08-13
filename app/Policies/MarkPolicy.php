@@ -16,7 +16,7 @@ class MarkPolicy
 
     public function view(User $user, Mark $mark): bool
     {
-        if ($user->isAdmin() && $user->can(PermissionName::ViewMarks->value)) {
+        if ($user->isSchoolOffice() && $user->can(PermissionName::ViewMarks->value)) {
             return true;
         }
 

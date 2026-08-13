@@ -4,10 +4,10 @@ Web routes for admin academic structure and account management. Sanctum REST mir
 
 | Method | Path | Auth | Notes |
 |---|---|---|---|
-| GET/POST | `/admin/users*` | admin + `manage-users` | User creation |
-| GET | `/admin/activity-logs` | admin + `view-activity-log` | Audit trail viewer |
-| resource | `/admin/academic-years` | admin + `manage-system-config` | CRUD except show |
-| resource | `/admin/grades` | admin + `manage-system-config` | CRUD except show |
-| resource | `/admin/streams` | admin + `manage-system-config` | CRUD except show |
-| resource | `/admin/subjects` | admin + `manage-system-config` | CRUD except show |
-| resource | `/admin/classes` | admin + `manage-system-config` | CRUD except show; body may include `subject_ids[]` |
+| resource | `/admin/officers` | admin + `manage-officers` | Officers CRUD (ADR 0013) |
+| GET | `/admin/activity-logs` | admin\|officer + `view-activity-log` | Audit trail viewer |
+| resource | `/admin/academic-years` | admin\|officer + `manage-system-config` | CRUD except show |
+| resource | `/admin/grades` | admin\|officer + `manage-system-config` | CRUD except show |
+| resource | `/admin/streams` | admin\|officer + `manage-system-config` | CRUD except show |
+| resource | `/admin/subjects` | admin\|officer + `manage-system-config` | CRUD except show |
+| resource | `/admin/classes` | admin\|officer + `manage-system-config` | CRUD except show; body may include `subject_ids[]` |
