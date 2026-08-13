@@ -87,12 +87,12 @@
 
                 @if (Route::has('login'))
                     <nav class="flex items-center gap-4">
-                        <a href="#modules" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
+                        {{-- <a href="#modules" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
                             {{ __('Modules') }}
                         </a>
                         <a href="#roles" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
                             {{ __('Roles') }}
-                        </a>
+                        </a> --}}
                         @auth
                             <a
                                 href="{{ route('dashboard') }}"
