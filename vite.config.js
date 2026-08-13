@@ -14,13 +14,13 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Montserrat', {
+                bunny('Plus Jakarta Sans', {
                     weights: [400, 500, 600, 700],
                 }),
-                bunny('Merriweather', {
+                bunny('Lora', {
                     weights: [400, 700],
                 }),
-                bunny('Ubuntu Mono', {
+                bunny('IBM Plex Mono', {
                     weights: [400, 700],
                 }),
             ],

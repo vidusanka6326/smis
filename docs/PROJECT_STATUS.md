@@ -38,6 +38,7 @@ Actionable report depth (at-risk attendance, class exam comparison, student repo
 
 ## Changelog
 
+- **2026-08-14** — Applied violet `shad.css` theme (light + dark) with Plus Jakarta Sans / Lora; Flux accent → primary.
 - **2026-08-14** — Applied coral/peach `sha.css` theme (light + dark) with Montserrat/Merriweather; Flux accent → primary.
 - **2026-08-14** — Full-coverage role dashboards: denser KPIs, subject/class exam charts, at-risk & ranking panels, student attendance/subject analytics.
 - **2026-08-14** — Reports enrichment + shad theme: at-risk attendance (&lt;80%), exam by-class stats, student report card (P/A/L/E + grouped exams), mint/Outfit Flux accent; reporting unit/feature tests updated.

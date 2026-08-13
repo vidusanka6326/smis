@@ -1,5 +1,5 @@
 @php
-    $chartColors = ['#ff7e5f', '#feb47b', '#ffcaa7', '#ffad8f', '#ce6a57'];
+    $chartColors = ['#7033ff', '#3276e4', '#fd822b', '#747474', '#4ac885'];
 @endphp
 
 <x-layouts::app :title="__('Teacher Dashboard')">
@@ -152,21 +152,21 @@
                     'id' => 'teacherGenderChart',
                     'type' => 'doughnut',
                     'data' => $charts['gender'],
-                    'colors' => ['#feb47b', '#ffad8f'],
+                    'colors' => ['#3276e4', '#747474'],
                 ],
                 [
                     'id' => 'teacherClassesChart',
                     'type' => 'bar',
                     'label' => __('Students'),
                     'data' => $charts['classes'],
-                    'colors' => ['#ffcaa7'],
+                    'colors' => ['#fd822b'],
                 ],
                 [
                     'id' => 'teacherAttendanceChart',
                     'type' => 'bar',
                     'label' => __('%'),
                     'data' => $charts['attendance_by_class'],
-                    'colors' => ['#ff7e5f'],
+                    'colors' => ['#7033ff'],
                 ],
                 [
                     'id' => 'teacherLettersChart',
@@ -179,14 +179,14 @@
                     'id' => 'teacherPassFailChart',
                     'type' => 'doughnut',
                     'data' => $charts['pass_fail'],
-                    'colors' => ['#ff7e5f', '#e63946'],
+                    'colors' => ['#4ac885', '#e54b4f'],
                 ],
                 [
                     'id' => 'teacherSubjectPassChart',
                     'type' => 'bar',
                     'label' => __('Pass %'),
                     'data' => $charts['subject_pass_rates'],
-                    'colors' => ['#feb47b'],
+                    'colors' => ['#3276e4'],
                 ],
             ]" />
         @endif

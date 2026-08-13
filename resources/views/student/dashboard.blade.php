@@ -1,5 +1,5 @@
 @php
-    $chartColors = ['#ff7e5f', '#feb47b', '#ffcaa7', '#ffad8f', '#ce6a57'];
+    $chartColors = ['#7033ff', '#3276e4', '#fd822b', '#747474', '#4ac885'];
 @endphp
 
 <x-layouts::app :title="__('Student Dashboard')">
@@ -122,7 +122,7 @@
                     'id' => 'studentAttendanceChart',
                     'type' => 'doughnut',
                     'data' => $charts['attendance_status'],
-                    'colors' => ['#ff7e5f', '#ffad8f', '#feb47b', '#ffcaa7'],
+                    'colors' => ['#7033ff', '#747474', '#3276e4', '#fd822b'],
                 ],
                 [
                     'id' => 'studentLettersChart',
@@ -134,14 +134,14 @@
                     'id' => 'studentPassFailChart',
                     'type' => 'doughnut',
                     'data' => $charts['pass_fail'],
-                    'colors' => ['#ff7e5f', '#e63946'],
+                    'colors' => ['#4ac885', '#e54b4f'],
                 ],
                 [
                     'id' => 'studentSubjectsChart',
                     'type' => 'bar',
                     'label' => __('Avg %'),
                     'data' => $charts['subject_averages'],
-                    'colors' => ['#feb47b'],
+                    'colors' => ['#3276e4'],
                 ],
             ]" />
         @endif
