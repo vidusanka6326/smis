@@ -36,6 +36,7 @@ Admin only for management; others use separate role dashboards.
 ## Key business rules
 
 - Academic CRUD requires `manage-system-config` (admin) via policies.
+- Create/edit screens use shared `x-form.*` sectioned multi-column layouts (not single-column field stacks).
 - Grades 12–13 **require** a stream; grades 1–11 **must not** have a stream.
 - Class codes are auto-built: `10-A` or `12-SCI-A`.
 - Subjects attached to a class must apply to that class’s grade number.

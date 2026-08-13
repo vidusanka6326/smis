@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-**UI — reports enrichment + shad theme** (Done)
+**UI — split form layouts** (Done)
 
-Actionable report depth (at-risk attendance, class exam comparison, student report card) and mint/Outfit theme from shad.css tokens.
+Create/edit forms use shared `x-form.*` components: sectioned cards + responsive multi-column grids instead of single-column stacks.
 
 ## Module Tracker
 
@@ -38,6 +38,7 @@ Actionable report depth (at-risk attendance, class exam comparison, student repo
 
 ## Changelog
 
+- **2026-08-14** — Split form layouts: shared `x-form` page/section/grid components; all create/edit screens sectioned + multi-column.
 - **2026-08-14** — Decluttered role dashboards: hero + few KPIs + one chart + action lists (cut widget spam).
 - **2026-08-14** — Aligned system colors to the SMIS logo (teal → mint primary, light/dark).
 - **2026-08-14** — Applied violet `shad.css` theme (light + dark) with Plus Jakarta Sans / Lora; Flux accent → primary.
