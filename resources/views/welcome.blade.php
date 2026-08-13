@@ -8,7 +8,8 @@
         <title>{{ config('app.name', 'SMIS') }} — {{ __('Smart School Management') }}</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+        <link rel="icon" href="/favicon-192x192.png" type="image/png" sizes="192x192">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -71,18 +72,27 @@
     <body class="bg-[var(--home-mist)] text-[var(--home-ink)] antialiased">
         <header class="absolute inset-x-0 top-0 z-20">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 lg:px-8">
-                <a href="{{ route('home') }}" class="font-display text-lg font-semibold tracking-tight text-white">
-                    {{ config('app.name', 'SMIS') }}
+                <a href="{{ route('home') }}" class="flex items-center gap-3 text-white">
+                    <img
+                        src="{{ asset('images/smis-logo-home.png') }}"
+                        alt="{{ config('app.name', 'SMIS') }}"
+                        class="h-10 w-10 object-contain drop-shadow-md"
+                        width="40"
+                        height="40"
+                    >
+                    <span class="font-display text-lg font-semibold tracking-tight">
+                        {{ config('app.name', 'SMIS') }}
+                    </span>
                 </a>
 
                 @if (Route::has('login'))
                     <nav class="flex items-center gap-4">
-                        <a href="#modules" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
+                        {{-- <a href="#modules" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
                             {{ __('Modules') }}
                         </a>
                         <a href="#roles" class="hidden font-display text-sm font-medium text-white/85 transition hover:text-white sm:inline">
                             {{ __('Roles') }}
-                        </a>
+                        </a> --}}
                         @auth
                             <a
                                 href="{{ route('dashboard') }}"
@@ -118,10 +128,6 @@
             </div>
 
             <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-6 pb-16 pt-28 lg:justify-center lg:px-8 lg:pb-24 lg:pt-20">
-                <p class="home-rise font-display text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-                    {{ config('app.name', 'SMIS') }}
-                </p>
-
                 <h1 class="home-rise home-rise-delay-1 mt-5 max-w-2xl font-display text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                     {{ __('School data, gathered and managed in one place.') }}
                 </h1>

@@ -46,3 +46,18 @@ test('perfect pass rate is one hundred', function () {
     expect($summary['pass_rate'])->toBe(100.0)
         ->and($summary['average_percentage'])->toBe(100.0);
 });
+
+test('summarize rows builds class comparison', function () {
+    $summary = $this->report->summarizeRows([
+        ['marks_obtained' => 80, 'max_marks' => 100, 'is_pass' => true, 'grade_letter' => 'A', 'school_class_id' => 1, 'class_code' => '10-A'],
+        ['marks_obtained' => 20, 'max_marks' => 100, 'is_pass' => false, 'grade_letter' => 'F', 'school_class_id' => 1, 'class_code' => '10-A'],
+        ['marks_obtained' => 90, 'max_marks' => 100, 'is_pass' => true, 'grade_letter' => 'A', 'school_class_id' => 2, 'class_code' => '10-B'],
+    ]);
+
+    expect($summary['by_class'])->toHaveCount(2)
+        ->and($summary['by_class'][0]['code'])->toBe('10-A')
+        ->and($summary['by_class'][0]['pass_rate'])->toBe(50.0)
+        ->and($summary['by_class'][0]['average_percentage'])->toBe(50.0)
+        ->and($summary['by_class'][1]['code'])->toBe('10-B')
+        ->and($summary['by_class'][1]['pass_rate'])->toBe(100.0);
+});

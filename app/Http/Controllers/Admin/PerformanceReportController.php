@@ -32,19 +32,21 @@ class PerformanceReportController extends Controller
                 'best',
                 $row['rank'],
                 $row['name'],
+                $row['class'] ?? '—',
                 $row['percentage'],
                 $row['average_marks'],
             ])->merge(collect($ranks['poor'])->map(fn (array $row): array => [
                 'poor',
                 $row['rank'],
                 $row['name'],
+                $row['class'] ?? '—',
                 $row['percentage'],
                 $row['average_marks'],
             ]));
 
             return $csv->download(
                 'performance-rankings.csv',
-                [__('Band'), __('Rank'), __('Student'), __('%'), __('Avg marks')],
+                [__('Band'), __('Rank'), __('Student'), __('Class'), __('%'), __('Avg marks')],
                 $rows,
             );
         }

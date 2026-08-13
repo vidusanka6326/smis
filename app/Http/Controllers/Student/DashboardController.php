@@ -26,6 +26,7 @@ class DashboardController extends Controller
                 'charts' => null,
                 'todaySlots' => [],
                 'recentMarks' => collect(),
+                'failedMarks' => collect(),
             ];
 
         return view('student.dashboard', [

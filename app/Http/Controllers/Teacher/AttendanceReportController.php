@@ -35,9 +35,17 @@ class AttendanceReportController extends Controller
                 $row['name'],
                 $row['class'],
                 $row['percentage'],
+                $row['present'],
+                $row['absent'],
+                $row['late'],
+                $row['excused'],
             ]);
 
-            return $csv->download("teacher-attendance-{$month}.csv", [__('Student'), __('Class'), __('%')], $rows);
+            return $csv->download(
+                "teacher-attendance-{$month}.csv",
+                [__('Student'), __('Class'), __('%'), __('Present'), __('Absent'), __('Late'), __('Excused')],
+                $rows,
+            );
         }
 
         return view('teacher.reports.attendance', [

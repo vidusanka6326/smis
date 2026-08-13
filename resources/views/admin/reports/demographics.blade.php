@@ -11,26 +11,26 @@
             <flux:button :href="route('admin.reports.dashboard')" variant="ghost" wire:navigate>{{ __('Dashboard') }}</flux:button>
         </x-report-toolbar>
 
-        <p class="text-sm">{{ __('Total students: :n', ['n' => $data['total']]) }}</p>
+        <x-dashboard.stat :label="__('Total students')" :value="$data['total']" class="max-w-xs" />
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+            <div class="overflow-x-auto rounded-xl border border-border bg-card">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-zinc-50 dark:bg-zinc-900"><tr><th class="px-3 py-2 text-left">{{ __('Gender') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
+                    <thead class="bg-muted/60"><tr><th class="px-3 py-2 text-left">{{ __('Gender') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
                     <tbody>
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ __('Boys') }}</td><td class="px-3 py-2">{{ $data['by_gender']['B'] ?? 0 }}</td></tr>
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ __('Girls') }}</td><td class="px-3 py-2">{{ $data['by_gender']['G'] ?? 0 }}</td></tr>
+                        <tr class="border-t border-border"><td class="px-3 py-2">{{ __('Boys') }}</td><td class="px-3 py-2">{{ $data['by_gender']['B'] ?? 0 }}</td></tr>
+                        <tr class="border-t border-border"><td class="px-3 py-2">{{ __('Girls') }}</td><td class="px-3 py-2">{{ $data['by_gender']['G'] ?? 0 }}</td></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
+            <div class="overflow-x-auto rounded-xl border border-border bg-card">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-zinc-50 dark:bg-zinc-900"><tr><th class="px-3 py-2 text-left">{{ __('Class') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
+                    <thead class="bg-muted/60"><tr><th class="px-3 py-2 text-left">{{ __('Class') }}</th><th class="px-3 py-2 text-left">{{ __('Count') }}</th></tr></thead>
                     <tbody>
                         @forelse ($data['by_class'] as $row)
-                            <tr class="border-t border-zinc-200 dark:border-zinc-700"><td class="px-3 py-2">{{ $row['code'] }}</td><td class="px-3 py-2">{{ $row['count'] }}</td></tr>
+                            <tr class="border-t border-border"><td class="px-3 py-2">{{ $row['code'] }}</td><td class="px-3 py-2">{{ $row['count'] }}</td></tr>
                         @empty
-                            <tr><td colspan="2" class="px-3 py-4 text-zinc-500">{{ __('No data.') }}</td></tr>
+                            <tr><td colspan="2" class="px-3 py-4 text-muted-foreground">{{ __('No data.') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

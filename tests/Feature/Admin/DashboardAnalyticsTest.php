@@ -16,5 +16,10 @@ test('admin dashboard shows analytics widgets', function () {
         ->assertSee(__('Students'))
         ->assertSee(__('Gender mix'))
         ->assertSee(__('Students by grade'))
-        ->assertSee('adminGenderChart');
+        ->assertSee(__('Students by class'))
+        ->assertSee(__('Pass vs fail (latest exam)'))
+        ->assertSee(__('Attendance needing attention'))
+        ->assertSee(__('Recent activity'))
+        ->assertSee('adminGenderChart')
+        ->assertSee('adminSubjectPassChart');
 });

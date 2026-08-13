@@ -1,6 +1,9 @@
 <x-layouts::app :title="__('Performance')">
     <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <flux:heading size="xl">{{ __('Best & poor performers') }}</flux:heading>
+        <div>
+            <flux:heading size="xl">{{ __('Best & poor performers') }}</flux:heading>
+            <flux:text class="mt-1">{{ __('Ranked by average percentage for students in your scope.') }}</flux:text>
+        </div>
 
         <form method="GET" class="no-print flex flex-wrap items-end gap-3">
             <flux:select name="exam_id" :label="__('Exam')">
@@ -17,23 +20,29 @@
         </x-report-toolbar>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
                 <flux:heading size="sm">{{ __('Best') }}</flux:heading>
-                <ul class="mt-3 space-y-1 text-sm">
+                <ul class="mt-3 space-y-2 text-sm">
                     @forelse ($ranks['best'] as $row)
-                        <li>#{{ $row['rank'] }} {{ $row['name'] }} — {{ $row['percentage'] }}%</li>
+                        <li class="flex items-baseline justify-between gap-3 border-b border-border/60 pb-2 last:border-0">
+                            <span>#{{ $row['rank'] }} {{ $row['name'] }} <span class="text-muted-foreground">({{ $row['class'] }})</span></span>
+                            <span class="font-medium text-emerald-700 dark:text-emerald-400">{{ $row['percentage'] }}%</span>
+                        </li>
                     @empty
-                        <li class="text-zinc-500">{{ __('No data.') }}</li>
+                        <li class="text-muted-foreground">{{ __('No data.') }}</li>
                     @endforelse
                 </ul>
             </div>
-            <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
-                <flux:heading size="sm">{{ __('Poor') }}</flux:heading>
-                <ul class="mt-3 space-y-1 text-sm">
+            <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+                <flux:heading size="sm">{{ __('Needs improvement') }}</flux:heading>
+                <ul class="mt-3 space-y-2 text-sm">
                     @forelse ($ranks['poor'] as $row)
-                        <li>#{{ $row['rank'] }} {{ $row['name'] }} — {{ $row['percentage'] }}%</li>
+                        <li class="flex items-baseline justify-between gap-3 border-b border-border/60 pb-2 last:border-0">
+                            <span>#{{ $row['rank'] }} {{ $row['name'] }} <span class="text-muted-foreground">({{ $row['class'] }})</span></span>
+                            <span class="font-medium text-amber-600 dark:text-amber-400">{{ $row['percentage'] }}%</span>
+                        </li>
                     @empty
-                        <li class="text-zinc-500">{{ __('No data.') }}</li>
+                        <li class="text-muted-foreground">{{ __('No data.') }}</li>
                     @endforelse
                 </ul>
             </div>

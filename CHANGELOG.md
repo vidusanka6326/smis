@@ -6,6 +6,13 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Reports enrichment + shad theme (2026-08-14)
+
+- Attendance reports flag students below 80% with class summaries; exam reports add by-class comparison.
+- Student report card shows P/A/L/E, exam averages, and results grouped by exam.
+- App theme: teal/mint tokens matched to the SMIS logo (light + dark); Flux accent mapped to primary.
+- Role dashboards expanded to fill the workspace: denser KPIs, subject/class charts, at-risk & ranking panels, student subject averages.
+
 ### Dashboard analytics + timetable UI (2026-08-10)
 
 - Role dashboards (admin/teacher/student) show Chart.js KPIs and quick links via `RoleDashboardMetrics`.

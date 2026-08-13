@@ -25,7 +25,8 @@ class ExaminationStatisticsReport
      *     average_marks: float,
      *     average_percentage: float,
      *     by_grade_letter: array<string, int>,
-     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>
+     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>,
+     *     by_class: list<array{school_class_id: int|null, code: string, average_percentage: float, pass_rate: float, count: int}>
      * }
      */
     public function forExam(Exam $exam, ?int $subjectId = null, ?array $studentIds = null): array
@@ -41,7 +42,7 @@ class ExaminationStatisticsReport
         }
 
         $marks = Mark::query()
-            ->with(['examSubject.subject', 'student.user'])
+            ->with(['examSubject.subject', 'student.user', 'student.currentClass'])
             ->whereIn('exam_subject_id', $examSubjects->pluck('id'))
             ->when($studentIds !== null, fn ($q) => $q->whereIn('student_id', $studentIds))
             ->get();
@@ -52,7 +53,7 @@ class ExaminationStatisticsReport
     /**
      * Pure aggregation for unit testing without DB.
      *
-     * @param  list<array{marks_obtained: float|int, max_marks: float|int, is_pass: bool, grade_letter: string|GradeLetter, subject_id?: int, subject?: string}>  $rows
+     * @param  list<array{marks_obtained: float|int, max_marks: float|int, is_pass: bool, grade_letter: string|GradeLetter, subject_id?: int, subject?: string, school_class_id?: int|null, class_code?: string}>  $rows
      * @return array{
      *     total_marks: int,
      *     pass_count: int,
@@ -60,7 +61,8 @@ class ExaminationStatisticsReport
      *     pass_rate: float,
      *     average_marks: float,
      *     average_percentage: float,
-     *     by_grade_letter: array<string, int>
+     *     by_grade_letter: array<string, int>,
+     *     by_class: list<array{school_class_id: int|null, code: string, average_percentage: float, pass_rate: float, count: int}>
      * }
      */
     public function summarizeRows(array $rows): array
@@ -74,6 +76,7 @@ class ExaminationStatisticsReport
                 'average_marks' => 0.0,
                 'average_percentage' => 0.0,
                 'by_grade_letter' => $this->emptyGradeLetterCounts(),
+                'by_class' => [],
             ];
         }
 
@@ -82,6 +85,7 @@ class ExaminationStatisticsReport
         $sumMarks = 0.0;
         $sumPct = 0.0;
         $letters = $this->emptyGradeLetterCounts();
+        $byClassBuckets = [];
 
         foreach ($rows as $row) {
             $max = (float) $row['max_marks'];
@@ -90,8 +94,9 @@ class ExaminationStatisticsReport
             }
 
             $obtained = (float) $row['marks_obtained'];
+            $pct = ($obtained / $max) * 100;
             $sumMarks += $obtained;
-            $sumPct += ($obtained / $max) * 100;
+            $sumPct += $pct;
 
             if ($row['is_pass']) {
                 $pass++;
@@ -103,9 +108,37 @@ class ExaminationStatisticsReport
                 ? $row['grade_letter']->value
                 : (string) $row['grade_letter'];
             $letters[$letter] = ($letters[$letter] ?? 0) + 1;
+
+            $classKey = array_key_exists('school_class_id', $row) && $row['school_class_id'] !== null
+                ? (string) $row['school_class_id']
+                : 'unassigned';
+            $byClassBuckets[$classKey] ??= [
+                'school_class_id' => $row['school_class_id'] ?? null,
+                'code' => $row['class_code'] ?? 'Unassigned',
+                'sum_pct' => 0.0,
+                'pass' => 0,
+                'count' => 0,
+            ];
+            $byClassBuckets[$classKey]['sum_pct'] += $pct;
+            $byClassBuckets[$classKey]['count']++;
+            if ($row['is_pass']) {
+                $byClassBuckets[$classKey]['pass']++;
+            }
         }
 
         $total = count($rows);
+        $byClass = [];
+        foreach ($byClassBuckets as $bucket) {
+            $byClass[] = [
+                'school_class_id' => $bucket['school_class_id'] !== null ? (int) $bucket['school_class_id'] : null,
+                'code' => (string) $bucket['code'],
+                'average_percentage' => round($bucket['sum_pct'] / $bucket['count'], 2),
+                'pass_rate' => round(($bucket['pass'] / $bucket['count']) * 100, 2),
+                'count' => $bucket['count'],
+            ];
+        }
+
+        usort($byClass, fn (array $a, array $b): int => strcmp($a['code'], $b['code']));
 
         return [
             'total_marks' => $total,
@@ -115,6 +148,7 @@ class ExaminationStatisticsReport
             'average_marks' => round($sumMarks / $total, 2),
             'average_percentage' => round($sumPct / $total, 2),
             'by_grade_letter' => $letters,
+            'by_class' => $byClass,
         ];
     }
 
@@ -131,7 +165,8 @@ class ExaminationStatisticsReport
      *     average_marks: float,
      *     average_percentage: float,
      *     by_grade_letter: array<string, int>,
-     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>
+     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>,
+     *     by_class: list<array{school_class_id: int|null, code: string, average_percentage: float, pass_rate: float, count: int}>
      * }
      */
     private function summarizeMarks(int $examId, ?int $subjectId, Collection $marks, Collection $examSubjects): array
@@ -144,6 +179,8 @@ class ExaminationStatisticsReport
                 'grade_letter' => $mark->grade_letter,
                 'subject_id' => (int) $mark->examSubject->subject_id,
                 'subject' => $mark->examSubject->subject?->name ?? '',
+                'school_class_id' => $mark->student?->current_class_id,
+                'class_code' => $mark->student?->currentClass?->code ?? 'Unassigned',
             ];
         })->all();
 
@@ -188,7 +225,8 @@ class ExaminationStatisticsReport
      *     average_marks: float,
      *     average_percentage: float,
      *     by_grade_letter: array<string, int>,
-     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>
+     *     by_subject: list<array{subject_id: int, subject: string, average_marks: float, pass_rate: float, count: int}>,
+     *     by_class: list<array{school_class_id: int|null, code: string, average_percentage: float, pass_rate: float, count: int}>
      * }
      */
     private function emptyResult(int $examId, ?int $subjectId): array
@@ -204,6 +242,7 @@ class ExaminationStatisticsReport
             'average_percentage' => 0.0,
             'by_grade_letter' => $this->emptyGradeLetterCounts(),
             'by_subject' => [],
+            'by_class' => [],
         ];
     }
 
