@@ -107,6 +107,24 @@ test('subject teacher cannot take class-level attendance for unassigned homeroom
         ->assertForbidden();
 });
 
+test('class teacher attendance roster uses flux status selects', function () {
+    [$user, $teacher, $year, $schoolClass, $student] = classTeacherAttendanceFixtures();
+
+    $this->actingAs($user)
+        ->get(route('teacher.attendance.sessions.create', [
+            'academic_year_id' => $year->id,
+            'school_class_id' => $schoolClass->id,
+        ]))
+        ->assertOk()
+        ->assertSee($student->user->name)
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee(AttendanceStatus::Present->label())
+        ->assertSee('name="records[0][status]"', false)
+        ->assertDontSee('<select name="records[0][status]" class="rounded border', false)
+        ->assertSee('name="finalize"', false)
+        ->assertSee('data-flux-checkbox', false);
+});
+
 test('teacher cannot edit finalized attendance session', function () {
     [$user, $teacher, $year, $schoolClass, $student] = classTeacherAttendanceFixtures();
 

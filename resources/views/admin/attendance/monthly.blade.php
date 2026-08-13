@@ -6,7 +6,7 @@
         </div>
 
         <form method="GET" action="{{ route('admin.attendance.monthly') }}" class="flex flex-wrap items-end gap-3">
-            <flux:input type="month" name="month" :label="__('Month')" :value="$month" />
+            <x-form.month-select :value="$month" />
             <flux:select name="school_class_id" :label="__('Class')">
                 <flux:select.option value="">{{ __('Select class') }}</flux:select.option>
                 @foreach ($schoolClasses as $class)

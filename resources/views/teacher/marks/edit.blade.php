@@ -43,7 +43,16 @@
                                         <input type="hidden" name="records[{{ $index }}][student_id]" value="{{ $student->id }}">
                                     </td>
                                     <td class="px-3 py-2">
-                                        <input type="number" step="0.01" min="0" max="{{ $examSubject->max_marks }}" name="records[{{ $index }}][marks_obtained]" value="{{ old('records.'.$index.'.marks_obtained', $mark?->marks_obtained ?? 0) }}" class="w-28 rounded border border-border bg-transparent px-2 py-1">
+                                        <flux:input
+                                            class="w-28"
+                                            type="number"
+                                            size="sm"
+                                            step="0.01"
+                                            min="0"
+                                            :max="$examSubject->max_marks"
+                                            name="records[{{ $index }}][marks_obtained]"
+                                            :value="old('records.'.$index.'.marks_obtained', $mark?->marks_obtained ?? 0)"
+                                        />
                                     </td>
                                     <td class="px-3 py-2">{{ $mark?->grade_letter?->value ?? '—' }}</td>
                                 </tr>

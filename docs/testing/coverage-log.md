@@ -1,5 +1,38 @@
 # Coverage Log
 
+## 2026-08-14 — Flux select dropdown override
+
+Command: `php artisan test --compact` — **261 passed** (874 assertions)
+
+Notable suites:
+- Student filters assert Flux dropdown markup and no leaked `@if="@if"` Blade
+- Teacher assignment form asserts `data-flux-dropdown`
+
+Notes: Free Flux `flux:select` is a native `<select>`; published override uses `flux:dropdown` + `flux:menu`. Date inputs unchanged (Pro datepicker). Full `--coverage` still blocked without pcov/xdebug.
+
+## 2026-08-14 — Flux selectors (complete pass)
+
+Command: `php artisan test --compact` — **261 passed** (868 assertions)
+
+Notable suites:
+- Admin/teacher/student month filters render Flux selects (`F Y` labels, no `type="month"`)
+- Admin/teacher marks entry uses Flux number inputs
+- Attendance create uses Flux checkbox for finalize
+- Timetable grid Edit/Delete still render after Flux buttons
+
+Notes: Date fields remain `flux:input type="date"` because Flux calendar datepicker is Pro-only. Full `--coverage` still blocked without pcov/xdebug.
+
+## 2026-08-14 — Flux selectors
+
+Command: `php artisan test --compact` — **259 passed** (848 assertions)
+
+Notable suites:
+- Admin teacher assignment form renders Flux native selects
+- Admin/teacher attendance roster status uses Flux selects
+- Activity log action filter uses Flux select
+
+Notes: View-only UI swap; POST/PUT attendance and assignment tests still pass. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-10 — Dashboard analytics + timetable UI
 
 Command: `php artisan test --compact` — **233 passed** (722 assertions)

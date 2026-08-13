@@ -35,6 +35,9 @@ Capture student and teacher attendance; monthly summaries; present/absent/late/e
 
 - Unique session per class + date + scope.
 - Students in a session must belong to the class.
+- Roster status fields use Flux `flux:select` (disabled when the session is finalized).
+- Month filters use shared `x-form.month-select` (Flux select of `Y-m` months) instead of native `type="month"` pickers.
+- Finalize-after-save uses `flux:checkbox`.
 - Teachers cannot edit finalized sessions; admins can (admin edits are audited with `post_finalization_edit` in `activity_logs`).
 - Attendance %: Present + Late = attended; Excused excluded from denominator.
 - Subject-teacher period attendance is enabled (assumption).

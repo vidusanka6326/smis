@@ -44,10 +44,7 @@
                             <flux:input name="notes" :label="__('Notes')" />
                         </x-form.full>
                         <x-form.full>
-                            <label class="flex items-center gap-2 text-sm">
-                                <input type="checkbox" name="finalize" value="1">
-                                {{ __('Finalize after save') }}
-                            </label>
+                            <flux:checkbox name="finalize" value="1" :label="__('Finalize after save')" />
                         </x-form.full>
                     </x-form.grid>
                 </x-form.section>
@@ -69,11 +66,13 @@
                                             <input type="hidden" name="records[{{ $index }}][student_id]" value="{{ $student->id }}">
                                         </td>
                                         <td class="px-3 py-2">
-                                            <select name="records[{{ $index }}][status]" class="rounded border border-border bg-transparent px-2 py-1">
+                                            <flux:select name="records[{{ $index }}][status]" size="sm">
                                                 @foreach ($statuses as $status)
-                                                    <option value="{{ $status->value }}" @selected($status === \App\Enums\AttendanceStatus::Present)>{{ $status->label() }}</option>
+                                                    <flux:select.option :value="$status->value" :selected="$status === \App\Enums\AttendanceStatus::Present">
+                                                        {{ $status->label() }}
+                                                    </flux:select.option>
                                                 @endforeach
-                                            </select>
+                                            </flux:select>
                                         </td>
                                     </tr>
                                 @endforeach
