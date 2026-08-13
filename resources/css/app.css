@@ -8,84 +8,85 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Brand palette derived from the SMIS logo (teal → mint gradient). */
 :root {
-    --background: rgb(253, 253, 253);
-    --foreground: rgb(0, 0, 0);
-    --card: rgb(253, 253, 253);
-    --card-foreground: rgb(0, 0, 0);
-    --popover: rgb(252, 252, 252);
-    --popover-foreground: rgb(0, 0, 0);
-    --primary: rgb(112, 51, 255);
+    --background: rgb(246, 251, 250);
+    --foreground: rgb(15, 36, 43);
+    --card: rgb(255, 255, 255);
+    --card-foreground: rgb(15, 36, 43);
+    --popover: rgb(255, 255, 255);
+    --popover-foreground: rgb(15, 36, 43);
+    --primary: rgb(15, 107, 109);
     --primary-foreground: rgb(255, 255, 255);
-    --secondary: rgb(237, 240, 244);
-    --secondary-foreground: rgb(8, 8, 8);
-    --muted: rgb(245, 245, 245);
-    --muted-foreground: rgb(82, 82, 82);
-    --accent: rgb(226, 235, 255);
-    --accent-foreground: rgb(30, 105, 220);
-    --destructive: rgb(229, 75, 79);
+    --secondary: rgb(230, 243, 242);
+    --secondary-foreground: rgb(15, 107, 109);
+    --muted: rgb(238, 246, 245);
+    --muted-foreground: rgb(74, 99, 104);
+    --accent: rgb(209, 237, 232);
+    --accent-foreground: rgb(15, 107, 109);
+    --destructive: rgb(200, 55, 55);
     --destructive-foreground: rgb(255, 255, 255);
-    --border: rgb(231, 231, 238);
-    --input: rgb(235, 235, 235);
-    --ring: rgb(112, 51, 255);
-    --chart-1: rgb(74, 200, 133);
-    --chart-2: rgb(112, 51, 255);
-    --chart-3: rgb(253, 130, 43);
-    --chart-4: rgb(50, 118, 228);
-    --chart-5: rgb(116, 116, 116);
-    --sidebar: rgb(245, 248, 251);
-    --sidebar-foreground: rgb(0, 0, 0);
-    --sidebar-primary: rgb(112, 51, 255);
+    --border: rgb(205, 226, 224);
+    --input: rgb(230, 243, 242);
+    --ring: rgb(15, 107, 109);
+    --chart-1: rgb(15, 107, 109);
+    --chart-2: rgb(45, 168, 168);
+    --chart-3: rgb(126, 211, 178);
+    --chart-4: rgb(37, 99, 150);
+    --chart-5: rgb(90, 120, 126);
+    --sidebar: rgb(238, 246, 245);
+    --sidebar-foreground: rgb(15, 36, 43);
+    --sidebar-primary: rgb(15, 107, 109);
     --sidebar-primary-foreground: rgb(255, 255, 255);
-    --sidebar-accent: rgb(235, 235, 235);
-    --sidebar-accent-foreground: rgb(0, 0, 0);
-    --sidebar-border: rgb(235, 235, 235);
-    --sidebar-ring: rgb(112, 51, 255);
-    --radius: 1.4rem;
-    --tracking-normal: -0.025em;
-    --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
-    --shadow-xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
-    --shadow-sm: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
-    --shadow: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
-    --shadow-md: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 2px 4px -1px hsl(0 0% 0% / 0.16);
-    --shadow-lg: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 4px 6px -1px hsl(0 0% 0% / 0.16);
-    --shadow-xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 8px 10px -1px hsl(0 0% 0% / 0.16);
-    --shadow-2xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.40);
+    --sidebar-accent: rgb(209, 237, 232);
+    --sidebar-accent-foreground: rgb(15, 107, 109);
+    --sidebar-border: rgb(205, 226, 224);
+    --sidebar-ring: rgb(15, 107, 109);
+    --radius: 1rem;
+    --tracking-normal: -0.015em;
+    --shadow-2xs: 0px 2px 3px 0px hsl(180 20% 10% / 0.06);
+    --shadow-xs: 0px 2px 3px 0px hsl(180 20% 10% / 0.06);
+    --shadow-sm: 0px 2px 3px 0px hsl(180 20% 10% / 0.10), 0px 1px 2px -1px hsl(180 20% 10% / 0.10);
+    --shadow: 0px 2px 3px 0px hsl(180 20% 10% / 0.10), 0px 1px 2px -1px hsl(180 20% 10% / 0.10);
+    --shadow-md: 0px 2px 4px 0px hsl(180 20% 10% / 0.12), 0px 2px 4px -1px hsl(180 20% 10% / 0.10);
+    --shadow-lg: 0px 4px 8px 0px hsl(180 20% 10% / 0.12), 0px 4px 6px -1px hsl(180 20% 10% / 0.10);
+    --shadow-xl: 0px 8px 12px 0px hsl(180 20% 10% / 0.12), 0px 8px 10px -1px hsl(180 20% 10% / 0.10);
+    --shadow-2xl: 0px 8px 16px 0px hsl(180 20% 10% / 0.28);
 }
 
 .dark {
-    --background: rgb(26, 27, 30);
-    --foreground: rgb(240, 240, 240);
-    --card: rgb(34, 35, 39);
-    --card-foreground: rgb(240, 240, 240);
-    --popover: rgb(34, 35, 39);
-    --popover-foreground: rgb(240, 240, 240);
-    --primary: rgb(140, 92, 255);
-    --primary-foreground: rgb(255, 255, 255);
-    --secondary: rgb(42, 44, 51);
-    --secondary-foreground: rgb(240, 240, 240);
-    --muted: rgb(42, 44, 51);
-    --muted-foreground: rgb(160, 160, 160);
-    --accent: rgb(30, 41, 59);
-    --accent-foreground: rgb(121, 192, 255);
+    --background: rgb(12, 22, 24);
+    --foreground: rgb(232, 242, 240);
+    --card: rgb(18, 32, 35);
+    --card-foreground: rgb(232, 242, 240);
+    --popover: rgb(18, 32, 35);
+    --popover-foreground: rgb(232, 242, 240);
+    --primary: rgb(56, 196, 184);
+    --primary-foreground: rgb(8, 28, 30);
+    --secondary: rgb(28, 46, 50);
+    --secondary-foreground: rgb(210, 236, 232);
+    --muted: rgb(24, 40, 44);
+    --muted-foreground: rgb(156, 180, 176);
+    --accent: rgb(28, 58, 60);
+    --accent-foreground: rgb(126, 226, 210);
     --destructive: rgb(248, 113, 113);
     --destructive-foreground: rgb(255, 255, 255);
-    --border: rgb(51, 53, 58);
-    --input: rgb(51, 53, 58);
-    --ring: rgb(140, 92, 255);
-    --chart-1: rgb(74, 222, 128);
-    --chart-2: rgb(140, 92, 255);
-    --chart-3: rgb(252, 165, 165);
-    --chart-4: rgb(89, 147, 244);
-    --chart-5: rgb(160, 160, 160);
-    --sidebar: rgb(22, 22, 24);
-    --sidebar-foreground: rgb(240, 240, 240);
-    --sidebar-primary: rgb(140, 92, 255);
-    --sidebar-primary-foreground: rgb(255, 255, 255);
-    --sidebar-accent: rgb(42, 44, 51);
-    --sidebar-accent-foreground: rgb(140, 92, 255);
-    --sidebar-border: rgb(51, 53, 58);
-    --sidebar-ring: rgb(140, 92, 255);
+    --border: rgb(38, 58, 62);
+    --input: rgb(28, 46, 50);
+    --ring: rgb(56, 196, 184);
+    --chart-1: rgb(56, 196, 184);
+    --chart-2: rgb(94, 214, 190);
+    --chart-3: rgb(126, 211, 178);
+    --chart-4: rgb(96, 165, 210);
+    --chart-5: rgb(148, 168, 172);
+    --sidebar: rgb(10, 18, 20);
+    --sidebar-foreground: rgb(210, 236, 232);
+    --sidebar-primary: rgb(56, 196, 184);
+    --sidebar-primary-foreground: rgb(8, 28, 30);
+    --sidebar-accent: rgb(28, 46, 50);
+    --sidebar-accent-foreground: rgb(126, 226, 210);
+    --sidebar-border: rgb(38, 58, 62);
+    --sidebar-ring: rgb(56, 196, 184);
 }
 
 @theme {
@@ -105,7 +106,7 @@
     --color-secondary-foreground: var(--secondary-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
-    /* Flux primary actions use accent — map to brand primary (violet). */
+    /* Flux primary actions use accent — map to brand teal. */
     --color-accent: var(--primary);
     --color-accent-content: var(--primary);
     --color-accent-foreground: var(--primary-foreground);
@@ -149,17 +150,17 @@
     --tracking-wider: calc(var(--tracking-normal) + 0.05em);
     --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e7e7ee;
-    --color-zinc-300: #d4d4d8;
-    --color-zinc-400: #a1a1aa;
-    --color-zinc-500: #747474;
-    --color-zinc-600: #52525b;
-    --color-zinc-700: #33353a;
-    --color-zinc-800: #222327;
-    --color-zinc-900: #1a1b1e;
-    --color-zinc-950: #161618;
+    --color-zinc-50: #f6fbfa;
+    --color-zinc-100: #eef6f5;
+    --color-zinc-200: #cde2e0;
+    --color-zinc-300: #a8c9c6;
+    --color-zinc-400: #6f9490;
+    --color-zinc-500: #4a6368;
+    --color-zinc-600: #355055;
+    --color-zinc-700: #263a3e;
+    --color-zinc-800: #1a282c;
+    --color-zinc-900: #0f242b;
+    --color-zinc-950: #0c1618;
 }
 
 @layer base {

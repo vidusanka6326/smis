@@ -1,5 +1,5 @@
 @php
-    $chartColors = ['#7033ff', '#3276e4', '#fd822b', '#747474', '#4ac885'];
+    $chartColors = ['#0f6b6d', '#2da8a8', '#7ed3b2', '#256396', '#5a787e'];
 @endphp
 
 <x-layouts::app :title="__('Reports')">
@@ -47,14 +47,14 @@
                 'id' => 'genderChart',
                 'type' => 'doughnut',
                 'data' => $chartGender,
-                'colors' => ['#3276e4', '#747474'],
+                'colors' => ['#2da8a8', '#5a787e'],
             ],
             [
                 'id' => 'attendanceChart',
                 'type' => 'bar',
                 'label' => __('%'),
                 'data' => $chartAttendanceByClass,
-                'colors' => ['#7033ff'],
+                'colors' => ['#0f6b6d'],
             ],
             [
                 'id' => 'lettersChart',

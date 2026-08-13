@@ -128,19 +128,6 @@
             </div>
 
             <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-6 pb-16 pt-28 lg:justify-center lg:px-8 lg:pb-24 lg:pt-20">
-                <div class="home-rise flex items-center gap-4">
-                    <img
-                        src="{{ asset('images/smis-logo-home.png') }}"
-                        alt="{{ config('app.name', 'SMIS') }}"
-                        class="h-16 w-16 object-contain drop-shadow-lg sm:h-20 sm:w-20"
-                        width="80"
-                        height="80"
-                    >
-                    <p class="font-display text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-                        {{ config('app.name', 'SMIS') }}
-                    </p>
-                </div>
-
                 <h1 class="home-rise home-rise-delay-1 mt-5 max-w-2xl font-display text-2xl font-semibold leading-tight text-white sm:text-3xl lg:text-4xl">
                     {{ __('School data, gathered and managed in one place.') }}
                 </h1>
