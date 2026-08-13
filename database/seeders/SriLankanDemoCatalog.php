@@ -47,7 +47,7 @@ class SriLankanDemoCatalog
     public static function officers(): array
     {
         return [
-            ['name' => 'Sanduni Fernando', 'email' => 'officer@smis.test'],
+            ['name' => 'Tharushi Fernando', 'email' => 'officer@smis.test'],
             ['name' => 'Ruwan Bandara', 'email' => 'officer.ruwan@smis.test'],
             ['name' => 'Nadeesha Perera', 'email' => 'officer.nadeesha@smis.test'],
             ['name' => 'Lasith Gunasekara', 'email' => 'officer.lasith@smis.test'],
