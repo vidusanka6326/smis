@@ -14,8 +14,14 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Outfit', {
+                bunny('Montserrat', {
                     weights: [400, 500, 600, 700],
+                }),
+                bunny('Merriweather', {
+                    weights: [400, 700],
+                }),
+                bunny('Ubuntu Mono', {
+                    weights: [400, 700],
                 }),
             ],
         }),
