@@ -32,6 +32,7 @@ Derived from existing domain tables (students, attendance, exams, marks). No ded
 - Teacher scope via assignments/homeroom.
 - Best/poor: top/bottom N by average percentage (default 5); includes class code.
 - Attendance at-risk: students with monthly attendance **&lt; 80%** (assumption).
+- Month filters on attendance reports use Flux `x-form.month-select`.
 - Exam class comparison: average % and pass rate by student’s current class.
 - Exports: CSV streamed downloads; PDF via browser print (no DomPDF/Excel deps).
 

@@ -51,10 +51,7 @@
                             <flux:input name="notes" :label="__('Notes')" />
                         </x-form.full>
                         <x-form.full>
-                            <label class="flex items-center gap-2 text-sm">
-                                <input type="checkbox" name="finalize" value="1">
-                                {{ __('Finalize after save') }}
-                            </label>
+                            <flux:checkbox name="finalize" value="1" :label="__('Finalize after save')" />
                         </x-form.full>
                     </x-form.grid>
                 </x-form.section>

@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-14 — Flux selectors (complete pass)
+
+Command: `php artisan test --compact` — **261 passed** (868 assertions)
+
+Notable suites:
+- Admin/teacher/student month filters render Flux selects (`F Y` labels, no `type="month"`)
+- Admin/teacher marks entry uses Flux number inputs
+- Attendance create uses Flux checkbox for finalize
+- Timetable grid Edit/Delete still render after Flux buttons
+
+Notes: Date fields remain `flux:input type="date"` because Flux calendar datepicker is Pro-only. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Flux selectors
 
 Command: `php artisan test --compact` — **259 passed** (848 assertions)

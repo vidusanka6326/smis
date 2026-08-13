@@ -66,11 +66,11 @@
                                     </div>
                                     @if ($variant === 'admin')
                                         <div class="mt-2 flex gap-2">
-                                            <a class="text-[11px] font-medium underline" href="{{ route('admin.timetables.edit', $slot) }}">{{ __('Edit') }}</a>
+                                            <flux:button :href="route('admin.timetables.edit', $slot)" variant="ghost" size="xs">{{ __('Edit') }}</flux:button>
                                             <form method="POST" action="{{ route('admin.timetables.destroy', $slot) }}" onsubmit="return confirm(@js(__('Delete this slot?')))">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-[11px] font-medium text-red-700 underline dark:text-red-300">{{ __('Delete') }}</button>
+                                                <flux:button type="submit" variant="danger" size="xs">{{ __('Delete') }}</flux:button>
                                             </form>
                                         </div>
                                     @endif

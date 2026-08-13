@@ -51,7 +51,7 @@
                                 <form method="POST" action="{{ route('admin.attendance.teachers.destroy', $record) }}" onsubmit="return confirm(@js(__('Delete?')))">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 underline">{{ __('Delete') }}</button>
+                                    <flux:button type="submit" variant="danger" size="sm">{{ __('Delete') }}</flux:button>
                                 </form>
                             </td>
                         </tr>

@@ -35,6 +35,7 @@ Create exams (term test, scholarship, O/L, A/L), configure subjects/max/pass mar
 - Marks locked after publish; admin may unpublish to edit again.
 - Class teachers may enter all subjects in own class (assumed).
 - Mark upsert and exam publish/unpublish write `activity_logs` entries (ADR 0010).
+- Marks entry grids use Flux `flux:input` number fields.
 
 ## Edge cases
 

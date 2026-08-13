@@ -103,3 +103,43 @@ test('subject teacher cannot enter marks for another subject', function () {
         ])
         ->assertForbidden();
 });
+
+test('teacher marks form uses flux number inputs', function () {
+    $user = User::factory()->teacher()->create();
+    $teacher = Teacher::factory()->create(['user_id' => $user->id]);
+    $year = AcademicYear::factory()->current()->create();
+    $grade = Grade::factory()->number(10)->create();
+    $subject = Subject::factory()->forGradeRange(1, 13)->create();
+    $schoolClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+    ]);
+    $schoolClass->subjects()->sync([$subject->id]);
+    $student = Student::factory()->create(['current_class_id' => $schoolClass->id]);
+
+    TeacherAssignment::factory()->create([
+        'teacher_id' => $teacher->id,
+        'school_class_id' => $schoolClass->id,
+        'subject_id' => $subject->id,
+        'academic_year_id' => $year->id,
+        'role_in_assignment' => TeacherAssignmentRole::SubjectTeacher,
+    ]);
+
+    $exam = Exam::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'school_class_id' => $schoolClass->id,
+    ]);
+    $examSubject = ExamSubject::factory()->create([
+        'exam_id' => $exam->id,
+        'subject_id' => $subject->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('teacher.marks.edit', $examSubject))
+        ->assertOk()
+        ->assertSee($student->user->name)
+        ->assertSee('name="records[0][marks_obtained]"', false)
+        ->assertSee('data-flux-control', false)
+        ->assertDontSee('rounded border border-border bg-transparent px-2 py-1', false);
+});

@@ -39,6 +39,7 @@ Admin manages Officers and all school data. Officers share operational admin rou
 - Officers section is **admin-only**; officers cannot create or manage other officers (ADR 0013).
 - Create/edit screens use shared `x-form.*` sectioned multi-column layouts (not single-column field stacks).
 - Dropdowns use Flux `flux:select` (including Alpine assignment rows via `x-bind:name` + `x-model`).
+- Month filters use shared `x-form.month-select`.
 - Grades 12–13 **require** a stream; grades 1–11 **must not** have a stream.
 - Class codes are auto-built: `10-A` or `12-SCI-A`.
 - Subjects attached to a class must apply to that class’s grade number.

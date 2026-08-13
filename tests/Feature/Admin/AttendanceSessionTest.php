@@ -69,7 +69,9 @@ test('admin attendance roster uses flux status selects', function () {
         ->assertSee('data-flux-select-native', false)
         ->assertSee(AttendanceStatus::Present->label())
         ->assertSee('name="records[0][status]"', false)
-        ->assertDontSee('<select name="records[0][status]" class="rounded border', false);
+        ->assertDontSee('<select name="records[0][status]" class="rounded border', false)
+        ->assertSee('name="finalize"', false)
+        ->assertSee('data-flux-checkbox', false);
 });
 
 test('teacher cannot access admin attendance routes', function () {
@@ -100,7 +102,10 @@ test('admin can view monthly attendance summary', function () {
         ]))
         ->assertOk()
         ->assertSee($student->user->name)
-        ->assertSee('100%');
+        ->assertSee('100%')
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee(now()->translatedFormat('F Y'))
+        ->assertDontSee('type="month"', false);
 });
 
 /**

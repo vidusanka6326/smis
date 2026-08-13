@@ -6,7 +6,7 @@
         </div>
 
         <form method="GET" class="no-print flex flex-wrap items-end gap-3">
-            <flux:input type="month" name="month" :label="__('Month')" :value="$month" />
+            <x-form.month-select :value="$month" />
             <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
         </form>
 

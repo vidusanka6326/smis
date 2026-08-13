@@ -35,7 +35,10 @@ test('student can view own attendance summary', function () {
         ->get(route('student.attendance', ['month' => now()->format('Y-m')]))
         ->assertOk()
         ->assertSee('100%')
-        ->assertSee(__('Present'));
+        ->assertSee(__('Present'))
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee(now()->translatedFormat('F Y'))
+        ->assertDontSee('type="month"', false);
 });
 
 test('teacher cannot open student attendance page', function () {
