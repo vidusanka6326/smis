@@ -27,7 +27,9 @@ test('admin can view the activity log index', function () {
         ->get(route('admin.activity-logs.index'))
         ->assertOk()
         ->assertSee(__('Activity log'))
-        ->assertSee('Created demo user.');
+        ->assertSee('Created demo user.')
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee(__('All actions'));
 });
 
 test('admin can filter activity logs by action', function () {

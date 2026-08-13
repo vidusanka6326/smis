@@ -46,30 +46,41 @@
                     <template x-for="(row, index) in rows" :key="index">
                         <div class="grid gap-3 rounded-xl border border-border bg-background/50 p-4 md:grid-cols-3">
                             <div>
-                                <flux:label>{{ __('Class') }}</flux:label>
-                                <select class="mt-1 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm" :name="`assignments[${index}][school_class_id]`" x-model="row.school_class_id" required>
-                                    <option value="">{{ __('Select class') }}</option>
+                                <flux:select
+                                    :label="__('Class')"
+                                    x-bind:name="`assignments[${index}][school_class_id]`"
+                                    x-model="row.school_class_id"
+                                    required
+                                >
+                                    <flux:select.option value="">{{ __('Select class') }}</flux:select.option>
                                     @foreach ($schoolClasses as $class)
-                                        <option value="{{ $class->id }}">{{ $class->code }}</option>
+                                        <flux:select.option :value="$class->id">{{ $class->code }}</flux:select.option>
                                     @endforeach
-                                </select>
+                                </flux:select>
                             </div>
                             <div>
-                                <flux:label>{{ __('Role') }}</flux:label>
-                                <select class="mt-1 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm" :name="`assignments[${index}][role_in_assignment]`" x-model="row.role_in_assignment" required>
+                                <flux:select
+                                    :label="__('Role')"
+                                    x-bind:name="`assignments[${index}][role_in_assignment]`"
+                                    x-model="row.role_in_assignment"
+                                    required
+                                >
                                     @foreach ($roles as $role)
-                                        <option value="{{ $role->value }}">{{ $role->label() }}</option>
+                                        <flux:select.option :value="$role->value">{{ $role->label() }}</flux:select.option>
                                     @endforeach
-                                </select>
+                                </flux:select>
                             </div>
                             <div>
-                                <flux:label>{{ __('Subject') }}</flux:label>
-                                <select class="mt-1 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm" :name="`assignments[${index}][subject_id]`" x-model="row.subject_id">
-                                    <option value="">{{ __('None') }}</option>
+                                <flux:select
+                                    :label="__('Subject')"
+                                    x-bind:name="`assignments[${index}][subject_id]`"
+                                    x-model="row.subject_id"
+                                >
+                                    <flux:select.option value="">{{ __('None') }}</flux:select.option>
                                     @foreach ($subjects as $subject)
-                                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                        <flux:select.option :value="$subject->id">{{ $subject->name }}</flux:select.option>
                                     @endforeach
-                                </select>
+                                </flux:select>
                             </div>
                         </div>
                     </template>

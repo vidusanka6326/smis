@@ -55,6 +55,23 @@ test('admin cannot create duplicate class session for same date', function () {
         ->assertSessionHasErrors(['date']);
 });
 
+test('admin attendance roster uses flux status selects', function () {
+    $admin = User::factory()->admin()->create();
+    [$year, $schoolClass, $student] = attendanceFixtures();
+
+    $this->actingAs($admin)
+        ->get(route('admin.attendance.sessions.create', [
+            'academic_year_id' => $year->id,
+            'school_class_id' => $schoolClass->id,
+        ]))
+        ->assertOk()
+        ->assertSee($student->user->name)
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee(AttendanceStatus::Present->label())
+        ->assertSee('name="records[0][status]"', false)
+        ->assertDontSee('<select name="records[0][status]" class="rounded border', false);
+});
+
 test('teacher cannot access admin attendance routes', function () {
     $teacher = User::factory()->teacher()->create();
 

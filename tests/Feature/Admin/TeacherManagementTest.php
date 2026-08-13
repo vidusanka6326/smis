@@ -37,6 +37,27 @@ test('admin can create and view a teacher', function () {
         ->assertSee('New Teacher');
 });
 
+test('admin assignment form uses flux selects for class and role', function () {
+    $admin = User::factory()->admin()->create();
+    $teacher = Teacher::factory()->create();
+    $year = AcademicYear::factory()->current()->create();
+    $grade = Grade::factory()->number(10)->create();
+    $schoolClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'name' => 'A',
+        'code' => '10-A',
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.teachers.assignments.edit', $teacher))
+        ->assertOk()
+        ->assertSee('data-flux-select-native', false)
+        ->assertSee($schoolClass->code)
+        ->assertSee(TeacherAssignmentRole::ClassTeacher->label())
+        ->assertDontSee('<select class="mt-1 w-full rounded-lg', false);
+});
+
 test('admin can sync teacher assignments including subject teacher', function () {
     $admin = User::factory()->admin()->create();
     $teacher = Teacher::factory()->create();

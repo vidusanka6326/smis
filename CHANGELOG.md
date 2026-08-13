@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Flux selectors (2026-08-14)
+
+- Replaced remaining native HTML `<select>` controls with Flux `flux:select`.
+- Covers teacher assignment rows (Alpine), attendance roster status, and the activity-log action filter.
+
 ### Officer role (2026-08-14)
 
 - Removed generic Create user; admins manage Officers under Admin → Officers.

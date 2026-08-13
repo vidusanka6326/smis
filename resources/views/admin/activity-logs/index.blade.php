@@ -6,17 +6,14 @@
         </div>
 
         <form method="GET" action="{{ route('admin.activity-logs.index') }}" class="flex flex-wrap items-end gap-3">
-            <div>
-                <flux:label>{{ __('Action') }}</flux:label>
-                <flux:select name="action" class="min-w-56">
-                    <option value="">{{ __('All actions') }}</option>
-                    @foreach ($actions as $action)
-                        <option value="{{ $action->value }}" @selected($selectedAction === $action->value)>
-                            {{ $action->label() }}
-                        </option>
-                    @endforeach
-                </flux:select>
-            </div>
+            <flux:select name="action" :label="__('Action')" class="min-w-56">
+                <flux:select.option value="">{{ __('All actions') }}</flux:select.option>
+                @foreach ($actions as $action)
+                    <flux:select.option :value="$action->value" :selected="$selectedAction === $action->value">
+                        {{ $action->label() }}
+                    </flux:select.option>
+                @endforeach
+            </flux:select>
             <flux:button type="submit" variant="primary">{{ __('Filter') }}</flux:button>
         </form>
 

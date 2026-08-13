@@ -65,11 +65,13 @@
                                         <input type="hidden" name="records[{{ $index }}][student_id]" value="{{ $student->id }}">
                                     </td>
                                     <td class="px-3 py-2">
-                                        <select name="records[{{ $index }}][status]" class="rounded border border-border bg-transparent px-2 py-1" @disabled($session->isFinalized())>
+                                        <flux:select name="records[{{ $index }}][status]" size="sm" :disabled="$session->isFinalized()">
                                             @foreach ($statuses as $status)
-                                                <option value="{{ $status->value }}" @selected(($current ?? \App\Enums\AttendanceStatus::Present) === $status)>{{ $status->label() }}</option>
+                                                <flux:select.option :value="$status->value" :selected="($current ?? \App\Enums\AttendanceStatus::Present) === $status">
+                                                    {{ $status->label() }}
+                                                </flux:select.option>
                                             @endforeach
-                                        </select>
+                                        </flux:select>
                                     </td>
                                 </tr>
                             @endforeach

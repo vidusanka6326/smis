@@ -1,5 +1,16 @@
 # Coverage Log
 
+## 2026-08-14 — Flux selectors
+
+Command: `php artisan test --compact` — **259 passed** (848 assertions)
+
+Notable suites:
+- Admin teacher assignment form renders Flux native selects
+- Admin/teacher attendance roster status uses Flux selects
+- Activity log action filter uses Flux select
+
+Notes: View-only UI swap; POST/PUT attendance and assignment tests still pass. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-10 — Dashboard analytics + timetable UI
 
 Command: `php artisan test --compact` — **233 passed** (722 assertions)
