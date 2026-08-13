@@ -11,6 +11,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 - Attendance reports flag students below 80% with class summaries; exam reports add by-class comparison.
 - Student report card shows P/A/L/E, exam averages, and results grouped by exam.
 - App theme: mint primary / Outfit from shad tokens; Flux accent mapped to primary; dashboard cards restyled.
+- Role dashboards expanded to fill the workspace: denser KPIs, subject/class charts, at-risk & ranking panels, student subject averages.
 
 ### Dashboard analytics + timetable UI (2026-08-10)
 

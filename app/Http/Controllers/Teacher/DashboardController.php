@@ -26,6 +26,9 @@ class DashboardController extends Controller
                 'todaySlots' => [],
                 'exam' => null,
                 'examStats' => null,
+                'atRiskPreview' => [],
+                'bestPreview' => [],
+                'poorPreview' => [],
             ];
 
         return view('teacher.dashboard', [

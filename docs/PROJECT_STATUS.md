@@ -38,6 +38,7 @@ Actionable report depth (at-risk attendance, class exam comparison, student repo
 
 ## Changelog
 
+- **2026-08-14** — Full-coverage role dashboards: denser KPIs, subject/class exam charts, at-risk & ranking panels, student attendance/subject analytics.
 - **2026-08-14** — Reports enrichment + shad theme: at-risk attendance (&lt;80%), exam by-class stats, student report card (P/A/L/E + grouped exams), mint/Outfit Flux accent; reporting unit/feature tests updated.
 - **2026-08-10** — Added root `README.md` (stack, setup, demo accounts, docs index).
 - **2026-08-10** — Replaced starter welcome page with branded SMIS homepage (hero + module overview + auth CTAs).

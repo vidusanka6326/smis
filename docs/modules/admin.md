@@ -24,7 +24,7 @@ Admin only for management; others use separate role dashboards.
 
 | Method | Path | Name | Notes |
 |---|---|---|---|
-| GET | `/admin/dashboard` | `admin.dashboard` | Shell + shortcuts |
+| GET | `/admin/dashboard` | `admin.dashboard` | Full analytics: KPIs, 8 charts, at-risk/rankings/drafts/activity |
 | GET/POST | `/admin/users/create`, `/admin/users` | `admin.users.*` | `StoreUserRequest` + `CreateUser` |
 | GET | `/admin/activity-logs` | `admin.activity-logs.index` | Admin-only audit viewer (`view-activity-log`) |
 | resource | `/admin/academic-years` | `admin.academic-years.*` | except show |

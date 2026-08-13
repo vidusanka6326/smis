@@ -2,7 +2,9 @@
 
 namespace App\Services\Dashboard;
 
+use App\Enums\AttendanceStatus;
 use App\Enums\DayOfWeek;
+use App\Models\ActivityLog;
 use App\Models\Exam;
 use App\Models\Mark;
 use App\Models\SchoolClass;
@@ -14,6 +16,7 @@ use App\Services\Attendance\AttendancePercentageCalculator;
 use App\Services\Reporting\AttendanceAnalyticsReport;
 use App\Services\Reporting\DemographicsReport;
 use App\Services\Reporting\ExaminationStatisticsReport;
+use App\Services\Reporting\PerformanceRankingService;
 use App\Services\Reporting\TeacherReportScope;
 use App\Services\Timetable\TimetableConflictDetector;
 
@@ -23,6 +26,7 @@ class RoleDashboardMetrics
         private DemographicsReport $demographics,
         private AttendanceAnalyticsReport $attendance,
         private ExaminationStatisticsReport $examination,
+        private PerformanceRankingService $ranking,
         private TeacherReportScope $teacherScope,
         private AttendancePercentageCalculator $attendancePercentage,
         private TimetableConflictDetector $timetable,
@@ -38,24 +42,47 @@ class RoleDashboardMetrics
         $attendanceSummary = $this->attendance->forMonth($monthStart, (clone $monthStart)->endOfMonth());
         $latestExam = Exam::query()->whereNotNull('published_at')->latest('published_at')->first();
         $examStats = $latestExam !== null ? $this->examination->forExam($latestExam) : null;
+        $ranks = $latestExam !== null
+            ? $this->ranking->forExam($latestExam, null, null, 5)
+            : ['best' => [], 'poor' => []];
 
-        $byGrade = $demo['by_grade'];
+        $draftExams = Exam::query()
+            ->whereNull('published_at')
+            ->orderByDesc('starts_on')
+            ->limit(6)
+            ->get(['id', 'name', 'starts_on']);
+
+        $recentActivity = ActivityLog::query()
+            ->with('causer')
+            ->latest('created_at')
+            ->limit(8)
+            ->get();
 
         return [
             'stats' => [
                 'students' => Student::query()->count(),
                 'teachers' => Teacher::query()->count(),
                 'classes' => SchoolClass::query()->count(),
+                'boys' => $demo['by_gender']['B'] ?? 0,
+                'girls' => $demo['by_gender']['G'] ?? 0,
                 'published_exams' => Exam::query()->whereNotNull('published_at')->count(),
                 'draft_exams' => Exam::query()->whereNull('published_at')->count(),
-                'attendance_tracked' => count($attendanceSummary['student_rows']),
+                'attendance_tracked' => $attendanceSummary['summary']['tracked_students'],
                 'avg_attendance' => $attendanceSummary['summary']['class_average']
                     ?? $this->averageAttendance($attendanceSummary['student_rows']),
                 'at_risk_count' => $attendanceSummary['summary']['at_risk_count'],
                 'pass_rate' => $examStats['pass_rate'] ?? null,
+                'fail_count' => $examStats['fail_count'] ?? 0,
+                'pass_count' => $examStats['pass_count'] ?? 0,
+                'average_percentage' => $examStats['average_percentage'] ?? null,
             ],
             'exam' => $latestExam,
             'examStats' => $examStats,
+            'atRiskPreview' => array_slice($attendanceSummary['at_risk'], 0, 8),
+            'bestPreview' => $ranks['best'],
+            'poorPreview' => $ranks['poor'],
+            'draftExams' => $draftExams,
+            'recentActivity' => $recentActivity,
             'charts' => [
                 'gender' => [
                     'labels' => [__('Boys'), __('Girls')],
@@ -65,8 +92,12 @@ class RoleDashboardMetrics
                     ],
                 ],
                 'grades' => [
-                    'labels' => array_column($byGrade, 'grade'),
-                    'data' => array_column($byGrade, 'count'),
+                    'labels' => array_column($demo['by_grade'], 'grade'),
+                    'data' => array_column($demo['by_grade'], 'count'),
+                ],
+                'classes' => [
+                    'labels' => array_column($demo['by_class'], 'code'),
+                    'data' => array_column($demo['by_class'], 'count'),
                 ],
                 'letters' => [
                     'labels' => array_keys($examStats['by_grade_letter'] ?? []),
@@ -78,6 +109,21 @@ class RoleDashboardMetrics
                         fn (array $row): float => (float) ($row['percentage'] ?? 0),
                         $attendanceSummary['class_rows'],
                     ),
+                ],
+                'subject_pass_rates' => [
+                    'labels' => array_column($examStats['by_subject'] ?? [], 'subject'),
+                    'data' => array_column($examStats['by_subject'] ?? [], 'pass_rate'),
+                ],
+                'class_exam_averages' => [
+                    'labels' => array_column($examStats['by_class'] ?? [], 'code'),
+                    'data' => array_column($examStats['by_class'] ?? [], 'average_percentage'),
+                ],
+                'pass_fail' => [
+                    'labels' => [__('Pass'), __('Fail')],
+                    'data' => [
+                        $examStats['pass_count'] ?? 0,
+                        $examStats['fail_count'] ?? 0,
+                    ],
                 ],
             ],
         ];
@@ -97,6 +143,9 @@ class RoleDashboardMetrics
         $examStats = $latestExam !== null
             ? $this->examination->forExam($latestExam, null, $studentIds)
             : null;
+        $ranks = $latestExam !== null
+            ? $this->ranking->forExam($latestExam, null, $studentIds, 5)
+            : ['best' => [], 'poor' => []];
 
         $today = DayOfWeek::tryFrom((int) now()->isoWeekday());
         $todaySlots = [];
@@ -121,15 +170,24 @@ class RoleDashboardMetrics
                 'classes' => count($classIds),
                 'assignments' => $teacher->assignments->count(),
                 'homerooms' => $teacher->homeroomClasses->count(),
-                'attendance_tracked' => count($attendanceSummary['student_rows']),
+                'boys' => $demo['by_gender']['B'] ?? 0,
+                'girls' => $demo['by_gender']['G'] ?? 0,
+                'attendance_tracked' => $attendanceSummary['summary']['tracked_students'],
                 'avg_attendance' => $attendanceSummary['summary']['class_average']
                     ?? $this->averageAttendance($attendanceSummary['student_rows']),
                 'at_risk_count' => $attendanceSummary['summary']['at_risk_count'],
                 'pass_rate' => $examStats['pass_rate'] ?? null,
+                'fail_count' => $examStats['fail_count'] ?? 0,
+                'pass_count' => $examStats['pass_count'] ?? 0,
+                'average_percentage' => $examStats['average_percentage'] ?? null,
+                'lessons_today' => count($todaySlots),
             ],
             'exam' => $latestExam,
             'examStats' => $examStats,
             'todaySlots' => $todaySlots,
+            'atRiskPreview' => array_slice($attendanceSummary['at_risk'], 0, 8),
+            'bestPreview' => $ranks['best'],
+            'poorPreview' => $ranks['poor'],
             'charts' => [
                 'gender' => [
                     'labels' => [__('Boys'), __('Girls')],
@@ -137,6 +195,10 @@ class RoleDashboardMetrics
                         $demo['by_gender']['B'] ?? 0,
                         $demo['by_gender']['G'] ?? 0,
                     ],
+                ],
+                'classes' => [
+                    'labels' => array_column($demo['by_class'], 'code'),
+                    'data' => array_column($demo['by_class'], 'count'),
                 ],
                 'letters' => [
                     'labels' => array_keys($examStats['by_grade_letter'] ?? []),
@@ -148,6 +210,17 @@ class RoleDashboardMetrics
                         fn (array $row): float => (float) ($row['percentage'] ?? 0),
                         $attendanceSummary['class_rows'],
                     ),
+                ],
+                'subject_pass_rates' => [
+                    'labels' => array_column($examStats['by_subject'] ?? [], 'subject'),
+                    'data' => array_column($examStats['by_subject'] ?? [], 'pass_rate'),
+                ],
+                'pass_fail' => [
+                    'labels' => [__('Pass'), __('Fail')],
+                    'data' => [
+                        $examStats['pass_count'] ?? 0,
+                        $examStats['fail_count'] ?? 0,
+                    ],
                 ],
             ],
         ];
@@ -161,7 +234,7 @@ class RoleDashboardMetrics
         $monthStart = now()->startOfMonth();
         $monthEnd = (clone $monthStart)->endOfMonth();
 
-        $statuses = StudentAttendance::query()
+        $attendanceRecords = StudentAttendance::query()
             ->where('student_id', $student->id)
             ->whereHas('attendanceSession', function ($query) use ($monthStart, $monthEnd): void {
                 $query->whereBetween('date', [
@@ -169,25 +242,60 @@ class RoleDashboardMetrics
                     $monthEnd->toDateString(),
                 ]);
             })
-            ->pluck('status')
-            ->all();
+            ->get();
+
+        $statuses = $attendanceRecords->pluck('status')->all();
+        $attendanceCounts = $this->attendance->countStatuses(collect($statuses));
 
         $attendancePercent = $statuses === []
             ? null
             : $this->attendancePercentage->percentage($statuses);
 
-        $marks = Mark::query()
+        $allMarks = Mark::query()
             ->with(['examSubject.exam', 'examSubject.subject'])
             ->where('student_id', $student->id)
             ->whereHas('examSubject.exam', fn ($q) => $q->whereNotNull('published_at'))
             ->latest('id')
-            ->limit(8)
             ->get();
 
-        $letterCounts = $marks
+        $recentMarks = $allMarks->take(10)->values();
+
+        $letterCounts = $allMarks
             ->groupBy(fn (Mark $mark) => $mark->grade_letter->value)
             ->map->count()
             ->all();
+
+        $passCount = $allMarks->where('is_pass', true)->count();
+        $failCount = $allMarks->where('is_pass', false)->count();
+
+        $overallAverage = null;
+        $subjectBuckets = [];
+        foreach ($allMarks as $mark) {
+            $max = (float) ($mark->examSubject?->max_marks ?? 0);
+            $obtained = (float) $mark->marks_obtained;
+            $pct = $max > 0 ? ($obtained / $max) * 100 : 0.0;
+            $subjectName = $mark->examSubject?->subject?->name ?? '—';
+            $subjectBuckets[$subjectName] ??= ['sum' => 0.0, 'count' => 0];
+            $subjectBuckets[$subjectName]['sum'] += $pct;
+            $subjectBuckets[$subjectName]['count']++;
+        }
+
+        if ($allMarks->isNotEmpty()) {
+            $sumPct = 0.0;
+            foreach ($allMarks as $mark) {
+                $max = (float) ($mark->examSubject?->max_marks ?? 0);
+                $obtained = (float) $mark->marks_obtained;
+                $sumPct += $max > 0 ? ($obtained / $max) * 100 : 0;
+            }
+            $overallAverage = round($sumPct / $allMarks->count(), 1);
+        }
+
+        ksort($subjectBuckets);
+        $subjectLabels = array_keys($subjectBuckets);
+        $subjectAverages = array_map(
+            fn (array $bucket): float => round($bucket['sum'] / max($bucket['count'], 1), 1),
+            array_values($subjectBuckets),
+        );
 
         $today = DayOfWeek::tryFrom((int) now()->isoWeekday());
         $todaySlots = [];
@@ -202,19 +310,47 @@ class RoleDashboardMetrics
                 ->all();
         }
 
+        $failedMarks = $allMarks->where('is_pass', false)->take(6)->values();
+
         return [
             'stats' => [
                 'attendance_percent' => $attendancePercent,
-                'published_marks' => $marks->count(),
+                'published_marks' => $allMarks->count(),
                 'subjects' => $student->currentClass?->subjects?->count() ?? 0,
                 'sessions_this_month' => count($statuses),
+                'present' => $attendanceCounts[AttendanceStatus::Present->value],
+                'absent' => $attendanceCounts[AttendanceStatus::Absent->value],
+                'late' => $attendanceCounts[AttendanceStatus::Late->value],
+                'excused' => $attendanceCounts[AttendanceStatus::Excused->value],
+                'pass_count' => $passCount,
+                'fail_count' => $failCount,
+                'overall_average' => $overallAverage,
+                'lessons_today' => count($todaySlots),
             ],
-            'recentMarks' => $marks,
+            'recentMarks' => $recentMarks,
+            'failedMarks' => $failedMarks,
             'todaySlots' => $todaySlots,
             'charts' => [
                 'letters' => [
                     'labels' => array_keys($letterCounts),
                     'data' => array_values($letterCounts),
+                ],
+                'attendance_status' => [
+                    'labels' => [__('Present'), __('Absent'), __('Late'), __('Excused')],
+                    'data' => [
+                        $attendanceCounts[AttendanceStatus::Present->value],
+                        $attendanceCounts[AttendanceStatus::Absent->value],
+                        $attendanceCounts[AttendanceStatus::Late->value],
+                        $attendanceCounts[AttendanceStatus::Excused->value],
+                    ],
+                ],
+                'pass_fail' => [
+                    'labels' => [__('Pass'), __('Fail')],
+                    'data' => [$passCount, $failCount],
+                ],
+                'subject_averages' => [
+                    'labels' => $subjectLabels,
+                    'data' => $subjectAverages,
                 ],
             ],
         ];

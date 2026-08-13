@@ -22,7 +22,7 @@ Teacher profiles, assignment types (class / subject / PT-PD), assigned classes/s
 |---|---|---|---|
 | resource | `/admin/teachers` | `admin.teachers.*` | Admin CRUD |
 | GET/PUT | `/admin/teachers/{teacher}/assignments` | `admin.teachers.assignments.*` | Sync year assignments |
-| GET | `/teacher/dashboard` | `teacher.dashboard` | Analytics + assignments + lessons today |
+| GET | `/teacher/dashboard` | `teacher.dashboard` | Scoped KPIs, 6 charts, at-risk/rankings, lessons today |
 | resource | `/teacher/students` | `teacher.students.*` | except show/destroy |
 
 ## Key business rules

@@ -12,5 +12,10 @@ test('student dashboard shows attendance and results widgets', function () {
         ->assertOk()
         ->assertSee(__('Student Dashboard'))
         ->assertSee(__('Attendance (month)'))
-        ->assertSee(__('Recent published results'));
+        ->assertSee(__('Overall exam avg'))
+        ->assertSee(__('Pass vs fail'))
+        ->assertSee(__('Subject averages %'))
+        ->assertSee(__('Subjects to improve'))
+        ->assertSee(__('Recent published results'))
+        ->assertSee('studentSubjectsChart');
 });

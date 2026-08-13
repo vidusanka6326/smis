@@ -12,5 +12,9 @@ test('teacher dashboard shows scoped analytics when profile exists', function ()
         ->assertOk()
         ->assertSee(__('Teacher Dashboard'))
         ->assertSee(__('Students in scope'))
-        ->assertSee(__('Gender mix (my classes)'));
+        ->assertSee(__('Gender mix (my classes)'))
+        ->assertSee(__('Subject pass rates'))
+        ->assertSee(__('Attendance needing attention'))
+        ->assertSee(__('Top performers'))
+        ->assertSee('teacherSubjectPassChart');
 });
