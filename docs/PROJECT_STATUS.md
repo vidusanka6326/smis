@@ -2,6 +2,10 @@
 
 ## Current Phase
 
+**Demo dataset — Sri Lankan national school seed** (Done)
+
+`migrate:fresh --seed` now loads a Type 1AB-style school: 1 admin, 5 officers, 30 teachers, 600 students, 28 classes (grades 6–13). Junior 12 subjects, O/L 9, A/L 3 per stream (ADR 0015). Sinhala personal names in English; UI copy stays English.
+
 **UI — Flux selectors** (Done)
 
 `flux:select` now opens a Flux dropdown menu (not the browser’s native picker). Hidden native `<select>` remains for form submit. Date fields stay `flux:input type="date"` (calendar picker is Pro-only).
@@ -42,6 +46,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Realistic demo school seed (ADR 0015): 1 admin, 5 officers, 30 teachers, 600 students; Sri Lankan junior/O/L/A/L subjects; Sinhala names in English.
 - **2026-08-14** — Flux selects open a custom dropdown menu (ADR 0014); native OS picker is hidden. Fixed Blade `@if` leaking into the trigger button.
 - **2026-08-14** — Dashboard sidebar brand shows muted subtitle “Never miss a class” under SMIS.
 - **2026-08-14** — Finished Flux form controls: month filters (`x-form.month-select`), attendance finalize checkboxes, marks number inputs, remaining native action buttons.
@@ -84,9 +89,9 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 |---|---|---|
 | Auth stack: Breeze vs Fortify/Livewire | Keep Fortify + Livewire + Flux | Assumed |
 | Local DB: SQLite vs MySQL | SQLite for local/tests; MySQL production | Assumed |
-| Default admin seed credentials | `admin@smis.test` / `password` (local only) | Assumed |
-| Demo teacher/student seeds | `class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password` | Assumed |
-| Demo officer seed | `officer@smis.test` / `password` (local only) | Assumed |
+| Default admin seed credentials | `admin@smis.test` / `password` (Chamara Wickramasinghe, local only) | Assumed |
+| Demo teacher/student seeds | `class.teacher@smis.test` (Nimal Perera, 10-A), `subject.teacher@smis.test` (Chaminda Jayasinghe), `student@smis.test` (Kasun Perera) / `password` | Assumed |
+| Demo officer seed | `officer@smis.test` plus 4 officers / `password` (local only) | Assumed |
 | Periods per day | 8 periods, Monday–Friday; default times via PeriodSchedule (ADR 0011) | Assumed |
 | Relief teacher allocation | Manual assignment with conflict detection | Assumed |
 | Subject-teacher attendance | Enabled by default for assigned subject/class | Assumed |
@@ -100,6 +105,6 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |
 | Audit log implementation | Custom `activity_logs` (no Spatie Activitylog package) | **Decided — ADR 0010** |
-| Stream names for Grades 12–13 | Science, Commerce, Arts, Technology | Assumed |
+| Stream names for Grades 12–13 | Science, Commerce, Arts, Technology; Science A = physical, B = biological | Assumed |
 | Class code format | `{grade}-{section}` or `{grade}-{STREAM}-{section}` | Assumed |
 | Class teacher limited student fields | Name, email, admission, DOB, gender, guardian; no status/password/class move | Assumed |

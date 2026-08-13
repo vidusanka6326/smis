@@ -48,13 +48,13 @@ php artisan migrate:fresh --seed
 This runs:
 
 1. `RolesAndPermissionsSeeder` — roles `admin` / `officer` / `teacher` / `student` and granular permissions
-2. `AdminUserSeeder` — default admin `admin@smis.test` / `password` (skipped if an admin already exists)
-3. `OfficerUserSeeder` — default officer `officer@smis.test` / `password` (skipped if an officer already exists)
-4. `AcademicStructureSeeder` — grades 1–13, A/L streams, sample subjects, current academic year `2025/2026`, sample classes
-5. `TeacherStudentSeeder` — demo class/subject teachers and a student in `10-A` (`class.teacher@smis.test`, `subject.teacher@smis.test`, `student@smis.test` / `password`)
-6. `TimetableSeeder` — sample weekly slots for `10-A`
-7. `AttendanceSeeder` — today’s class attendance for the demo student + class teacher self attendance
-8. `ExaminationSeeder` — Demo Term 1 Test for `10-A` MATH (published sample mark for demo student)
+2. `AdminUserSeeder` — principal `Chamara Wickramasinghe` / `admin@smis.test` / `password`
+3. `OfficerUserSeeder` — five office staff (`officer@smis.test` plus four named accounts)
+4. `AcademicStructureSeeder` — grades 1–13, A/L streams, Sri Lankan national-curriculum subjects, academic year `2026`, 28 classes in grades 6–13 (ADR 0015)
+5. `TeacherStudentSeeder` — 30 teachers and 600 students (Sinhala names in English). Demo logins: `class.teacher@smis.test` (10-A homeroom), `subject.teacher@smis.test` (O/L Mathematics), `student@smis.test` (Kasun Perera, 10-A)
+6. `TimetableSeeder` — conflict-free weekly grid for every class
+7. `AttendanceSeeder` — last 10 school days of class + teacher attendance
+8. `ExaminationSeeder` — published First Term tests (grades 6, 8, 10, 11 and each A/L class) with marks
 
 There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). Analytics live under **Reports** (admin/teacher) and **My report** (student). Export with `CSV` or use **Print / PDF** in the browser.
 

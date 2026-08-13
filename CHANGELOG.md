@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Realistic demo school (2026-08-14)
+
+- Seeded a Type 1AB-style dataset: 1 admin, 5 officers, 30 teachers, 600 students, 28 classes (grades 6–13).
+- Subjects follow the Sri Lankan national curriculum (12 junior, 9 O/L, 3 A/L per stream). Names are Sinhala in English; UI copy stays English (ADR 0015).
+
 ### Flux selectors (2026-08-14)
 
 - Replaced remaining native HTML `<select>` controls with Flux `flux:select`.
