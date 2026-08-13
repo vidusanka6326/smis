@@ -42,6 +42,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Dashboard sidebar brand shows muted subtitle “Never miss a class” under SMIS.
 - **2026-08-14** — Finished Flux form controls: month filters (`x-form.month-select`), attendance finalize checkboxes, marks number inputs, remaining native action buttons.
 - **2026-08-14** — Replaced remaining native HTML selects with Flux `flux:select` (teacher assignment rows, attendance roster status, activity-log filter).
 - **2026-08-14** — Officer role + admin-only Officers section; removed Create user; officers share data-entry routes + activity log (ADR 0013).
