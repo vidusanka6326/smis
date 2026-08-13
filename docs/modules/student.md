@@ -23,7 +23,7 @@ Student CRUD, guardian info, enrollment history, categorization (grade/class/sub
 |---|---|---|---|
 | resource | `/admin/students` | `admin.students.*` | Filters on index |
 | resource | `/teacher/students` | `teacher.students.*` | Scoped; limited update |
-| GET | `/student/dashboard` | `student.dashboard` | Attendance/results KPIs, 4 charts, timetable, improve list |
+| GET | `/student/dashboard` | `student.dashboard` | Personal hero, 3 KPIs, subject chart, today + latest results |
 
 ## Key business rules
 

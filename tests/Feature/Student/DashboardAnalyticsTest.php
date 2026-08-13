@@ -10,12 +10,10 @@ test('student dashboard shows attendance and results widgets', function () {
     $this->actingAs($user->fresh())
         ->get(route('student.dashboard'))
         ->assertOk()
-        ->assertSee(__('Student Dashboard'))
-        ->assertSee(__('Attendance (month)'))
-        ->assertSee(__('Overall exam avg'))
-        ->assertSee(__('Pass vs fail'))
-        ->assertSee(__('Subject averages %'))
-        ->assertSee(__('Subjects to improve'))
-        ->assertSee(__('Recent published results'))
+        ->assertSee(__('This month'))
+        ->assertSee(__('Exam average'))
+        ->assertSee(__('Today'))
+        ->assertSee(__('Latest results'))
+        ->assertSee(__('Subject averages'))
         ->assertSee('studentSubjectsChart');
 });

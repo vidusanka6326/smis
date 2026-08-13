@@ -38,6 +38,7 @@ Actionable report depth (at-risk attendance, class exam comparison, student repo
 
 ## Changelog
 
+- **2026-08-14** — Decluttered role dashboards: hero + few KPIs + one chart + action lists (cut widget spam).
 - **2026-08-14** — Aligned system colors to the SMIS logo (teal → mint primary, light/dark).
 - **2026-08-14** — Applied violet `shad.css` theme (light + dark) with Plus Jakarta Sans / Lora; Flux accent → primary.
 - **2026-08-14** — Applied coral/peach `sha.css` theme (light + dark) with Montserrat/Merriweather; Flux accent → primary.
