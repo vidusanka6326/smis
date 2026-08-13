@@ -1,223 +1,136 @@
 @php
-    $chartColors = ['#0f6b6d', '#2da8a8', '#7ed3b2', '#256396', '#5a787e'];
+    $greeting = now()->format('l');
 @endphp
 
 <x-layouts::app :title="__('Admin Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-                <flux:heading size="xl">{{ __('Admin Dashboard') }}</flux:heading>
-                <flux:text class="mt-1">{{ __('School-wide people, attendance, exams, and recent activity.') }}</flux:text>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <flux:button :href="route('admin.reports.dashboard')" variant="primary" wire:navigate>{{ __('Full reports') }}</flux:button>
-                <flux:button :href="route('admin.timetables.index')" variant="filled" wire:navigate>{{ __('Timetables') }}</flux:button>
-                <flux:button :href="route('admin.activity-logs.index')" variant="filled" wire:navigate>{{ __('Activity log') }}</flux:button>
-            </div>
-        </div>
-
+    <div class="flex h-full w-full flex-1 flex-col gap-8">
         @if (session('status'))
             <flux:callout variant="success" icon="check-circle">
                 <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
             </flux:callout>
         @endif
 
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
-            <x-dashboard.stat :label="__('Students')" :value="$stats['students']" />
-            <x-dashboard.stat :label="__('Teachers')" :value="$stats['teachers']" />
-            <x-dashboard.stat :label="__('Classes')" :value="$stats['classes']" />
-            <x-dashboard.stat :label="__('Boys / Girls')" :value="$stats['boys'].' / '.$stats['girls']" />
-            <x-dashboard.stat
-                :label="__('Avg attendance')"
-                :value="$stats['avg_attendance'] !== null ? $stats['avg_attendance'].'%' : '—'"
-                :hint="__(':count tracked', ['count' => $stats['attendance_tracked']])"
-                tone="success"
-            />
-            <x-dashboard.stat
-                :label="__('Attendance at risk')"
-                :value="$stats['at_risk_count']"
-                :hint="__('Below 80%')"
-                :tone="$stats['at_risk_count'] > 0 ? 'warning' : 'default'"
-            />
+        <section class="relative overflow-hidden rounded-3xl bg-primary px-6 py-8 text-primary-foreground sm:px-8">
+            <div class="pointer-events-none absolute -right-8 -top-12 size-52 rounded-full bg-white/10"></div>
+            <div class="pointer-events-none absolute -bottom-20 left-1/3 size-64 rounded-full bg-white/5"></div>
+
+            <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div class="max-w-xl">
+                    <p class="text-sm font-medium text-primary-foreground/75">{{ $greeting }}</p>
+                    <h1 class="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">{{ __('School at a glance') }}</h1>
+                    <p class="mt-2 text-sm text-primary-foreground/80">
+                        {{ __(':students students · :teachers teachers · :classes classes', [
+                            'students' => $stats['students'],
+                            'teachers' => $stats['teachers'],
+                            'classes' => $stats['classes'],
+                        ]) }}
+                    </p>
+                    <div class="mt-5 flex flex-wrap gap-2">
+                        <flux:button :href="route('admin.reports.dashboard')" variant="filled" class="!bg-white !text-primary" wire:navigate>{{ __('Reports') }}</flux:button>
+                        <flux:button :href="route('admin.students.index')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Students') }}</flux:button>
+                        <flux:button :href="route('admin.activity-logs.index')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Activity') }}</flux:button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-sm">
+                        <p class="text-xs uppercase tracking-wide text-primary-foreground/70">{{ __('Attendance') }}</p>
+                        <p class="mt-1 text-3xl font-semibold tabular-nums">
+                            {{ $stats['avg_attendance'] !== null ? $stats['avg_attendance'].'%' : '—' }}
+                        </p>
+                    </div>
+                    <div class="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-sm">
+                        <p class="text-xs uppercase tracking-wide text-primary-foreground/70">{{ __('At risk') }}</p>
+                        <p class="mt-1 text-3xl font-semibold tabular-nums">{{ $stats['at_risk_count'] }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid gap-4 sm:grid-cols-3">
             <x-dashboard.stat
                 :label="__('Exam pass rate')"
                 :value="$stats['pass_rate'] !== null ? $stats['pass_rate'].'%' : '—'"
-                :hint="$exam?->name"
+                :hint="$exam?->name ?? __('No published exam yet')"
                 tone="success"
             />
             <x-dashboard.stat
-                :label="__('Exam avg %')"
-                :value="$stats['average_percentage'] !== null ? $stats['average_percentage'].'%' : '—'"
-                :hint="__('Pass :p · Fail :f', ['p' => $stats['pass_count'], 'f' => $stats['fail_count']])"
+                :label="__('Draft exams')"
+                :value="$stats['draft_exams']"
+                :hint="__(':count published', ['count' => $stats['published_exams']])"
+            />
+            <x-dashboard.stat
+                :label="__('Boys / Girls')"
+                :value="$stats['boys'].' / '.$stats['girls']"
             />
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            <x-dashboard.chart-card :title="__('Gender mix')" canvas-id="adminGenderChart" />
-            <x-dashboard.chart-card :title="__('Students by grade')" canvas-id="adminGradesChart" />
-            <x-dashboard.chart-card :title="__('Students by class')" canvas-id="adminClassesChart" />
-            <x-dashboard.chart-card :title="__('Attendance % by class')" canvas-id="adminAttendanceChart" />
-            <x-dashboard.chart-card :title="__('Grade letters (latest exam)')" canvas-id="adminLettersChart" />
-            <x-dashboard.chart-card :title="__('Pass vs fail (latest exam)')" canvas-id="adminPassFailChart" />
-            <x-dashboard.chart-card :title="__('Subject pass rates')" canvas-id="adminSubjectPassChart" class="xl:col-span-2" />
-            <x-dashboard.chart-card :title="__('Class exam averages %')" canvas-id="adminClassExamChart" />
+        <div class="grid gap-4 lg:grid-cols-12">
+            <x-dashboard.chart-card
+                :title="__('Attendance by class')"
+                canvas-id="adminAttendanceChart"
+                class="lg:col-span-7"
+            />
+            <x-dashboard.chart-card
+                :title="__('Latest exam letters')"
+                canvas-id="adminLettersChart"
+                class="lg:col-span-5"
+            />
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
-            <x-dashboard.panel :title="__('Attendance needing attention')">
+        <div class="grid gap-4 lg:grid-cols-2">
+            <x-dashboard.panel :title="__('Needs attention')">
                 <ul class="space-y-2 text-sm">
                     @forelse ($atRiskPreview as $row)
-                        <li class="flex items-baseline justify-between gap-2 border-b border-border/70 pb-2 last:border-0">
-                            <span>{{ $row['name'] }} <span class="text-muted-foreground">({{ $row['class'] }})</span></span>
-                            <span class="font-medium text-amber-600 dark:text-amber-400">{{ $row['percentage'] }}%</span>
+                        <li class="flex items-baseline justify-between gap-2 border-b border-border/60 pb-2 last:border-0">
+                            <span>{{ $row['name'] }} <span class="text-muted-foreground">· {{ $row['class'] }}</span></span>
+                            <span class="font-semibold text-amber-600 dark:text-amber-400">{{ $row['percentage'] }}%</span>
                         </li>
                     @empty
-                        <li class="text-muted-foreground">{{ __('No students below 80% this month.') }}</li>
+                        <li class="text-muted-foreground">{{ __('Attendance looks healthy this month.') }}</li>
                     @endforelse
                 </ul>
-                <div class="mt-3">
-                    <flux:button size="sm" :href="route('admin.reports.attendance')" variant="ghost" wire:navigate>{{ __('Open attendance report') }}</flux:button>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <flux:button size="sm" :href="route('admin.reports.attendance')" variant="ghost" wire:navigate>{{ __('Attendance report') }}</flux:button>
+                    @if ($draftExams->isNotEmpty())
+                        <flux:button size="sm" :href="route('admin.exams.index')" variant="ghost" wire:navigate>
+                            {{ __(':count drafts waiting', ['count' => $draftExams->count()]) }}
+                        </flux:button>
+                    @endif
                 </div>
             </x-dashboard.panel>
 
-            <x-dashboard.panel :title="__('Top performers (latest exam)')">
-                <ul class="space-y-2 text-sm">
-                    @forelse ($bestPreview as $row)
-                        <li class="flex items-baseline justify-between gap-2 border-b border-border/70 pb-2 last:border-0">
-                            <span>#{{ $row['rank'] }} {{ $row['name'] }} <span class="text-muted-foreground">({{ $row['class'] }})</span></span>
-                            <span class="font-medium text-emerald-700 dark:text-emerald-400">{{ $row['percentage'] }}%</span>
+            <x-dashboard.panel :title="__('Recent activity')">
+                <ul class="space-y-3 text-sm">
+                    @forelse ($recentActivity->take(5) as $log)
+                        <li class="border-b border-border/60 pb-3 last:border-0">
+                            <div class="font-medium">{{ $log->description }}</div>
+                            <div class="mt-0.5 text-muted-foreground">
+                                {{ $log->causer?->name ?? '—' }}
+                                · {{ $log->created_at?->diffForHumans() }}
+                            </div>
                         </li>
                     @empty
-                        <li class="text-muted-foreground">{{ __('No published exam rankings yet.') }}</li>
+                        <li class="text-muted-foreground">{{ __('No activity logged yet.') }}</li>
                     @endforelse
                 </ul>
             </x-dashboard.panel>
-
-            <x-dashboard.panel :title="__('Needs improvement (latest exam)')">
-                <ul class="space-y-2 text-sm">
-                    @forelse ($poorPreview as $row)
-                        <li class="flex items-baseline justify-between gap-2 border-b border-border/70 pb-2 last:border-0">
-                            <span>#{{ $row['rank'] }} {{ $row['name'] }} <span class="text-muted-foreground">({{ $row['class'] }})</span></span>
-                            <span class="font-medium text-amber-600 dark:text-amber-400">{{ $row['percentage'] }}%</span>
-                        </li>
-                    @empty
-                        <li class="text-muted-foreground">{{ __('No published exam rankings yet.') }}</li>
-                    @endforelse
-                </ul>
-                <div class="mt-3">
-                    <flux:button size="sm" :href="route('admin.reports.performance')" variant="ghost" wire:navigate>{{ __('Full rankings') }}</flux:button>
-                </div>
-            </x-dashboard.panel>
-
-            <x-dashboard.panel :title="__('Draft exams')">
-                <ul class="space-y-2 text-sm">
-                    @forelse ($draftExams as $draft)
-                        <li class="border-b border-border/70 pb-2 last:border-0">
-                            <div class="font-medium">{{ $draft->name }}</div>
-                            <div class="text-muted-foreground">{{ $draft->starts_on?->format('Y-m-d') ?? '—' }}</div>
-                        </li>
-                    @empty
-                        <li class="text-muted-foreground">{{ __('No draft exams.') }}</li>
-                    @endforelse
-                </ul>
-                <div class="mt-3">
-                    <flux:button size="sm" :href="route('admin.exams.index')" variant="ghost" wire:navigate>{{ __('Manage exams') }}</flux:button>
-                </div>
-            </x-dashboard.panel>
-        </div>
-
-        <x-dashboard.panel :title="__('Recent activity')">
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-muted-foreground">
-                            <th class="py-2 pe-3">{{ __('When') }}</th>
-                            <th class="py-2 pe-3">{{ __('Who') }}</th>
-                            <th class="py-2 pe-3">{{ __('Action') }}</th>
-                            <th class="py-2">{{ __('Detail') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($recentActivity as $log)
-                            <tr class="border-t border-border">
-                                <td class="py-2 pe-3 whitespace-nowrap">{{ $log->created_at?->diffForHumans() }}</td>
-                                <td class="py-2 pe-3">{{ $log->causer?->name ?? '—' }}</td>
-                                <td class="py-2 pe-3">{{ $log->action instanceof \App\Enums\ActivityAction ? $log->action->label() : $log->action }}</td>
-                                <td class="py-2">{{ $log->description }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-4 text-muted-foreground">{{ __('No activity logged yet.') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </x-dashboard.panel>
-
-        <div class="flex flex-wrap gap-2">
-            <flux:button :href="route('admin.users.create')" variant="filled" wire:navigate>{{ __('Create user') }}</flux:button>
-            <flux:button :href="route('admin.teachers.index')" variant="filled" wire:navigate>{{ __('Teachers') }}</flux:button>
-            <flux:button :href="route('admin.students.index')" variant="filled" wire:navigate>{{ __('Students') }}</flux:button>
-            <flux:button :href="route('admin.attendance.sessions.index')" variant="filled" wire:navigate>{{ __('Attendance') }}</flux:button>
-            <flux:button :href="route('admin.exams.index')" variant="filled" wire:navigate>{{ __('Exams') }}</flux:button>
-            <flux:button :href="route('admin.academic-years.index')" variant="ghost" wire:navigate>{{ __('Academic years') }}</flux:button>
         </div>
 
         <x-charts.render :charts="[
-            [
-                'id' => 'adminGenderChart',
-                'type' => 'doughnut',
-                'data' => $charts['gender'],
-                'colors' => ['#2da8a8', '#5a787e'],
-            ],
-            [
-                'id' => 'adminGradesChart',
-                'type' => 'bar',
-                'label' => __('Students'),
-                'data' => $charts['grades'],
-                'colors' => ['#0f6b6d'],
-            ],
-            [
-                'id' => 'adminClassesChart',
-                'type' => 'bar',
-                'label' => __('Students'),
-                'data' => $charts['classes'],
-                'colors' => ['#7ed3b2'],
-            ],
             [
                 'id' => 'adminAttendanceChart',
                 'type' => 'bar',
                 'label' => __('%'),
                 'data' => $charts['attendance_by_class'],
-                'colors' => ['#2da8a8'],
+                'colors' => ['#0f6b6d'],
             ],
             [
                 'id' => 'adminLettersChart',
                 'type' => 'bar',
                 'label' => __('Count'),
                 'data' => $charts['letters'],
-                'colors' => $chartColors,
-            ],
-            [
-                'id' => 'adminPassFailChart',
-                'type' => 'doughnut',
-                'data' => $charts['pass_fail'],
-                'colors' => ['#2da8a8', '#c83737'],
-            ],
-            [
-                'id' => 'adminSubjectPassChart',
-                'type' => 'bar',
-                'label' => __('Pass %'),
-                'data' => $charts['subject_pass_rates'],
-                'colors' => ['#0f6b6d'],
-            ],
-            [
-                'id' => 'adminClassExamChart',
-                'type' => 'bar',
-                'label' => __('Avg %'),
-                'data' => $charts['class_exam_averages'],
-                'colors' => ['#2da8a8'],
+                'colors' => ['#2da8a8', '#0f6b6d', '#7ed3b2', '#256396', '#5a787e'],
             ],
         ]" />
     </div>
