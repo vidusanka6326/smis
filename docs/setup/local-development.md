@@ -37,6 +37,8 @@ composer run dev
 | `QUEUE_CONNECTION` | Queue | Default `database` |
 | `CACHE_STORE` | Cache | Default `database` |
 | `MAIL_*` | Mail | Default `log` driver locally |
+| `GEMINI_API_KEY` | SMIS Agent (Gemini) | Required for live chat; leave empty in tests |
+| `GEMINI_MODEL` | Gemini model id | Default `gemini-flash-latest` |
 | `VITE_APP_NAME` | Frontend title | Mirrors `APP_NAME` |
 
 ## Seeding
@@ -56,7 +58,7 @@ This runs:
 7. `AttendanceSeeder` — last 10 school days of class + teacher attendance
 8. `ExaminationSeeder` — published First Term tests (grades 6, 8, 10, 11 and each A/L class) with marks
 
-There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). **Reports** is a card catalog (admin/teacher/student): open a report, filter, then download PDF or CSV.
+There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). **Reports** is a card catalog (admin/teacher/student): open a report, filter, then download PDF or CSV. **SMIS Agent** (`/agent`) is a streaming chat for admin, officer, and teacher (Gemini; ADR 0018).
 
 ## Tests
 

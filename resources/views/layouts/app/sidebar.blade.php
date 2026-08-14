@@ -16,6 +16,12 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
 
+                    @role('admin|officer|teacher')
+                        <flux:sidebar.item icon="bot" :href="route('agent.chat')" :current="request()->routeIs('agent.*')" wire:navigate>
+                            {{ __('SMIS Agent') }}
+                        </flux:sidebar.item>
+                    @endrole
+
                     @role('admin|officer')
                         @role('admin')
                             <flux:sidebar.item icon="briefcase" :href="route('admin.officers.index')" :current="request()->routeIs('admin.officers.*')" wire:navigate>

@@ -1,5 +1,30 @@
 # Coverage Log
 
+## 2026-08-14 — Gemini empty-properties 400
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **38 passed** (89 assertions).
+
+Notes: `list_capabilities` / `get_dashboard_summary` now JSON-encode `properties` as `{}`. Debug 400s include Gemini’s upstream message. PHPStan clean on `app/Services/Agent`.
+
+## 2026-08-14 — SMIS Agent full staff-UI coverage
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **35 passed** (82 assertions). PHPStan clean on `app/Services/Agent`.
+
+Notable suites:
+- Admin/officer/teacher access; students still 403
+- Teacher cannot create grades, teachers, or officers through the registry
+- Class teacher can create a student in their homeroom; cannot create in another class
+- Officer can create a student; admin can save attendance and create a grade
+- Subject teacher can enter marks through `enter_marks`
+
+Notes: Tools call existing Actions and re-check Policies. Full `--coverage` still blocked without pcov/xdebug.
+
+## 2026-08-14 — Gemini generateContent (`gemini-flash-latest`)
+
+Command: `php artisan test --compact tests/Unit/Agent/GeminiAgentLlmTest.php tests/Feature/Agent/AgentOrchestratorTest.php tests/Feature/Agent/AgentChatTest.php tests/Unit/Agent/AgentMarkdownTest.php` — **11 passed** (31 assertions)
+
+Notes: Agent now posts to `models/gemini-flash-latest:generateContent`. Tests fake 200/404/429 and assert chat surfaces quota errors. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Report catalog and PDF/CSV downloads
 
 Command: `php artisan test --compact` — **289 passed** (1019 assertions)

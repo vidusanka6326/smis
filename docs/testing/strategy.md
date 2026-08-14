@@ -37,3 +37,7 @@ Results are appended to [coverage-log.md](coverage-log.md).
 ## Phase 0
 
 Scaffolding smoke test: `tests/Feature/PhaseZeroScaffoldingTest.php` asserts docs skeleton, Spatie config, and permission migration presence.
+
+## SMIS Agent
+
+Feature tests cover role access, Livewire chat persistence, tool authorization (including teacher 403 on assign), and the orchestrator tool loop with a scripted LLM (no live Gemini calls).

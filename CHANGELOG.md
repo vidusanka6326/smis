@@ -6,6 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### SMIS Agent (2026-08-14)
+
+- Gemini-backed chat for admin, officer, and teacher (`/agent`) via `gemini-flash-latest` `generateContent`.
+- Permissioned tools cover every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports), still gated by Policies (ADR 0018).
+- Fixed Gemini 400s from empty tool `properties` encoding as a JSON list (`[]` instead of `{}`).
+
 ### Report catalog and PDF downloads (2026-08-14)
 
 - Reports is a card catalog for admin, teacher, and student (analytics stay on dashboards).
