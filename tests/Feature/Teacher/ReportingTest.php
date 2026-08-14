@@ -35,7 +35,9 @@ test('class teacher can open scoped reports dashboard', function () {
     $this->actingAs($user)
         ->get(route('teacher.reports.dashboard'))
         ->assertOk()
-        ->assertSee(__('My class reports'));
+        ->assertSee(__('Reports'))
+        ->assertSee(__('Student attendance'))
+        ->assertSee(__('Class roster'));
 });
 
 test('subject teacher can view performance for assigned subject students', function () {

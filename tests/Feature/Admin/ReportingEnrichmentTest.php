@@ -45,9 +45,9 @@ test('admin attendance report highlights students below eighty percent', functio
     ]);
 
     $this->actingAs($admin)
-        ->get(route('admin.reports.attendance', ['month' => now()->format('Y-m')]))
+        ->get(route('admin.reports.at-risk', ['month' => now()->format('Y-m')]))
         ->assertOk()
-        ->assertSee(__('Needs attention (below :pct%)', ['pct' => 80]))
+        ->assertSee(__('Attendance at risk'))
         ->assertSee($other->user->name);
 });
 
@@ -81,11 +81,12 @@ test('admin examination report shows class comparison', function () {
         ->assertSee($schoolClass->code);
 });
 
-test('admin reports dashboard shows at risk kpi', function () {
+test('admin reports catalog lists downloadable reports', function () {
     $admin = User::factory()->admin()->create();
 
     $this->actingAs($admin)
         ->get(route('admin.reports.dashboard'))
         ->assertOk()
-        ->assertSee(__('Attendance at risk'));
+        ->assertSee(__('Student attendance'))
+        ->assertSee(__('Class enrollment'));
 });

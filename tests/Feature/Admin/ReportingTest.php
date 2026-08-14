@@ -10,16 +10,19 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\User;
 
-test('admin can open reports dashboard', function () {
+test('admin can open reports catalog', function () {
     $admin = User::factory()->admin()->create();
 
     $this->actingAs($admin)
         ->get(route('admin.reports.dashboard'))
         ->assertOk()
-        ->assertSee(__('Analytics dashboard'));
+        ->assertSee(__('Choose a report, filter the data, then download PDF or CSV.'))
+        ->assertSee(__('Student attendance'))
+        ->assertSee(__('Attendance at risk'))
+        ->assertSee(__('Exam results'));
 });
 
-test('admin can export demographics csv', function () {
+test('admin can export demographics csv and pdf', function () {
     $admin = User::factory()->admin()->create();
     [$year, $schoolClass] = examFixtures();
     Student::factory()->create(['current_class_id' => $schoolClass->id]);
@@ -28,6 +31,13 @@ test('admin can export demographics csv', function () {
         ->get(route('admin.reports.demographics', ['export' => 'csv']))
         ->assertOk()
         ->assertHeader('content-disposition');
+
+    $pdf = $this->actingAs($admin)
+        ->get(route('admin.reports.demographics', ['export' => 'pdf']));
+
+    $pdf->assertOk();
+    expect($pdf->headers->get('content-type'))->toStartWith('application/pdf')
+        ->and($pdf->getContent())->toStartWith('%PDF');
 });
 
 test('admin can view performance rankings for published exam', function () {

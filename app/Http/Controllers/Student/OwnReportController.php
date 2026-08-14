@@ -3,136 +3,104 @@
 namespace App\Http\Controllers\Student;
 
 use App\Enums\AttendanceStatus;
+use App\Http\Controllers\Concerns\RespondsWithReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Mark;
 use App\Models\Report;
-use App\Models\StudentAttendance;
-use App\Services\Attendance\AttendancePercentageCalculator;
-use App\Services\Reporting\AttendanceAnalyticsReport;
 use App\Services\Reporting\ReportCsvExporter;
-use Carbon\Carbon;
+use App\Services\Reporting\ReportPdfExporter;
+use App\Services\Reporting\StudentOwnReport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class OwnReportController extends Controller
 {
+    use RespondsWithReportExport;
+
     public function __invoke(
         Request $request,
-        AttendancePercentageCalculator $attendanceCalculator,
-        AttendanceAnalyticsReport $attendanceAnalytics,
+        StudentOwnReport $ownReport,
         ReportCsvExporter $csv,
-    ): View|StreamedResponse {
+        ReportPdfExporter $pdf,
+    ): View|Response {
         $this->authorize('viewOwn', Report::class);
 
         $student = $request->user()->student;
         abort_unless($student !== null, 403);
+        $student->load('currentClass.grade', 'user');
 
-        $month = $request->string('month')->toString() ?: now()->format('Y-m');
-        $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        $end = (clone $start)->endOfMonth();
+        [$month, $start, $end] = $this->monthRange($request);
+        $attendance = $ownReport->attendanceForMonth($student, $start, $end);
+        $results = $ownReport->publishedResults($student);
 
-        $attendanceRecords = StudentAttendance::query()
-            ->with('attendanceSession')
-            ->where('student_id', $student->id)
-            ->whereHas('attendanceSession', function ($q) use ($start, $end): void {
-                $q->whereDate('date', '>=', $start->toDateString())
-                    ->whereDate('date', '<=', $end->toDateString());
-            })
-            ->get();
+        $headers = [__('Exam'), __('Subject'), __('Marks'), __('Max'), __('%'), __('Grade'), __('Result')];
+        $rows = $results['marks']->map(function (Mark $mark): array {
+            $max = (float) ($mark->examSubject?->max_marks ?? 0);
+            $obtained = (float) $mark->marks_obtained;
+            $pct = $max > 0 ? round(($obtained / $max) * 100, 2) : 0.0;
 
-        $attendanceCounts = $attendanceAnalytics->countStatuses($attendanceRecords->pluck('status'));
-        $attendancePercentage = $attendanceCalculator->percentage($attendanceRecords->pluck('status')->all());
+            return [
+                $mark->examSubject?->exam?->name,
+                $mark->examSubject?->subject?->name,
+                $obtained,
+                $max,
+                $pct,
+                $mark->grade_letter->value,
+                $mark->is_pass ? 'pass' : 'fail',
+            ];
+        });
 
-        $marks = Mark::query()
-            ->with(['examSubject.exam', 'examSubject.subject'])
-            ->where('student_id', $student->id)
-            ->whereHas('examSubject.exam', fn ($q) => $q->whereNotNull('published_at'))
-            ->get();
-
-        $marksByExam = $marks
-            ->groupBy(fn (Mark $mark) => $mark->examSubject?->exam_id)
-            ->map(function (Collection $group): array {
-                /** @var Collection<int, Mark> $group */
-                $exam = $group->first()?->examSubject?->exam;
-                $sumPct = 0.0;
-                $rows = [];
-
-                foreach ($group as $mark) {
-                    $max = (float) ($mark->examSubject?->max_marks ?? 0);
-                    $obtained = (float) $mark->marks_obtained;
-                    $pct = $max > 0 ? round(($obtained / $max) * 100, 2) : 0.0;
-                    $sumPct += $pct;
-                    $rows[] = [
-                        'subject' => $mark->examSubject?->subject?->name ?? '—',
-                        'marks_obtained' => $obtained,
-                        'max_marks' => $max,
-                        'percentage' => $pct,
-                        'grade_letter' => $mark->grade_letter->value,
-                        'is_pass' => (bool) $mark->is_pass,
-                    ];
-                }
-
-                $count = count($rows);
-
-                return [
-                    'exam_name' => $exam?->name ?? __('Exam'),
-                    'average_percentage' => $count > 0 ? round($sumPct / $count, 2) : 0.0,
-                    'rows' => $rows,
-                ];
-            })
-            ->values()
-            ->all();
-
-        $overallAverage = null;
-        if ($marks->isNotEmpty()) {
-            $sumPct = 0.0;
-            foreach ($marks as $mark) {
-                $max = (float) ($mark->examSubject?->max_marks ?? 0);
-                $obtained = (float) $mark->marks_obtained;
-                $sumPct += $max > 0 ? ($obtained / $max) * 100 : 0;
-            }
-            $overallAverage = round($sumPct / $marks->count(), 2);
+        $pdfTables = [];
+        foreach ($results['by_exam'] as $examBlock) {
+            $pdfTables[] = [
+                'title' => $examBlock['exam_name'].' — '.__('average :pct%', ['pct' => $examBlock['average_percentage']]),
+                'headers' => [__('Subject'), __('Marks'), __('Max'), __('%'), __('Grade'), __('Result')],
+                'rows' => collect($examBlock['rows'])->map(fn (array $row): array => [
+                    $row['subject'],
+                    $row['marks_obtained'],
+                    $row['max_marks'],
+                    $row['percentage'],
+                    $row['grade_letter'],
+                    $row['is_pass'] ? __('Pass') : __('Fail'),
+                ])->all(),
+            ];
         }
 
-        if ($request->string('export')->toString() === 'csv') {
-            $rows = $marks->map(function (Mark $mark): array {
-                $max = (float) ($mark->examSubject?->max_marks ?? 0);
-                $obtained = (float) $mark->marks_obtained;
-                $pct = $max > 0 ? round(($obtained / $max) * 100, 2) : 0.0;
+        $exported = $this->exportIfRequested(
+            $request,
+            $csv,
+            $pdf,
+            'my-report-card',
+            $headers,
+            $rows,
+            __('Report card'),
+            $pdfTables !== [] ? $pdfTables : [[
+                'title' => __('Published results'),
+                'headers' => $headers,
+                'rows' => [],
+            ]],
+            $student->user?->name.' — '.$month,
+        );
 
-                return [
-                    $mark->examSubject?->exam?->name,
-                    $mark->examSubject?->subject?->name,
-                    $obtained,
-                    $max,
-                    $pct,
-                    $mark->grade_letter->value,
-                    $mark->is_pass ? 'pass' : 'fail',
-                ];
-            });
-
-            return $csv->download(
-                'my-results.csv',
-                [__('Exam'), __('Subject'), __('Marks'), __('Max'), __('%'), __('Grade'), __('Result')],
-                $rows,
-            );
+        if ($exported !== null) {
+            return $exported;
         }
 
         return view('student.report', [
-            'student' => $student->load('currentClass.grade'),
+            'student' => $student,
             'month' => $month,
-            'attendancePercentage' => $attendancePercentage,
-            'attendanceCounts' => $attendanceCounts,
-            'attendanceRecords' => $attendanceRecords,
-            'marksByExam' => $marksByExam,
-            'overallAverage' => $overallAverage,
-            'print' => $request->boolean('print'),
+            'attendancePercentage' => $attendance['percentage'],
+            'attendanceCounts' => $attendance['counts'],
+            'attendanceRecords' => $attendance['records'],
+            'marksByExam' => $results['by_exam'],
+            'overallAverage' => $results['overall_average'],
             'presentKey' => AttendanceStatus::Present->value,
             'absentKey' => AttendanceStatus::Absent->value,
             'lateKey' => AttendanceStatus::Late->value,
             'excusedKey' => AttendanceStatus::Excused->value,
+            'catalogRoute' => 'student.reports',
+            'exportQuery' => ['month' => $month],
         ]);
     }
 }

@@ -2,13 +2,16 @@
 
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AtRiskAttendanceReportController as AdminAtRiskAttendanceReportController;
 use App\Http\Controllers\Admin\AttendanceMonthlySummaryController as AdminAttendanceMonthlySummaryController;
 use App\Http\Controllers\Admin\AttendanceReportController as AdminAttendanceReportController;
 use App\Http\Controllers\Admin\AttendanceSessionController as AdminAttendanceSessionController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DemographicsReportController;
+use App\Http\Controllers\Admin\EnrollmentReportController as AdminEnrollmentReportController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExaminationReportController as AdminExaminationReportController;
+use App\Http\Controllers\Admin\ExamResultsReportController as AdminExamResultsReportController;
 use App\Http\Controllers\Admin\ExamSubjectController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\MarkEntryController as AdminMarkEntryController;
@@ -17,24 +20,32 @@ use App\Http\Controllers\Admin\PerformanceReportController as AdminPerformanceRe
 use App\Http\Controllers\Admin\ReliefTeacherAssignmentController;
 use App\Http\Controllers\Admin\ReportDashboardController as AdminReportDashboardController;
 use App\Http\Controllers\Admin\SchoolClassController;
+use App\Http\Controllers\Admin\StaffAttendanceReportController as AdminStaffAttendanceReportController;
 use App\Http\Controllers\Admin\StreamController;
 use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherAssignmentController;
+use App\Http\Controllers\Admin\TeacherAssignmentReportController as AdminTeacherAssignmentReportController;
 use App\Http\Controllers\Admin\TeacherAttendanceController as AdminTeacherAttendanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TimetableController as AdminTimetableController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\OwnAttendanceReportController as StudentOwnAttendanceReportController;
 use App\Http\Controllers\Student\OwnReportController as StudentOwnReportController;
+use App\Http\Controllers\Student\OwnResultsReportController as StudentOwnResultsReportController;
+use App\Http\Controllers\Student\ReportCatalogController as StudentReportCatalogController;
 use App\Http\Controllers\Student\ResultController as StudentResultController;
 use App\Http\Controllers\Student\TimetableController as StudentTimetableController;
+use App\Http\Controllers\Teacher\AtRiskAttendanceReportController as TeacherAtRiskAttendanceReportController;
 use App\Http\Controllers\Teacher\AttendanceMonthlySummaryController as TeacherAttendanceMonthlySummaryController;
 use App\Http\Controllers\Teacher\AttendanceReportController as TeacherAttendanceReportController;
 use App\Http\Controllers\Teacher\AttendanceSessionController as TeacherAttendanceSessionController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\EnrollmentReportController as TeacherEnrollmentReportController;
 use App\Http\Controllers\Teacher\ExaminationReportController as TeacherExaminationReportController;
+use App\Http\Controllers\Teacher\ExamResultsReportController as TeacherExamResultsReportController;
 use App\Http\Controllers\Teacher\MarkEntryController as TeacherMarkEntryController;
 use App\Http\Controllers\Teacher\PerformanceReportController as TeacherPerformanceReportController;
 use App\Http\Controllers\Teacher\ReportDashboardController as TeacherReportDashboardController;
@@ -113,8 +124,13 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('reports', AdminReportDashboardController::class)->name('reports.dashboard');
         Route::get('reports/demographics', DemographicsReportController::class)->name('reports.demographics');
         Route::get('reports/attendance', AdminAttendanceReportController::class)->name('reports.attendance');
+        Route::get('reports/at-risk', AdminAtRiskAttendanceReportController::class)->name('reports.at-risk');
+        Route::get('reports/staff-attendance', AdminStaffAttendanceReportController::class)->name('reports.staff-attendance');
+        Route::get('reports/enrollment', AdminEnrollmentReportController::class)->name('reports.enrollment');
         Route::get('reports/examination', AdminExaminationReportController::class)->name('reports.examination');
+        Route::get('reports/exam-results', AdminExamResultsReportController::class)->name('reports.exam-results');
         Route::get('reports/performance', AdminPerformanceReportController::class)->name('reports.performance');
+        Route::get('reports/assignments', AdminTeacherAssignmentReportController::class)->name('reports.assignments');
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
@@ -138,7 +154,10 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
 
         Route::get('reports', TeacherReportDashboardController::class)->name('reports.dashboard');
         Route::get('reports/attendance', TeacherAttendanceReportController::class)->name('reports.attendance');
+        Route::get('reports/at-risk', TeacherAtRiskAttendanceReportController::class)->name('reports.at-risk');
+        Route::get('reports/enrollment', TeacherEnrollmentReportController::class)->name('reports.enrollment');
         Route::get('reports/examination', TeacherExaminationReportController::class)->name('reports.examination');
+        Route::get('reports/exam-results', TeacherExamResultsReportController::class)->name('reports.exam-results');
         Route::get('reports/performance', TeacherPerformanceReportController::class)->name('reports.performance');
     });
 
@@ -147,6 +166,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('timetable', StudentTimetableController::class)->name('timetable');
         Route::get('attendance', StudentAttendanceController::class)->name('attendance');
         Route::get('results', StudentResultController::class)->name('results');
+        Route::get('reports', StudentReportCatalogController::class)->name('reports');
+        Route::get('reports/attendance', StudentOwnAttendanceReportController::class)->name('reports.attendance');
+        Route::get('reports/results', StudentOwnResultsReportController::class)->name('reports.results');
         Route::get('report', StudentOwnReportController::class)->name('report');
     });
 });

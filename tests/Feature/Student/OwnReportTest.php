@@ -35,7 +35,7 @@ test('student can view own combined report', function () {
     $this->actingAs($user)
         ->get(route('student.report'))
         ->assertOk()
-        ->assertSee(__('My report'))
+        ->assertSee(__('Report card'))
         ->assertSee($exam->name)
         ->assertSee(__('Overall exam average'))
         ->assertSee(__('Pass'));

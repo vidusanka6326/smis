@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use App\Http\Controllers\Concerns\RespondsWithReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Report;
 use App\Services\Reporting\ExaminationStatisticsReport;
 use App\Services\Reporting\ReportCsvExporter;
+use App\Services\Reporting\ReportPdfExporter;
 use App\Services\Reporting\TeacherReportScope;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ExaminationReportController extends Controller
 {
+    use RespondsWithReportExport;
+
     public function __invoke(
         Request $request,
         TeacherReportScope $scope,
         ExaminationStatisticsReport $report,
         ReportCsvExporter $csv,
-    ): View|StreamedResponse {
+        ReportPdfExporter $pdf,
+    ): View|Response {
         $this->authorize('viewAny', Report::class);
 
         $teacher = $request->user()->teacher;
@@ -44,24 +49,55 @@ class ExaminationReportController extends Controller
             ? $report->forExam($exam, $subjectId, $scope->accessibleStudentIds($teacher, $subjectId))
             : null;
 
-        if ($request->string('export')->toString() === 'csv' && $stats !== null) {
-            $rows = collect($stats['by_subject'])->map(fn (array $row): array => [
-                $row['subject'],
-                $row['count'],
-                $row['average_marks'],
-                $row['pass_rate'],
-            ]);
+        $headers = [__('Subject'), __('Entries'), __('Avg'), __('Pass %')];
+        $rows = collect($stats['by_subject'] ?? [])->map(fn (array $row): array => [
+            $row['subject'],
+            $row['count'],
+            $row['average_marks'],
+            $row['pass_rate'],
+        ]);
 
-            return $csv->download('teacher-examination-stats.csv', [__('Subject'), __('Entries'), __('Avg'), __('Pass %')], $rows);
+        $exported = $this->exportIfRequested(
+            $request,
+            $csv,
+            $pdf,
+            'teacher-examination-stats',
+            $headers,
+            $rows,
+            __('Examination statistics'),
+            [
+                [
+                    'title' => __('By subject'),
+                    'headers' => $headers,
+                    'rows' => $rows->all(),
+                ],
+                [
+                    'title' => __('By class'),
+                    'headers' => [__('Class'), __('Entries'), __('Avg %'), __('Pass %')],
+                    'rows' => collect($stats['by_class'] ?? [])->map(fn (array $row): array => [
+                        $row['code'],
+                        $row['count'],
+                        $row['average_percentage'],
+                        $row['pass_rate'],
+                    ])->all(),
+                ],
+            ],
+            $exam?->name,
+        );
+
+        if ($exported !== null) {
+            return $exported;
         }
 
-        return view('teacher.reports.examination', [
+        return view('reports.examination', [
             'exams' => $exams,
             'exam' => $exam,
             'stats' => $stats,
             'selectedExamId' => $examId,
             'selectedSubjectId' => $subjectId,
-            'print' => $request->boolean('print'),
+            'action' => route('teacher.reports.examination'),
+            'catalogRoute' => 'teacher.reports.dashboard',
+            'exportQuery' => ['exam_id' => $examId, 'subject_id' => $subjectId],
         ]);
     }
 }

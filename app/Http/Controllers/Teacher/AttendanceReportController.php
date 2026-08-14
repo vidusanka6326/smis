@@ -2,34 +2,36 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use App\Http\Controllers\Concerns\RespondsWithReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Report;
 use App\Models\SchoolClass;
 use App\Services\Reporting\AttendanceAnalyticsReport;
 use App\Services\Reporting\ReportCsvExporter;
+use App\Services\Reporting\ReportPdfExporter;
 use App\Services\Reporting\TeacherReportScope;
 use App\Support\ListQuery;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceReportController extends Controller
 {
+    use RespondsWithReportExport;
+
     public function __invoke(
         Request $request,
         TeacherReportScope $scope,
         AttendanceAnalyticsReport $report,
         ReportCsvExporter $csv,
-    ): View|StreamedResponse {
+        ReportPdfExporter $pdf,
+    ): View|Response {
         $this->authorize('viewAny', Report::class);
 
         $teacher = $request->user()->teacher;
         abort_unless($teacher !== null, 403);
 
-        $month = $request->string('month')->toString() ?: now()->format('Y-m');
-        $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        $end = (clone $start)->endOfMonth();
+        [$month, $start, $end] = $this->monthRange($request);
         $classIds = $scope->accessibleClassIds($teacher);
         $selectedClassId = $request->filled('school_class_id') ? $request->integer('school_class_id') : null;
 
@@ -43,29 +45,44 @@ class AttendanceReportController extends Controller
             $selectedClassId !== null ? [$selectedClassId] : $classIds,
         );
 
-        if ($request->string('export')->toString() === 'csv') {
-            $rows = collect($data['student_rows'])->map(fn (array $row): array => [
-                $row['name'],
-                $row['class'],
-                $row['percentage'],
-                $row['present'],
-                $row['absent'],
-                $row['late'],
-                $row['excused'],
-            ]);
+        $headers = [__('Student'), __('Class'), __('%'), __('Present'), __('Absent'), __('Late'), __('Excused')];
+        $rows = collect($data['student_rows'])->map(fn (array $row): array => [
+            $row['name'],
+            $row['class'],
+            $row['percentage'],
+            $row['present'],
+            $row['absent'],
+            $row['late'],
+            $row['excused'],
+        ]);
 
-            return $csv->download(
-                "teacher-attendance-{$month}.csv",
-                [__('Student'), __('Class'), __('%'), __('Present'), __('Absent'), __('Late'), __('Excused')],
-                $rows,
-            );
+        $exported = $this->exportIfRequested(
+            $request,
+            $csv,
+            $pdf,
+            "teacher-attendance-{$month}",
+            $headers,
+            $rows,
+            __('Student attendance'),
+            [
+                [
+                    'title' => __('All students'),
+                    'headers' => $headers,
+                    'rows' => $rows->all(),
+                ],
+            ],
+            $month,
+            'landscape',
+        );
+
+        if ($exported !== null) {
+            return $exported;
         }
 
-        return view('teacher.reports.attendance', [
+        return view('reports.attendance', [
             'data' => $data,
             'studentRows' => ListQuery::paginateCollection($data['student_rows'], $request),
             'month' => $month,
-            'print' => $request->boolean('print'),
             'filters' => array_filter([
                 'month' => $month,
                 'school_class_id' => $selectedClassId,
@@ -75,6 +92,9 @@ class AttendanceReportController extends Controller
                 ->orderBy('code')
                 ->get(),
             'selectedSchoolClassId' => $selectedClassId,
+            'action' => route('teacher.reports.attendance'),
+            'catalogRoute' => 'teacher.reports.dashboard',
+            'exportQuery' => ['month' => $month, 'school_class_id' => $selectedClassId],
         ]);
     }
 }

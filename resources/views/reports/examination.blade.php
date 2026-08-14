@@ -1,22 +1,27 @@
-<x-layouts::app :title="__('Exam report')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <div>
-            <flux:heading size="xl">{{ __('Examination statistics') }}</flux:heading>
-            <flux:text class="mt-1">{{ __('Subject and class comparison for students in your scope.') }}</flux:text>
-        </div>
+<x-layouts::app :title="__('Examination statistics')">
+    <x-report.page
+        :title="__('Examination statistics')"
+        :description="__('Subject and class comparison for the selected exam.')"
+        :catalog-route="$catalogRoute"
+    >
+        <x-slot:aside>
+            <x-report.exports :query="$exportQuery" />
+        </x-slot:aside>
 
-        <x-list.filters :action="route('teacher.reports.examination')" :filters="array_filter(['exam_id' => $selectedExamId])" :submit="__('Load')" :with-per-page="false" class="no-print">
+        <x-list.filters :action="$action" :filters="array_filter(['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId])" :submit="__('Apply')" :with-per-page="false">
             <flux:select name="exam_id" :label="__('Exam')">
                 @foreach ($exams as $option)
                     <flux:select.option :value="$option->id" :selected="(string) $selectedExamId === (string) $option->id">{{ $option->name }}</flux:select.option>
                 @endforeach
             </flux:select>
+            @if ($exam)
+                <flux:select name="subject_id" :label="__('Subject')" :placeholder="__('All subjects')">
+                    @foreach ($exam->examSubjects as $examSubject)
+                        <flux:select.option :value="$examSubject->subject_id" :selected="(string) $selectedSubjectId === (string) $examSubject->subject_id">{{ $examSubject->subject?->name }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+            @endif
         </x-list.filters>
-
-        <x-report-toolbar :print="$print">
-            <flux:button :href="route('teacher.reports.examination', ['exam_id' => $selectedExamId, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
-            <flux:button :href="route('teacher.reports.examination', ['exam_id' => $selectedExamId, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
-        </x-report-toolbar>
 
         @if ($stats)
             <div class="grid gap-4 md:grid-cols-4">
@@ -24,6 +29,15 @@
                 <x-dashboard.stat :label="__('Pass rate')" :value="$stats['pass_rate'].'%'" tone="success" />
                 <x-dashboard.stat :label="__('Avg marks')" :value="$stats['average_marks']" />
                 <x-dashboard.stat :label="__('Avg %')" :value="$stats['average_percentage'].'%'" />
+            </div>
+
+            <div class="rounded-xl border border-border bg-card p-4">
+                <flux:heading size="sm">{{ __('Grade letters') }}</flux:heading>
+                <div class="mt-3 flex flex-wrap gap-3 text-sm">
+                    @foreach ($stats['by_grade_letter'] as $letter => $count)
+                        <span class="rounded-md bg-muted px-3 py-1.5">{{ $letter }}: <strong>{{ $count }}</strong></span>
+                    @endforeach
+                </div>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-border bg-card">
@@ -34,16 +48,18 @@
                     <thead class="bg-muted/60">
                         <tr>
                             <th class="px-3 py-2 text-left">{{ __('Subject') }}</th>
-                            <th class="px-3 py-2 text-left">{{ __('Pass %') }}</th>
+                            <th class="px-3 py-2 text-left">{{ __('Entries') }}</th>
                             <th class="px-3 py-2 text-left">{{ __('Avg') }}</th>
+                            <th class="px-3 py-2 text-left">{{ __('Pass %') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($stats['by_subject'] as $row)
                             <tr class="border-t border-border">
                                 <td class="px-3 py-2">{{ $row['subject'] }}</td>
-                                <td class="px-3 py-2">{{ $row['pass_rate'] }}%</td>
+                                <td class="px-3 py-2">{{ $row['count'] }}</td>
                                 <td class="px-3 py-2">{{ $row['average_marks'] }}</td>
+                                <td class="px-3 py-2">{{ $row['pass_rate'] }}%</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -78,5 +94,5 @@
                 </table>
             </div>
         @endif
-    </div>
+    </x-report.page>
 </x-layouts::app>
