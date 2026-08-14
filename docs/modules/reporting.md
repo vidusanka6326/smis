@@ -33,6 +33,7 @@ Derived from existing domain tables (students, attendance, exams, marks). No ded
 - Best/poor: top/bottom N by average percentage (default 5); includes class code.
 - Attendance at-risk: students with monthly attendance **&lt; 80%** (assumption).
 - Month filters on attendance reports use Flux `x-form.month-select`.
+- List/report filters use shared `x-list.filters`. Attendance “all students” tables paginate; CSV still exports the full month (ADR 0016).
 - Exam class comparison: average % and pass rate by student’s current class.
 - Exports: CSV streamed downloads; PDF via browser print (no DomPDF/Excel deps).
 

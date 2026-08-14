@@ -19,7 +19,7 @@ Class timetable builder, teacher timetable view, relief teacher allocation, conf
 | Method | Path | Name | Notes |
 |---|---|---|---|
 | GET/POST/PUT/DELETE | `/admin/timetables*` | `admin.timetables.*` | Class grid builder |
-| GET/POST/DELETE | `/admin/relief-assignments*` | `admin.relief-assignments.*` | Manual relief |
+| GET/POST/DELETE | `/admin/relief-assignments*` | `admin.relief-assignments.*` | Manual relief; date/class/teacher filters + pagination |
 | GET | `/teacher/timetable` | `teacher.timetable` | Own teaching slots |
 | GET | `/student/timetable` | `student.timetable` | Current class grid |
 
@@ -32,6 +32,7 @@ Class timetable builder, teacher timetable view, relief teacher allocation, conf
 - Period count assumed **8**; school days **Monday–Friday**.
 - Wall-clock times for periods come from `PeriodSchedule` (07:30 start, 40 min, break after P4) — ADR 0011.
 - Shared Blade component `x-timetable.grid` renders a color-coded period×day school timetable for admin/teacher/student.
+- Class picker and relief index use shared `x-list.filters` (ADR 0016).
 
 ## Edge cases
 

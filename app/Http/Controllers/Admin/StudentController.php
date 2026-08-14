@@ -14,6 +14,7 @@ use App\Models\Grade;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -24,17 +25,19 @@ class StudentController extends Controller
     {
         $this->authorize('viewAny', Student::class);
 
-        $filters = $request->only(['search', 'gender', 'grade_id', 'class_id', 'subject_id']);
+        $filters = ListQuery::filters($request, ['search', 'gender', 'grade_id', 'class_id', 'subject_id', 'status']);
 
         return view('admin.students.index', [
-            'students' => Student::query()
-                ->with(['user', 'currentClass.grade', 'currentClass.stream'])
-                ->filter($filters)
-                ->latest('id')
-                ->paginate(20)
-                ->withQueryString(),
+            'students' => ListQuery::paginate(
+                Student::query()
+                    ->with(['user', 'currentClass.grade', 'currentClass.stream'])
+                    ->filter($filters)
+                    ->latest('id'),
+                $request,
+            ),
             'filters' => $filters,
             'genders' => Gender::cases(),
+            'statuses' => UserStatus::cases(),
             'grades' => Grade::query()->orderBy('number')->get(),
             'classes' => SchoolClass::query()->with('grade')->orderBy('code')->get(),
             'subjects' => Subject::query()->orderBy('name')->get(),

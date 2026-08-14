@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\SchoolClassFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -97,5 +98,24 @@ class SchoolClass extends Model
     {
         return $this->belongsToMany(Subject::class, 'class_subject', 'school_class_id')
             ->withTimestamps();
+    }
+
+    /**
+     * @param  Builder<SchoolClass>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<SchoolClass>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['academic_year_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('academic_year_id', $id))
+            ->when($filters['grade_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('grade_id', $id))
+            ->when($filters['stream_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('stream_id', $id))
+            ->when($filters['search'] ?? null, function (Builder $q, string $search): void {
+                $q->where(function (Builder $inner) use ($search): void {
+                    $inner->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                });
+            });
     }
 }

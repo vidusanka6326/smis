@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### List filters and pagination (2026-08-14)
+
+- Shared `x-list.filters` / table / Flux pagination on every index, with per-page 10/20/50/100 (ADR 0016).
+- Search and dropdown filters on teachers, officers, classes, exams, marks, attendance, activity log, relief, and student results (students already had filters).
+
 ### Realistic demo school (2026-08-14)
 
 - Seeded a Type 1AB-style dataset: 1 admin, 5 officers, 30 teachers, 600 students, 28 classes (grades 6–13).

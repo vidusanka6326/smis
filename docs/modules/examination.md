@@ -36,6 +36,7 @@ Create exams (term test, scholarship, O/L, A/L), configure subjects/max/pass mar
 - Class teachers may enter all subjects in own class (assumed).
 - Mark upsert and exam publish/unpublish write `activity_logs` entries (ADR 0010).
 - Marks entry grids use Flux `flux:input` number fields.
+- Exam and mark-entry indexes use shared `x-list.filters` + pagination (search, year, type, published/draft; ADR 0016). Student results paginate published marks.
 
 ## Edge cases
 

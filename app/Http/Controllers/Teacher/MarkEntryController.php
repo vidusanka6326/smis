@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Teacher;
 use App\Actions\Examination\UpsertMarks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\UpsertMarksRequest;
+use App\Models\AcademicYear;
 use App\Models\Exam;
 use App\Models\ExamSubject;
 use App\Models\SchoolClass;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,16 +23,28 @@ class MarkEntryController extends Controller
         $teacher = $request->user()->teacher;
         abort_unless($teacher !== null, 403);
 
+        $filters = ListQuery::filters($request, ['search', 'academic_year_id', 'status']);
+
         $examSubjects = ExamSubject::query()
             ->with(['exam.academicYear', 'subject'])
-            ->whereHas('exam', fn ($q) => $q->whereNull('published_at')->orWhereNotNull('published_at'))
+            ->when($filters['academic_year_id'] ?? null, fn ($q, $id) => $q->whereHas('exam', fn ($exam) => $exam->where('academic_year_id', $id)))
+            ->when(($filters['status'] ?? null) === 'published', fn ($q) => $q->whereHas('exam', fn ($exam) => $exam->whereNotNull('published_at')))
+            ->when(($filters['status'] ?? null) === 'draft', fn ($q) => $q->whereHas('exam', fn ($exam) => $exam->whereNull('published_at')))
+            ->when($filters['search'] ?? null, function ($q, string $search): void {
+                $q->where(function ($inner) use ($search): void {
+                    $inner->whereHas('exam', fn ($exam) => $exam->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('subject', fn ($subject) => $subject->where('name', 'like', "%{$search}%"));
+                });
+            })
             ->orderByDesc('id')
             ->get()
             ->filter(fn (ExamSubject $examSubject): bool => $request->user()->can('view', $examSubject))
             ->values();
 
         return view('teacher.marks.index', [
-            'examSubjects' => $examSubjects,
+            'examSubjects' => ListQuery::paginateCollection($examSubjects, $request),
+            'filters' => $filters,
+            'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
         ]);
     }
 

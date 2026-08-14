@@ -7,6 +7,7 @@ use App\Models\Report;
 use App\Models\User;
 use App\Policies\ReportPolicy;
 use Carbon\CarbonImmutable;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -61,5 +62,7 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+
+        Paginator::defaultView('pagination::flux');
     }
 }

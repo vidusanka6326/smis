@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ExamType;
 use Database\Factories\ExamFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -86,6 +87,23 @@ class Exam extends Model
     public function examSubjects(): HasMany
     {
         return $this->hasMany(ExamSubject::class);
+    }
+
+    /**
+     * @param  Builder<Exam>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<Exam>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['academic_year_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('academic_year_id', $id))
+            ->when($filters['type'] ?? null, fn (Builder $q, string $type) => $q->where('type', $type))
+            ->when($filters['grade_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('grade_id', $id))
+            ->when($filters['school_class_id'] ?? null, fn (Builder $q, int|string $id) => $q->where('school_class_id', $id))
+            ->when(($filters['status'] ?? null) === 'published', fn (Builder $q) => $q->whereNotNull('published_at'))
+            ->when(($filters['status'] ?? null) === 'draft', fn (Builder $q) => $q->whereNull('published_at'))
+            ->when($filters['search'] ?? null, fn (Builder $q, string $search) => $q->where('name', 'like', "%{$search}%"));
     }
 
     /**

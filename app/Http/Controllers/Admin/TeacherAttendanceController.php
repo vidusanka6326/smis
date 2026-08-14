@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTeacherAttendanceRequest;
 use App\Models\Teacher;
 use App\Models\TeacherAttendance;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,18 +19,19 @@ class TeacherAttendanceController extends Controller
     {
         $this->authorize('viewAny', TeacherAttendance::class);
 
-        $records = TeacherAttendance::query()
-            ->with(['teacher.user', 'recordedBy'])
-            ->when($request->filled('teacher_id'), fn ($q) => $q->where('teacher_id', $request->integer('teacher_id')))
-            ->orderByDesc('date')
-            ->paginate(20)
-            ->withQueryString();
+        $filters = ListQuery::filters($request, ['teacher_id', 'status', 'date_from', 'date_to']);
 
         return view('admin.attendance.teachers.index', [
-            'records' => $records,
+            'records' => ListQuery::paginate(
+                TeacherAttendance::query()
+                    ->with(['teacher.user', 'recordedBy'])
+                    ->filter($filters)
+                    ->orderByDesc('date'),
+                $request,
+            ),
+            'filters' => $filters,
             'teachers' => Teacher::query()->with('user')->orderBy('employee_no')->get(),
             'statuses' => AttendanceStatus::cases(),
-            'selectedTeacherId' => $request->integer('teacher_id'),
         ]);
     }
 

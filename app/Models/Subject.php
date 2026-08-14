@@ -58,4 +58,23 @@ class Subject extends Model
         return $this->belongsToMany(SchoolClass::class, 'class_subject')
             ->withTimestamps();
     }
+
+    /**
+     * @param  Builder<Subject>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<Subject>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['grade'] ?? null, function (Builder $q, int|string $grade): void {
+                $q->forGrade((int) $grade);
+            })
+            ->when($filters['search'] ?? null, function (Builder $q, string $search): void {
+                $q->where(function (Builder $inner) use ($search): void {
+                    $inner->where('name', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%");
+                });
+            });
+    }
 }

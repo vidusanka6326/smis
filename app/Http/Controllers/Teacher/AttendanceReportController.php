@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Report;
+use App\Models\SchoolClass;
 use App\Services\Reporting\AttendanceAnalyticsReport;
 use App\Services\Reporting\ReportCsvExporter;
 use App\Services\Reporting\TeacherReportScope;
+use App\Support\ListQuery;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,7 +30,18 @@ class AttendanceReportController extends Controller
         $month = $request->string('month')->toString() ?: now()->format('Y-m');
         $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $end = (clone $start)->endOfMonth();
-        $data = $report->forMonth($start, $end, $scope->accessibleClassIds($teacher));
+        $classIds = $scope->accessibleClassIds($teacher);
+        $selectedClassId = $request->filled('school_class_id') ? $request->integer('school_class_id') : null;
+
+        if ($selectedClassId !== null && ! in_array($selectedClassId, $classIds, true)) {
+            abort(403);
+        }
+
+        $data = $report->forMonth(
+            $start,
+            $end,
+            $selectedClassId !== null ? [$selectedClassId] : $classIds,
+        );
 
         if ($request->string('export')->toString() === 'csv') {
             $rows = collect($data['student_rows'])->map(fn (array $row): array => [
@@ -50,8 +63,18 @@ class AttendanceReportController extends Controller
 
         return view('teacher.reports.attendance', [
             'data' => $data,
+            'studentRows' => ListQuery::paginateCollection($data['student_rows'], $request),
             'month' => $month,
             'print' => $request->boolean('print'),
+            'filters' => array_filter([
+                'month' => $month,
+                'school_class_id' => $selectedClassId,
+            ], fn ($value) => filled($value)),
+            'schoolClasses' => SchoolClass::query()
+                ->whereIn('id', $classIds)
+                ->orderBy('code')
+                ->get(),
+            'selectedSchoolClassId' => $selectedClassId,
         ]);
     }
 }

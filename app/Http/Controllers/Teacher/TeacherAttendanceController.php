@@ -7,6 +7,7 @@ use App\Enums\AttendanceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\StoreTeacherAttendanceRequest;
 use App\Models\TeacherAttendance;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,13 +21,17 @@ class TeacherAttendanceController extends Controller
         $teacher = $request->user()->teacher;
         abort_unless($teacher !== null, 403);
 
-        $records = TeacherAttendance::query()
-            ->where('teacher_id', $teacher->id)
-            ->orderByDesc('date')
-            ->paginate(20);
+        $filters = ListQuery::filters($request, ['status', 'date_from', 'date_to']);
 
         return view('teacher.attendance.self.index', [
-            'records' => $records,
+            'records' => ListQuery::paginate(
+                TeacherAttendance::query()
+                    ->where('teacher_id', $teacher->id)
+                    ->filter($filters)
+                    ->orderByDesc('date'),
+                $request,
+            ),
+            'filters' => $filters,
             'teacher' => $teacher,
             'statuses' => AttendanceStatus::cases(),
         ]);

@@ -8,52 +8,40 @@
             <flux:button :href="route('admin.grades.create')" variant="primary" wire:navigate>{{ __('Add grade') }}</flux:button>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        @if ($errors->any())
-            <flux:callout variant="danger" icon="x-circle">
-                <flux:callout.heading>{{ $errors->first() }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.filters :action="route('admin.grades.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Name or number') }}" />
+        </x-list.filters>
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 text-left dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-4 py-3 font-medium">{{ __('Number') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Name') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($grades as $grade)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-4 py-3">{{ $grade->number }}</td>
-                            <td class="px-4 py-3">{{ $grade->name }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex flex-wrap gap-2">
-                                    <flux:button size="sm" :href="route('admin.grades.edit', $grade)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>
-                                    <form method="POST" action="{{ route('admin.grades.destroy', $grade) }}" onsubmit="return confirm(@js(__('Delete this grade?')))">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button size="sm" type="submit" variant="danger">{{ __('Delete') }}</flux:button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td colspan="3" class="px-4 py-6 text-zinc-500">{{ __('No grades yet.') }}</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('Number') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Name') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Actions') }}</th>
+            </x-slot:head>
+            @forelse ($grades as $grade)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3">{{ $grade->number }}</td>
+                    <td class="px-4 py-3">{{ $grade->name }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                            <flux:button size="sm" :href="route('admin.grades.edit', $grade)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>
+                            <form method="POST" action="{{ route('admin.grades.destroy', $grade) }}" onsubmit="return confirm(@js(__('Delete this grade?')))">
+                                @csrf
+                                @method('DELETE')
+                                <flux:button size="sm" type="submit" variant="danger">{{ __('Delete') }}</flux:button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="3" class="px-4 py-10 text-center text-muted-foreground">{{ __('No grades match these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
 
-        {{ $grades->links() }}
+        <x-list.pagination :paginator="$grades" />
     </div>
 </x-layouts::app>

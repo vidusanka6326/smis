@@ -5,9 +5,27 @@
             <flux:text class="mt-1">{{ __('Enter marks per exam subject. Results lock after publish.') }}</flux:text>
         </div>
 
+        <x-list.filters :action="route('admin.marks.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Exam name') }}" />
+            <flux:select name="academic_year_id" :label="__('Academic year')" :placeholder="__('All')">
+                @foreach ($academicYears as $year)
+                    <flux:select.option :value="$year->id" :selected="(string) ($filters['academic_year_id'] ?? '') === (string) $year->id">{{ $year->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="type" :label="__('Type')" :placeholder="__('All')">
+                @foreach ($types as $type)
+                    <flux:select.option :value="$type->value" :selected="($filters['type'] ?? null) === $type->value">{{ $type->label() }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="status" :label="__('Status')" :placeholder="__('All')">
+                <flux:select.option value="draft" :selected="($filters['status'] ?? null) === 'draft'">{{ __('Draft') }}</flux:select.option>
+                <flux:select.option value="published" :selected="($filters['status'] ?? null) === 'published'">{{ __('Published') }}</flux:select.option>
+            </flux:select>
+        </x-list.filters>
+
         <div class="space-y-4">
             @forelse ($exams as $exam)
-                <div class="rounded-xl border border-zinc-200 p-4 dark:border-zinc-700">
+                <div class="rounded-xl border border-border bg-card p-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             <flux:heading size="sm">{{ $exam->name }}</flux:heading>
@@ -25,15 +43,15 @@
                                 @endunless
                             </li>
                         @empty
-                            <li class="text-zinc-500">{{ __('No subjects configured.') }}</li>
+                            <li class="text-muted-foreground">{{ __('No subjects configured.') }}</li>
                         @endforelse
                     </ul>
                 </div>
             @empty
-                <p class="text-zinc-500">{{ __('No exams yet.') }}</p>
+                <p class="rounded-xl border border-border bg-card px-4 py-10 text-center text-muted-foreground">{{ __('No exams match these filters.') }}</p>
             @endforelse
         </div>
 
-        {{ $exams->links() }}
+        <x-list.pagination :paginator="$exams" />
     </div>
 </x-layouts::app>

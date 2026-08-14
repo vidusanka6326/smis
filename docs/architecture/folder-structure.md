@@ -12,6 +12,7 @@ smis/
 │   │   └── Requests/      # Form Requests (all validation)
 │   ├── Livewire/
 │   ├── Models/
+│   ├── Support/           # Shared helpers (ListQuery for filters/pagination)
 │   └── Providers/
 ├── docs/                  # All project documentation (required)
 │   ├── PROJECT_STATUS.md

@@ -19,7 +19,7 @@ There is **no public registration**. Admins create accounts. A REST API layer wa
 
 ## Features
 
-- **Admin** — officers, academic years/grades/streams/subjects/classes, teachers & assignments, students, timetables & relief, attendance, exams & marks, reports, activity log
+- **Admin** — officers, academic years/grades/streams/subjects/classes, teachers & assignments, students, timetables & relief, attendance, exams & marks, reports, activity log; every index has filters and pagination
 - **Officer** — school office data entry (same operational modules as admin) + activity log; cannot manage officers
 - **Teacher** — scoped students, timetable, attendance, marks, class analytics
 - **Student** — own timetable, attendance, published results, personal report

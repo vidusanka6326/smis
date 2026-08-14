@@ -10,20 +10,29 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreOfficerRequest;
 use App\Http\Requests\Admin\UpdateOfficerRequest;
 use App\Models\User;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class OfficerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('manageOfficers', User::class);
 
+        $filters = ListQuery::filters($request, ['search', 'status']);
+
         return view('admin.officers.index', [
-            'officers' => User::query()
-                ->role(RoleName::Officer)
-                ->latest('id')
-                ->paginate(20),
+            'officers' => ListQuery::paginate(
+                User::query()
+                    ->role(RoleName::Officer)
+                    ->filter($filters)
+                    ->latest('id'),
+                $request,
+            ),
+            'filters' => $filters,
+            'statuses' => UserStatus::cases(),
         ]);
     }
 

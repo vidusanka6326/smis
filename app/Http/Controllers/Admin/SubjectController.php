@@ -5,18 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreSubjectRequest;
 use App\Http\Requests\Admin\UpdateSubjectRequest;
+use App\Models\Grade;
 use App\Models\Subject;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SubjectController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', Subject::class);
 
+        $filters = ListQuery::filters($request, ['search', 'grade']);
+
         return view('admin.subjects.index', [
-            'subjects' => Subject::query()->orderBy('name')->paginate(20),
+            'subjects' => ListQuery::paginate(
+                Subject::query()->filter($filters)->orderBy('name'),
+                $request,
+            ),
+            'filters' => $filters,
+            'grades' => Grade::query()->orderBy('number')->get(),
         ]);
     }
 

@@ -5,23 +5,21 @@
             <flux:text class="mt-1">{{ __('Ranked by average percentage across selected exam subjects.') }}</flux:text>
         </div>
 
-        <form method="GET" action="{{ route('admin.reports.performance') }}" class="no-print flex flex-wrap items-end gap-3">
+        <x-list.filters :action="route('admin.reports.performance')" :filters="array_filter(['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit])" :submit="__('Load')" :with-per-page="false" class="no-print">
             <flux:select name="exam_id" :label="__('Exam')">
                 @foreach ($exams as $option)
                     <flux:select.option :value="$option->id" :selected="(string) $selectedExamId === (string) $option->id">{{ $option->name }}</flux:select.option>
                 @endforeach
             </flux:select>
             @if ($exam)
-                <flux:select name="subject_id" :label="__('Subject')">
-                    <flux:select.option value="">{{ __('All subjects') }}</flux:select.option>
+                <flux:select name="subject_id" :label="__('Subject')" :placeholder="__('All subjects')">
                     @foreach ($exam->examSubjects as $examSubject)
                         <flux:select.option :value="$examSubject->subject_id" :selected="(string) $selectedSubjectId === (string) $examSubject->subject_id">{{ $examSubject->subject?->name }}</flux:select.option>
                     @endforeach
                 </flux:select>
             @endif
             <flux:input type="number" name="limit" :label="__('Top/bottom N')" :value="$limit" min="1" max="50" />
-            <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
-        </form>
+        </x-list.filters>
 
         <x-report-toolbar :print="$print">
             <flux:button :href="route('admin.reports.performance', ['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>

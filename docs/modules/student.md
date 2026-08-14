@@ -21,7 +21,7 @@ Student CRUD, guardian info, enrollment history, categorization (grade/class/sub
 
 | Method | Path | Name | Notes |
 |---|---|---|---|
-| resource | `/admin/students` | `admin.students.*` | Filters on index |
+| resource | `/admin/students` | `admin.students.*` | Filters + pagination on index |
 | resource | `/teacher/students` | `teacher.students.*` | Scoped; limited update |
 | GET | `/student/dashboard` | `student.dashboard` | Personal hero, 3 KPIs, subject chart, today + latest results |
 
@@ -29,7 +29,7 @@ Student CRUD, guardian info, enrollment history, categorization (grade/class/sub
 
 - Creating a student uses a DB transaction: user + profile + active enrollment.
 - Gender values: `G` / `B`.
-- Admin index filters: search, gender, grade, class, subject (via class subjects).
+- Admin index filters: search, gender, status, grade, class, subject; paginated (10/20/50/100) via shared `x-list.*` kit (ADR 0016).
 - Class teacher create requires `createInClass` for the selected class.
 - Class teacher update cannot change password/status/class (limited Form Request).
 

@@ -5,41 +5,48 @@
             <flux:text class="mt-1">{{ __('Subjects you can enter marks for.') }}</flux:text>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-3 py-2 text-left">{{ __('Exam') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Subject') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Status') }}</th>
-                        <th class="px-3 py-2 text-left"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($examSubjects as $examSubject)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-3 py-2">{{ $examSubject->exam?->name }}</td>
-                            <td class="px-3 py-2">{{ $examSubject->subject?->name }}</td>
-                            <td class="px-3 py-2">{{ $examSubject->exam?->isPublished() ? __('Published') : __('Open') }}</td>
-                            <td class="px-3 py-2">
-                                @can('enterMarks', $examSubject)
-                                    <a class="underline" href="{{ route('teacher.marks.edit', $examSubject) }}">{{ __('Enter') }}</a>
-                                @else
-                                    —
-                                @endcan
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="4" class="px-3 py-6 text-zinc-500">{{ __('No exam subjects available.') }}</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.filters :action="route('teacher.marks.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Exam or subject') }}" />
+            <flux:select name="academic_year_id" :label="__('Academic year')" :placeholder="__('All')">
+                @foreach ($academicYears as $year)
+                    <flux:select.option :value="$year->id" :selected="(string) ($filters['academic_year_id'] ?? '') === (string) $year->id">{{ $year->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="status" :label="__('Status')" :placeholder="__('All')">
+                <flux:select.option value="draft" :selected="($filters['status'] ?? null) === 'draft'">{{ __('Open') }}</flux:select.option>
+                <flux:select.option value="published" :selected="($filters['status'] ?? null) === 'published'">{{ __('Published') }}</flux:select.option>
+            </flux:select>
+        </x-list.filters>
+
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('Exam') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Subject') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
+                <th class="px-4 py-3 font-medium"></th>
+            </x-slot:head>
+            @forelse ($examSubjects as $examSubject)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3">{{ $examSubject->exam?->name }}</td>
+                    <td class="px-4 py-3">{{ $examSubject->subject?->name }}</td>
+                    <td class="px-4 py-3">{{ $examSubject->exam?->isPublished() ? __('Published') : __('Open') }}</td>
+                    <td class="px-4 py-3">
+                        @can('enterMarks', $examSubject)
+                            <flux:button size="sm" :href="route('teacher.marks.edit', $examSubject)" variant="ghost" wire:navigate>{{ __('Enter') }}</flux:button>
+                        @else
+                            —
+                        @endcan
+                    </td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="4" class="px-4 py-10 text-center text-muted-foreground">{{ __('No exam subjects match these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
+
+        <x-list.pagination :paginator="$examSubjects" />
     </div>
 </x-layouts::app>

@@ -5,14 +5,13 @@
             <flux:text class="mt-1">{{ __('Subject and class comparison for students in your scope.') }}</flux:text>
         </div>
 
-        <form method="GET" class="no-print flex flex-wrap items-end gap-3">
+        <x-list.filters :action="route('teacher.reports.examination')" :filters="array_filter(['exam_id' => $selectedExamId])" :submit="__('Load')" :with-per-page="false" class="no-print">
             <flux:select name="exam_id" :label="__('Exam')">
                 @foreach ($exams as $option)
                     <flux:select.option :value="$option->id" :selected="(string) $selectedExamId === (string) $option->id">{{ $option->name }}</flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
-        </form>
+        </x-list.filters>
 
         <x-report-toolbar :print="$print">
             <flux:button :href="route('teacher.reports.examination', ['exam_id' => $selectedExamId, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>

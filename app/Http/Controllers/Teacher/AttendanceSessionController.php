@@ -12,6 +12,7 @@ use App\Models\AttendanceSession;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,20 +27,24 @@ class AttendanceSessionController extends Controller
 
         abort_unless($teacher !== null, 403);
 
-        $sessions = AttendanceSession::query()
-            ->with(['schoolClass', 'subject'])
-            ->where(function ($query) use ($teacher): void {
-                $homeroomIds = $teacher->homeroomClasses()->pluck('id');
-                $assignedClassIds = $teacher->assignments()->pluck('school_class_id');
-                $classIds = $homeroomIds->merge($assignedClassIds)->unique()->filter();
+        $filters = ListQuery::filters($request, ['school_class_id', 'subject_id', 'scope', 'status', 'date_from', 'date_to']);
 
-                $query->whereIn('school_class_id', $classIds);
-            })
-            ->orderByDesc('date')
-            ->paginate(20);
+        $homeroomIds = $teacher->homeroomClasses()->pluck('id');
+        $assignedClassIds = $teacher->assignments()->pluck('school_class_id');
+        $classIds = $homeroomIds->merge($assignedClassIds)->unique()->filter();
 
         return view('teacher.attendance.sessions.index', [
-            'sessions' => $sessions,
+            'sessions' => ListQuery::paginate(
+                AttendanceSession::query()
+                    ->with(['schoolClass', 'subject'])
+                    ->whereIn('school_class_id', $classIds)
+                    ->filter($filters)
+                    ->orderByDesc('date'),
+                $request,
+            ),
+            'filters' => $filters,
+            'schoolClasses' => SchoolClass::query()->whereIn('id', $classIds)->orderBy('code')->get(),
+            'subjects' => Subject::query()->orderBy('name')->get(),
         ]);
     }
 
