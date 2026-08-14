@@ -3,9 +3,8 @@
 namespace App\Services\Agent;
 
 use App\Contracts\AgentLlm;
-use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use RuntimeException;
 
 class GeminiAgentLlm implements AgentLlm
 {
@@ -21,7 +20,7 @@ class GeminiAgentLlm implements AgentLlm
     public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
     {
         if (! $this->isConfigured()) {
-            throw new RuntimeException('Gemini is not configured.');
+            throw new GeminiRequestException('Gemini is not configured.');
         }
 
         $payload = [
@@ -47,56 +46,35 @@ class GeminiAgentLlm implements AgentLlm
                 'Content-Type' => 'application/json',
                 'x-goog-api-key' => (string) config('services.gemini.key'),
             ])
-            ->withOptions(['stream' => true])
-            ->withQueryParameters(['alt' => 'sse'])
             ->post($this->endpoint(), $payload);
 
         if ($response->failed()) {
-            throw new RequestException($response);
+            throw new GeminiRequestException($this->userMessageFromResponse($response));
         }
 
-        $body = $response->toPsrResponse()->getBody();
-        $buffer = '';
-        $pendingCalls = [];
+        $decoded = $response->json();
 
-        while (! $body->eof()) {
-            $buffer .= $body->read(256);
+        if (! is_array($decoded)) {
+            throw new GeminiRequestException(__('SMIS Agent could not complete that request. Please try again.'));
+        }
 
-            while (($pos = strpos($buffer, "\n\n")) !== false) {
-                $rawEvent = substr($buffer, 0, $pos);
-                $buffer = substr($buffer, $pos + 2);
+        $blockReason = data_get($decoded, 'promptFeedback.blockReason');
 
-                foreach ($this->decoder->dataLinesFromChunk($rawEvent) as $json) {
-                    if ($json === '' || $json === '[DONE]') {
-                        continue;
-                    }
+        if (is_string($blockReason) && $blockReason !== '') {
+            throw new GeminiRequestException(__('That request was blocked by Gemini safety filters. Rephrase and try again.'));
+        }
 
-                    /** @var array<string, mixed>|null $decoded */
-                    $decoded = json_decode($json, true);
+        $event = $this->decoder->eventFromPayload($decoded);
 
-                    if (! is_array($decoded)) {
-                        continue;
-                    }
-
-                    $event = $this->decoder->eventFromPayload($decoded);
-
-                    if ($event->functionCalls !== []) {
-                        $pendingCalls = array_merge($pendingCalls, $event->functionCalls);
-                    }
-
-                    if ($event->textDelta !== null || $event->complete) {
-                        yield new AgentLlmEvent(
-                            textDelta: $event->textDelta,
-                            functionCalls: [],
-                            complete: false,
-                        );
-                    }
-                }
-            }
+        if ($event->textDelta !== null) {
+            yield new AgentLlmEvent(
+                textDelta: $event->textDelta,
+                complete: false,
+            );
         }
 
         yield new AgentLlmEvent(
-            functionCalls: $pendingCalls,
+            functionCalls: $event->functionCalls,
             complete: true,
         );
     }
@@ -106,6 +84,16 @@ class GeminiAgentLlm implements AgentLlm
         $base = rtrim((string) config('services.gemini.base_url'), '/');
         $model = (string) config('services.gemini.model');
 
-        return "{$base}/models/{$model}:streamGenerateContent";
+        return "{$base}/models/{$model}:generateContent";
+    }
+
+    private function userMessageFromResponse(Response $response): string
+    {
+        return match ($response->status()) {
+            401, 403 => __('Gemini rejected the API key. Check GEMINI_API_KEY and retry.'),
+            404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-flash-latest and retry.'),
+            429 => __('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.'),
+            default => __('SMIS Agent could not complete that request. Please try again.'),
+        };
     }
 }

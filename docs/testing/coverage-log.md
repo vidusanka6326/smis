@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-14 — Gemini generateContent (`gemini-flash-latest`)
+
+Command: `php artisan test --compact tests/Unit/Agent/GeminiAgentLlmTest.php tests/Feature/Agent/AgentOrchestratorTest.php tests/Feature/Agent/AgentChatTest.php tests/Unit/Agent/AgentMarkdownTest.php` — **11 passed** (31 assertions)
+
+Notes: Agent now posts to `models/gemini-flash-latest:generateContent`. Tests fake 200/404/429 and assert chat surfaces quota errors. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Report catalog and PDF/CSV downloads
 
 Command: `php artisan test --compact` — **289 passed** (1019 assertions)

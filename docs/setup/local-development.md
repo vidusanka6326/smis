@@ -38,7 +38,7 @@ composer run dev
 | `CACHE_STORE` | Cache | Default `database` |
 | `MAIL_*` | Mail | Default `log` driver locally |
 | `GEMINI_API_KEY` | SMIS Agent (Gemini) | Required for live chat; leave empty in tests |
-| `GEMINI_MODEL` | Gemini model id | Default `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Gemini model id | Default `gemini-flash-latest` |
 | `VITE_APP_NAME` | Frontend title | Mirrors `APP_NAME` |
 
 ## Seeding

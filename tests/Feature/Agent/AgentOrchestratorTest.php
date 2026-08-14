@@ -12,6 +12,7 @@ use App\Models\TimetableEntry;
 use App\Models\User;
 use App\Services\Agent\AgentLlmEvent;
 use App\Services\Agent\AgentOrchestrator;
+use App\Services\Agent\GeminiRequestException;
 use Tests\Support\ScriptedAgentLlm;
 
 test('orchestrator calls tools then stores markdown and choices', function () {
@@ -75,4 +76,32 @@ test('orchestrator calls tools then stores markdown and choices', function () {
         ->and($deltas)->not->toBeEmpty()
         ->and($conversation->fresh()->title)->not->toBeNull()
         ->and($conversation->messages()->count())->toBe(2);
+});
+
+test('orchestrator surfaces gemini request errors in the chat', function () {
+    $this->app->instance(AgentLlm::class, new class implements AgentLlm
+    {
+        public function isConfigured(): bool
+        {
+            return true;
+        }
+
+        public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
+        {
+            throw new GeminiRequestException('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.');
+        }
+    });
+
+    $admin = User::factory()->admin()->create();
+    $conversation = AgentConversation::factory()->create(['user_id' => $admin->id]);
+
+    $result = app(AgentOrchestrator::class)->run(
+        $admin,
+        $conversation,
+        'Hello',
+        function (string $markdown): void {},
+        function (string $status): void {},
+    );
+
+    expect($result->markdown)->toContain('credits or quota');
 });
