@@ -272,3 +272,12 @@ select:focus[data-flux-control] {
 .agent-markdown blockquote {
     @apply border-s-2 border-primary/40 ps-3 text-muted-foreground;
 }
+
+.agent-composer textarea {
+    field-sizing: content;
+    @apply max-h-36 min-h-10 resize-none py-2;
+}
+
+[data-flux-main]:has(.agent-shell) {
+    @apply overflow-hidden p-0;
+}

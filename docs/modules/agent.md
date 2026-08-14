@@ -59,6 +59,7 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 - Gemini key is `config('services.gemini.key')` (`GEMINI_API_KEY`). Missing key returns a setup message instead of calling Google.
 - Live replies use `models/gemini-flash-latest:generateContent` (Google AI Studio sample). Model 404, quota 429, bad-key 403, and (when `APP_DEBUG`) Gemini 400 messages are shown in chat instead of a generic failure.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
+- The chat is a full-height shell: conversation list (title + relative time), compact composer, and Gemini/setup failures as Flux callouts (with an AI Studio link for quota errors).
 - Assigning a **named teacher to a free period** creates a timetable entry (subject required). Relief is only for an existing lesson on a matching weekday date.
 - Teachers may inspect timetables of classes they are assigned to (assumption; class/subject/PT-PD via `TeacherReportScope`).
 - Class teachers may create students only in their homeroom (`StudentPolicy::createInClass`). They cannot change status, password, or class.

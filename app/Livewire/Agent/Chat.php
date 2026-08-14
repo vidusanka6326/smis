@@ -16,7 +16,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.agent')]
 #[Title('SMIS Agent')]
 class Chat extends Component
 {
@@ -30,6 +30,8 @@ class Chat extends Component
     public string $status = '';
 
     public bool $isStreaming = false;
+
+    public bool $showHistory = false;
 
     public function mount(): void
     {
@@ -62,6 +64,7 @@ class Chat extends Component
     public function newChat(): void
     {
         $this->conversationId = null;
+        $this->showHistory = false;
         $this->resetComposer();
         unset($this->conversationList, $this->thread);
     }
@@ -72,6 +75,7 @@ class Chat extends Component
         Gate::authorize('view', $conversation);
 
         $this->conversationId = $conversation->id;
+        $this->showHistory = false;
         $this->resetComposer();
         unset($this->thread);
     }
@@ -119,7 +123,7 @@ class Chat extends Component
     }
 
     /**
-     * @return list<array{label: string, message: string}>
+     * @return list<array{label: string, message: string, icon: string}>
      */
     #[Computed]
     public function suggestions(): array
@@ -128,19 +132,32 @@ class Chat extends Component
 
         if ($user instanceof User && $user->isTeacher()) {
             return [
-                ['label' => __('My timetable'), 'message' => __('Show my timetable for this week.')],
-                ['label' => __('At-risk students'), 'message' => __('Which of my students are below 80% attendance this month?')],
-                ['label' => __('Take attendance'), 'message' => __('Help me take today’s class attendance.')],
-                ['label' => __('Enter marks'), 'message' => __('Help me enter marks for the latest exam in my classes.')],
+                ['label' => __('My timetable'), 'message' => __('Show my timetable for this week.'), 'icon' => 'table-cells'],
+                ['label' => __('At-risk students'), 'message' => __('Which of my students are below 80% attendance this month?'), 'icon' => 'exclamation-triangle'],
+                ['label' => __('Take attendance'), 'message' => __('Help me take today’s class attendance.'), 'icon' => 'clipboard-document-check'],
+                ['label' => __('Enter marks'), 'message' => __('Help me enter marks for the latest exam in my classes.'), 'icon' => 'pencil-square'],
             ];
         }
 
         return [
-            ['label' => __('Free periods in 10-A'), 'message' => __('What are the free periods in 10-A?')],
-            ['label' => __('Free teachers'), 'message' => __('Show teachers who are free on those 10-A timeslots.')],
-            ['label' => __('At-risk attendance'), 'message' => __('Which students are below 80% attendance this month?')],
-            ['label' => __('What can you do?'), 'message' => __('What can you do for me in this school system?')],
+            ['label' => __('Free periods in 10-A'), 'message' => __('What are the free periods in 10-A?'), 'icon' => 'clock'],
+            ['label' => __('Free teachers'), 'message' => __('Show teachers who are free on those 10-A timeslots.'), 'icon' => 'user-group'],
+            ['label' => __('At-risk attendance'), 'message' => __('Which students are below 80% attendance this month?'), 'icon' => 'exclamation-triangle'],
+            ['label' => __('What can you do?'), 'message' => __('What can you do for me in this school system?'), 'icon' => 'sparkles'],
         ];
+    }
+
+    public function currentTitle(): string
+    {
+        if ($this->conversationId === null) {
+            return __('New chat');
+        }
+
+        $title = AgentConversation::query()
+            ->whereKey($this->conversationId)
+            ->value('title');
+
+        return is_string($title) && $title !== '' ? $title : __('New chat');
     }
 
     private function submit(string $text, AgentOrchestrator $orchestrator): void
