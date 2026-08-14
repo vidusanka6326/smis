@@ -8,7 +8,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ### List filters and pagination (2026-08-14)
 
-- Shared `x-list.filters` / table / Flux pagination on every index, with per-page 10/20/50/100 (ADR 0016).
+- Shared `x-list.filters` / table / Flux pagination on every index, with a single-row filter bar and a compact per-page select (ADR 0016).
 - Search and dropdown filters on teachers, officers, classes, exams, marks, attendance, activity log, relief, and student results (students already had filters).
 
 ### Realistic demo school (2026-08-14)

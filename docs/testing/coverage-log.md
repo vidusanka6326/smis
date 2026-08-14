@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-14 — Compact list filter bar
+
+Command: `php artisan test --compact tests/Feature/ListFiltersPaginationTest.php tests/Feature/Admin/StudentManagementTest.php tests/Feature/Admin/ActivityLogTest.php` — **16 passed**
+
+Notes: Filter heading copy removed; Apply sits on the same row as fields; per-page select is `w-24` / `size="sm"`.
+
 ## 2026-08-14 — Shared list filters and pagination
 
 Command: `php artisan test --compact` — **276 passed** (971 assertions)

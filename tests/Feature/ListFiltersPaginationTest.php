@@ -38,7 +38,7 @@ test('admin student index paginates and keeps filters in the query string', func
         ->assertSee(__('Showing'))
         ->assertSee('11')
         ->assertSee('20')
-        ->assertSee(__('Filters'))
+        ->assertSee(__('Apply'))
         ->assertSee(__('Per page'))
         ->assertSee('data-flux-select', false);
 });
@@ -132,7 +132,7 @@ test('student results and teacher students lists render the shared filter bar', 
     $this->actingAs($teacherUser)
         ->get(route('teacher.students.index'))
         ->assertOk()
-        ->assertSee(__('Filters'))
+        ->assertSee(__('Apply'))
         ->assertSee(__('Per page'));
 
     $studentUser = User::factory()->student()->create();
@@ -144,7 +144,7 @@ test('student results and teacher students lists render the shared filter bar', 
     $this->actingAs($studentUser)
         ->get(route('student.results'))
         ->assertOk()
-        ->assertSee(__('Filters'));
+        ->assertSee(__('Apply'));
 });
 
 test('list query per page options are the sizes shown in the ui', function () {
