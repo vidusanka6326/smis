@@ -57,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Fixed SMIS Agent chat failing with a generic error: no-argument tools (`list_capabilities`, `get_dashboard_summary`) sent `properties: []`; Gemini requires a JSON object `{}`.
 - **2026-08-14** — SMIS Agent now covers every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports, activity log), still gated by Policies/Actions (ADR 0018).
 - **2026-08-14** — SMIS Agent now calls `gemini-flash-latest:generateContent` (the Google AI Studio sample). `gemini-2.5-flash` 404s for new keys; quota/key errors are shown in chat.
 - **2026-08-14** — SMIS Agent: Gemini streaming chat for admin/officer/teacher. Permissioned tools look up free periods, free teachers, attendance, exams, and assign timetable slots or relief (ADR 0018).

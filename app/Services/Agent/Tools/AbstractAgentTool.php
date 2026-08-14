@@ -66,7 +66,8 @@ abstract class AbstractAgentTool implements AgentTool
     {
         $schema = [
             'type' => 'OBJECT',
-            'properties' => $properties,
+            // Empty PHP arrays JSON-encode as lists. Gemini requires `properties` to be a map.
+            'properties' => $properties === [] ? (object) [] : $properties,
         ];
 
         if ($required !== []) {

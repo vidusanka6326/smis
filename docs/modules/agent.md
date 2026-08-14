@@ -57,7 +57,7 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 ## Key business rules
 
 - Gemini key is `config('services.gemini.key')` (`GEMINI_API_KEY`). Missing key returns a setup message instead of calling Google.
-- Live replies use `models/gemini-flash-latest:generateContent` (Google AI Studio sample). Model 404, quota 429, and bad-key 403 are shown in chat instead of a generic failure.
+- Live replies use `models/gemini-flash-latest:generateContent` (Google AI Studio sample). Model 404, quota 429, bad-key 403, and (when `APP_DEBUG`) Gemini 400 messages are shown in chat instead of a generic failure.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
 - Assigning a **named teacher to a free period** creates a timetable entry (subject required). Relief is only for an existing lesson on a matching weekday date.
 - Teachers may inspect timetables of classes they are assigned to (assumption; class/subject/PT-PD via `TeacherReportScope`).
@@ -72,6 +72,7 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 - `10A` normalizes to `10-A`.
 - Cross-user conversations 403.
 - Unauthorized tools are omitted from Gemini’s function list; calling one anyway returns a role error.
+- Tools with no arguments must JSON-encode `parameters.properties` as `{}`. PHP empty arrays become `[]`, which Gemini rejects with HTTP 400 (`Cannot bind a list to map for field 'properties'`).
 
 ## Status
 

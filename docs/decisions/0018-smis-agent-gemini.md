@@ -17,4 +17,5 @@ Staff need to ask operational questions (free periods in 10-A, who is free, assi
 
 - New env: `GEMINI_API_KEY`, optional `GEMINI_MODEL` (default `gemini-flash-latest`).
 - Existing Actions remain the only writers (students, teachers, officers, timetable, attendance, exams, marks). Agent tools never duplicate that logic.
+- Gemini function `parameters.properties` must be a JSON object. PHP empty arrays encode as `[]` and Gemini returns HTTP 400.
 - Re-run `RolesAndPermissionsSeeder` on existing databases to grant `use-smis-agent`.

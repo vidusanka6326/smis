@@ -24,6 +24,18 @@ use App\Services\Agent\Tools\ManageStudentTool;
 use App\Services\Agent\Tools\ManageTeacherTool;
 use App\Services\Agent\Tools\SaveAttendanceSessionTool;
 
+test('no-argument tool schemas json-encode properties as an object', function () {
+    foreach ([
+        app(ListCapabilitiesTool::class)->parameters(),
+        app(GetDashboardSummaryTool::class)->parameters(),
+    ] as $schema) {
+        $json = json_encode($schema);
+
+        expect($json)->toContain('"properties":{}')
+            ->and($json)->not->toContain('"properties":[]');
+    }
+});
+
 test('capabilities lists the signed-in user’s permissions', function () {
     $admin = User::factory()->admin()->create();
 

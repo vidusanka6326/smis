@@ -2,6 +2,7 @@
 
 use App\Services\Agent\GeminiAgentLlm;
 use App\Services\Agent\GeminiRequestException;
+use App\Services\Agent\Tools\ListCapabilitiesTool;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -76,6 +77,37 @@ test('generateContent yields function calls', function () {
         ->and($events[0]->complete)->toBeTrue();
 });
 
+test('empty properties encode as a json object in the gemini payload', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'ok']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [[
+            'name' => 'list_capabilities',
+            'description' => 'List capabilities',
+            'parameters' => app(ListCapabilitiesTool::class)->parameters(),
+        ]],
+        'You are SMIS Agent.',
+    ));
+
+    Http::assertSent(function ($request): bool {
+        $body = $request->body();
+
+        return str_contains($body, '"properties":{}')
+            && ! str_contains($body, '"properties":[]');
+    });
+});
+
 test('unavailable model explains how to switch', function () {
     Http::preventStrayRequests();
     Http::fake([
@@ -93,6 +125,27 @@ test('unavailable model explains how to switch', function () {
         [],
         'You are SMIS Agent.',
     )))->toThrow(GeminiRequestException::class, 'gemini-flash-latest');
+});
+
+test('invalid tool schema includes gemini’s message when debug is on', function () {
+    config(['app.debug' => true]);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'error' => [
+                'code' => 400,
+                'message' => "Invalid value at 'tools[0].function_declarations[1].parameters' (Map), Cannot bind a list to map for field 'properties'.",
+                'status' => 'INVALID_ARGUMENT',
+            ],
+        ], 400),
+    ]);
+
+    expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [],
+        'You are SMIS Agent.',
+    )))->toThrow(GeminiRequestException::class, 'Cannot bind a list to map');
 });
 
 test('exhausted credits explain billing', function () {

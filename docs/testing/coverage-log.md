@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-14 — Gemini empty-properties 400
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **38 passed** (89 assertions).
+
+Notes: `list_capabilities` / `get_dashboard_summary` now JSON-encode `properties` as `{}`. Debug 400s include Gemini’s upstream message. PHPStan clean on `app/Services/Agent`.
+
 ## 2026-08-14 — SMIS Agent full staff-UI coverage
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **35 passed** (82 assertions). PHPStan clean on `app/Services/Agent`.

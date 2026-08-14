@@ -5,6 +5,7 @@ namespace App\Services\Agent;
 use App\Contracts\AgentLlm;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class GeminiAgentLlm implements AgentLlm
 {
@@ -49,7 +50,13 @@ class GeminiAgentLlm implements AgentLlm
             ->post($this->endpoint(), $payload);
 
         if ($response->failed()) {
-            throw new GeminiRequestException($this->userMessageFromResponse($response));
+            throw new GeminiRequestException(
+                $this->userMessageFromResponse($response),
+                [
+                    'gemini_status' => $response->status(),
+                    'gemini_message' => $this->upstreamMessage($response),
+                ],
+            );
         }
 
         $decoded = $response->json();
@@ -89,11 +96,32 @@ class GeminiAgentLlm implements AgentLlm
 
     private function userMessageFromResponse(Response $response): string
     {
+        $upstream = $this->upstreamMessage($response);
+
         return match ($response->status()) {
+            400 => $this->invalidArgumentMessage($upstream),
             401, 403 => __('Gemini rejected the API key. Check GEMINI_API_KEY and retry.'),
             404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-flash-latest and retry.'),
             429 => __('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.'),
             default => __('SMIS Agent could not complete that request. Please try again.'),
         };
+    }
+
+    private function invalidArgumentMessage(?string $upstream): string
+    {
+        if ((bool) config('app.debug') && is_string($upstream) && $upstream !== '') {
+            return __('Gemini rejected the request: :error', [
+                'error' => Str::limit($upstream, 280),
+            ]);
+        }
+
+        return __('SMIS Agent could not complete that request. Please try again.');
+    }
+
+    private function upstreamMessage(Response $response): ?string
+    {
+        $message = data_get($response->json(), 'error.message');
+
+        return is_string($message) && $message !== '' ? $message : null;
     }
 }
