@@ -1,5 +1,18 @@
 # Coverage Log
 
+## 2026-08-14 — SMIS Agent full staff-UI coverage
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **35 passed** (82 assertions). PHPStan clean on `app/Services/Agent`.
+
+Notable suites:
+- Admin/officer/teacher access; students still 403
+- Teacher cannot create grades, teachers, or officers through the registry
+- Class teacher can create a student in their homeroom; cannot create in another class
+- Officer can create a student; admin can save attendance and create a grade
+- Subject teacher can enter marks through `enter_marks`
+
+Notes: Tools call existing Actions and re-check Policies. Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Gemini generateContent (`gemini-flash-latest`)
 
 Command: `php artisan test --compact tests/Unit/Agent/GeminiAgentLlmTest.php tests/Feature/Agent/AgentOrchestratorTest.php tests/Feature/Agent/AgentChatTest.php tests/Unit/Agent/AgentMarkdownTest.php` — **11 passed** (31 assertions)

@@ -130,7 +130,8 @@ class Chat extends Component
             return [
                 ['label' => __('My timetable'), 'message' => __('Show my timetable for this week.')],
                 ['label' => __('At-risk students'), 'message' => __('Which of my students are below 80% attendance this month?')],
-                ['label' => __('Class results'), 'message' => __('Summarise the latest exam results for my classes.')],
+                ['label' => __('Take attendance'), 'message' => __('Help me take today’s class attendance.')],
+                ['label' => __('Enter marks'), 'message' => __('Help me enter marks for the latest exam in my classes.')],
             ];
         }
 
@@ -138,6 +139,7 @@ class Chat extends Component
             ['label' => __('Free periods in 10-A'), 'message' => __('What are the free periods in 10-A?')],
             ['label' => __('Free teachers'), 'message' => __('Show teachers who are free on those 10-A timeslots.')],
             ['label' => __('At-risk attendance'), 'message' => __('Which students are below 80% attendance this month?')],
+            ['label' => __('What can you do?'), 'message' => __('What can you do for me in this school system?')],
         ];
     }
 

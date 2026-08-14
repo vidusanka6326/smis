@@ -3,22 +3,6 @@
 namespace App\Services\Agent;
 
 use App\Models\User;
-use App\Services\Agent\Tools\AssignReliefTeacherTool;
-use App\Services\Agent\Tools\AssignTimetableSlotTool;
-use App\Services\Agent\Tools\FindFreePeriodsTool;
-use App\Services\Agent\Tools\FindFreeTeachersTool;
-use App\Services\Agent\Tools\GetAtRiskStudentsTool;
-use App\Services\Agent\Tools\GetClassAttendanceTool;
-use App\Services\Agent\Tools\GetClassTimetableTool;
-use App\Services\Agent\Tools\GetExamResultsTool;
-use App\Services\Agent\Tools\GetStudentSummaryTool;
-use App\Services\Agent\Tools\GetTeacherTimetableTool;
-use App\Services\Agent\Tools\ListClassesTool;
-use App\Services\Agent\Tools\LookupClassTool;
-use App\Services\Agent\Tools\OfferChoicesTool;
-use App\Services\Agent\Tools\SearchExamsTool;
-use App\Services\Agent\Tools\SearchStudentsTool;
-use App\Services\Agent\Tools\SearchTeachersTool;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
 
@@ -29,42 +13,16 @@ class AgentToolRegistry
      */
     private array $tools;
 
-    public function __construct(
-        OfferChoicesTool $offerChoices,
-        ListClassesTool $listClasses,
-        LookupClassTool $lookupClass,
-        GetClassTimetableTool $getClassTimetable,
-        FindFreePeriodsTool $findFreePeriods,
-        FindFreeTeachersTool $findFreeTeachers,
-        GetTeacherTimetableTool $getTeacherTimetable,
-        SearchTeachersTool $searchTeachers,
-        AssignTimetableSlotTool $assignTimetableSlot,
-        AssignReliefTeacherTool $assignReliefTeacher,
-        SearchStudentsTool $searchStudents,
-        GetStudentSummaryTool $getStudentSummary,
-        GetClassAttendanceTool $getClassAttendance,
-        GetAtRiskStudentsTool $getAtRiskStudents,
-        SearchExamsTool $searchExams,
-        GetExamResultsTool $getExamResults,
-    ) {
-        $this->tools = [
-            $offerChoices,
-            $listClasses,
-            $lookupClass,
-            $getClassTimetable,
-            $findFreePeriods,
-            $findFreeTeachers,
-            $getTeacherTimetable,
-            $searchTeachers,
-            $assignTimetableSlot,
-            $assignReliefTeacher,
-            $searchStudents,
-            $getStudentSummary,
-            $getClassAttendance,
-            $getAtRiskStudents,
-            $searchExams,
-            $getExamResults,
-        ];
+    /**
+     * @param  iterable<int, AgentTool>  $tools
+     */
+    public function __construct(iterable $tools)
+    {
+        $this->tools = [];
+
+        foreach ($tools as $tool) {
+            $this->tools[] = $tool;
+        }
     }
 
     /**
