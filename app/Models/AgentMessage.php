@@ -49,4 +49,41 @@ class AgentMessage extends Model
     {
         return $this->belongsTo(AgentConversation::class, 'agent_conversation_id');
     }
+
+    /**
+     * Gemini/setup failures should render as a callout, not a chat bubble.
+     */
+    public function isServiceNotice(): bool
+    {
+        return $this->serviceNoticeVariant() !== null;
+    }
+
+    /**
+     * Gemini/setup failures should render as a callout, not a chat bubble.
+     *
+     * @return 'warning'|'danger'|null
+     */
+    public function serviceNoticeVariant(): ?string
+    {
+        if ($this->role !== AgentMessageRole::Assistant) {
+            return null;
+        }
+
+        $content = $this->content;
+
+        if (str_contains($content, 'credits or quota')
+            || str_contains($content, 'not configured')
+            || str_contains($content, 'rejected the API key')) {
+            return 'warning';
+        }
+
+        if (str_contains($content, 'could not complete')
+            || str_contains($content, 'Gemini rejected')
+            || str_contains($content, 'safety filters')
+            || str_contains($content, 'model is not available')) {
+            return 'danger';
+        }
+
+        return null;
+    }
 }

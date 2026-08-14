@@ -38,7 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
-| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini generateContent, Livewire chat, full-coverage mutations) | 2026-08-14 | Policy-gated tools for every staff UI action; `gemini-flash-latest` |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini generateContent, Livewire chat, full-coverage mutations) | 2026-08-14 | Full-height chat UI; quota/setup failures as callouts; Policy-gated tools; `gemini-flash-latest` |
 
 ## Deliverables Checklist
 
@@ -57,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Refactored SMIS Agent chat UI: full-height shell, wider history with two-line titles, compact composer, and Gemini quota/setup errors as callouts.
 - **2026-08-14** — Fixed SMIS Agent chat failing with a generic error: no-argument tools (`list_capabilities`, `get_dashboard_summary`) sent `properties: []`; Gemini requires a JSON object `{}`.
 - **2026-08-14** — SMIS Agent now covers every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports, activity log), still gated by Policies/Actions (ADR 0018).
 - **2026-08-14** — SMIS Agent now calls `gemini-flash-latest:generateContent` (the Google AI Studio sample). `gemini-2.5-flash` 404s for new keys; quota/key errors are shown in chat.

@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-14 — SMIS Agent chat UI
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **43 passed** (98 assertions). PHPStan clean on chat UI files.
+
+Notes: Full-height chat shell, conversation list titles, quota errors as Flux callouts with an AI Studio link.
+
 ## 2026-08-14 — Gemini empty-properties 400
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **38 passed** (89 assertions).
