@@ -2,6 +2,10 @@
 
 ## Current Phase
 
+**SMIS Agent** (Done)
+
+Role-scoped Gemini agent (admin / officer / teacher) that can look up school data and take permitted actions (e.g. free periods → free teachers → assign a slot) from a ChatGPT-style streaming chat.
+
 **UI — Report catalog & PDF/CSV exports** (Done)
 
 Reports is a card catalog per role (not an analytics dashboard). Each report has filters plus PDF (DomPDF) and CSV download (ADR 0017).
@@ -34,6 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, markdown, Livewire chat) | 2026-08-14 | Gemini tool layer + streaming chat; role/permission gated |
 
 ## Deliverables Checklist
 
@@ -52,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — SMIS Agent: Gemini streaming chat for admin/officer/teacher. Permissioned tools look up free periods, free teachers, attendance, exams, and assign timetable slots or relief (ADR 0018).
 - **2026-08-14** — Reports catalog per role (cards, not analytics dashboards). Each report filters data and downloads PDF (DomPDF) or CSV. Added at-risk, teacher attendance, enrollment, exam results, and teacher-assignment reports (ADR 0017).
 - **2026-08-14** — Aligned the compact per-page select with other filter controls (same height as Apply).
 - **2026-08-14** — Compacted list filter bars to a single row (no heading copy; small per-page select; Apply at the end).
@@ -90,7 +96,8 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 - `admins` profile extension table still deferred.
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
 - Spreadsheet export is CSV only (no Excel package).
-- Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log` and `manage-officers` / `officer` role.
+- Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log`, `manage-officers` / `officer` role, and `use-smis-agent`.
+- SMIS Agent needs `GEMINI_API_KEY` in `.env` for live replies (tests use a scripted LLM).
 
 ## Decisions Needed From Product Owner
 
@@ -110,6 +117,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Pass/fail | `marks_obtained >= pass_mark` (per exam subject; default pass 40/100) | Assumed |
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
 | Report exports | CSV download + DomPDF PDF files (ADR 0017) | **Decided** |
+| SMIS Agent | Gemini function-calling over existing Policies/Actions; admin/officer/teacher only | **Decided — ADR 0018** |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
 | Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |
@@ -117,3 +125,4 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Stream names for Grades 12–13 | Science, Commerce, Arts, Technology; Science A = physical, B = biological | Assumed |
 | Class code format | `{grade}-{section}` or `{grade}-{STREAM}-{section}` | Assumed |
 | Class teacher limited student fields | Name, email, admission, DOB, gender, guardian; no status/password/class move | Assumed |
+| SMIS Agent class timetable scope | Teachers may inspect timetables of classes they are assigned to (not only their own teaching slots) | Assumed |

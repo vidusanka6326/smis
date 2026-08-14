@@ -52,12 +52,17 @@ use App\Http\Controllers\Teacher\ReportDashboardController as TeacherReportDashb
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherAttendanceController as TeacherSelfAttendanceController;
 use App\Http\Controllers\Teacher\TimetableController as TeacherTimetableController;
+use App\Livewire\Agent\Chat as AgentChat;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::middleware('role:admin|officer|teacher')->group(function () {
+        Route::livewire('agent', AgentChat::class)->name('agent.chat');
+    });
 
     Route::middleware('role:admin|officer')->prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', AdminDashboardController::class)->name('dashboard');

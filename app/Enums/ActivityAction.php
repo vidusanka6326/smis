@@ -11,6 +11,7 @@ enum ActivityAction: string
     case AttendanceSessionUpserted = 'attendance.session.upserted';
     case AttendanceSessionFinalized = 'attendance.session.finalized';
     case TeacherAttendanceUpserted = 'attendance.teacher.upserted';
+    case AgentMutated = 'agent.mutated';
 
     public function label(): string
     {
@@ -22,6 +23,7 @@ enum ActivityAction: string
             self::AttendanceSessionUpserted => __('Attendance session saved'),
             self::AttendanceSessionFinalized => __('Attendance session finalized'),
             self::TeacherAttendanceUpserted => __('Teacher attendance saved'),
+            self::AgentMutated => __('SMIS Agent action'),
         };
     }
 }

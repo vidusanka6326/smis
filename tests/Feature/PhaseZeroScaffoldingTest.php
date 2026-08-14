@@ -14,6 +14,7 @@ test('phase 0 scaffolding artifacts exist', function () {
         ->and(file_exists(base_path('docs/modules/timetable.md')))->toBeTrue()
         ->and(file_exists(base_path('docs/modules/examination.md')))->toBeTrue()
         ->and(file_exists(base_path('docs/modules/reporting.md')))->toBeTrue()
+        ->and(file_exists(base_path('docs/modules/agent.md')))->toBeTrue()
         ->and(file_exists(base_path('docs/api/README.md')))->toBeTrue()
         ->and(file_exists(base_path('docs/decisions/0001-use-spatie-permission.md')))->toBeTrue()
         ->and(file_exists(base_path('docs/testing/strategy.md')))->toBeTrue()

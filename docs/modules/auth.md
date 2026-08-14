@@ -30,7 +30,7 @@ Public `/register` is **disabled** (Fortify registration feature removed).
 
 ## Permissions (seeded)
 
-See `App\Enums\PermissionName`. Admin receives all (including `manage-officers` + `view-activity-log`); officer gets operational data-entry + activity log; teacher gets timetable/attendance/marks/reports subset; student gets view-only timetable/attendance/marks.
+See `App\Enums\PermissionName`. Admin receives all (including `manage-officers`, `view-activity-log`, and `use-smis-agent`); officer gets operational data-entry + activity log + SMIS Agent; teacher gets timetable/attendance/marks/reports plus SMIS Agent; student gets view-only timetable/attendance/marks.
 
 ## Audit trail
 

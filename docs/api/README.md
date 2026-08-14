@@ -16,5 +16,6 @@ Files in this folder document **web routes** used by the Blade/Livewire UI (and 
 | [timetable.md](timetable.md) | Timetable | Web routes (Phase 4) |
 | [examination.md](examination.md) | Examination | Web routes (Phase 6) |
 | [reporting.md](reporting.md) | Reporting | Web routes (Phase 7) |
+| [agent.md](agent.md) | SMIS Agent | Livewire chat (ADR 0018) |
 
 **If/when an API is added:** controllers should reuse the same Policies and Form Requests as the web UI — do not duplicate authorization logic.

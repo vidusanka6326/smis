@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Contracts\AgentLlm;
 use App\Enums\RoleName;
 use App\Models\Report;
 use App\Models\User;
 use App\Policies\ReportPolicy;
+use App\Services\Agent\GeminiAgentLlm;
 use Carbon\CarbonImmutable;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Date;
@@ -22,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(AgentLlm::class, GeminiAgentLlm::class);
     }
 
     /**

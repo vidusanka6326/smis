@@ -196,3 +196,79 @@ textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-background;
 }
+
+.agent-markdown {
+    @apply text-sm leading-relaxed text-inherit;
+}
+
+.agent-markdown > *:first-child {
+    @apply mt-0;
+}
+
+.agent-markdown > *:last-child {
+    @apply mb-0;
+}
+
+.agent-markdown h1 {
+    @apply mt-4 mb-2 text-xl font-semibold;
+}
+
+.agent-markdown h2 {
+    @apply mt-4 mb-2 text-lg font-semibold;
+}
+
+.agent-markdown h3 {
+    @apply mt-3 mb-1 text-base font-semibold;
+}
+
+.agent-markdown p {
+    @apply my-2;
+}
+
+.agent-markdown ul {
+    @apply my-2 list-disc ps-5;
+}
+
+.agent-markdown ol {
+    @apply my-2 list-decimal ps-5;
+}
+
+.agent-markdown li {
+    @apply my-0.5;
+}
+
+.agent-markdown code {
+    @apply rounded bg-black/10 px-1 py-0.5 font-mono text-[0.85em] dark:bg-white/10;
+}
+
+.agent-markdown pre {
+    @apply my-2 overflow-x-auto rounded-lg bg-black/10 p-3 dark:bg-white/10;
+}
+
+.agent-markdown pre code {
+    @apply bg-transparent p-0;
+}
+
+.agent-markdown table {
+    @apply my-2 w-full text-sm;
+}
+
+.agent-markdown th {
+    @apply border-b border-border px-2 py-1 text-start font-medium;
+}
+
+.agent-markdown td {
+    @apply border-b border-border px-2 py-1;
+}
+
+.agent-markdown a {
+    @apply text-primary underline;
+}
+
+.agent-markdown strong {
+    @apply font-semibold;
+}
+
+.agent-markdown blockquote {
+    @apply border-s-2 border-primary/40 ps-3 text-muted-foreground;
+}

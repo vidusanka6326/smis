@@ -19,6 +19,7 @@ enum PermissionName: string
     case ViewReports = 'view-reports';
     case ManageSystemConfig = 'manage-system-config';
     case ViewActivityLog = 'view-activity-log';
+    case UseSmisAgent = 'use-smis-agent';
 
     /**
      * @return list<string>
@@ -50,6 +51,7 @@ enum PermissionName: string
                 self::ViewReports,
                 self::ManageSystemConfig,
                 self::ViewActivityLog,
+                self::UseSmisAgent,
             ],
             RoleName::Teacher->value => [
                 self::ViewTimetable,
@@ -58,6 +60,7 @@ enum PermissionName: string
                 self::EnterMarks,
                 self::ViewMarks,
                 self::ViewReports,
+                self::UseSmisAgent,
             ],
             RoleName::Student->value => [
                 self::ViewTimetable,

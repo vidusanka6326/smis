@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### SMIS Agent (2026-08-14)
+
+- Gemini-backed streaming chat for admin, officer, and teacher (`/agent`).
+- Permissioned tools can look up free periods, free teachers, attendance, exams, and assign timetable slots or relief (ADR 0018).
+
 ### Report catalog and PDF downloads (2026-08-14)
 
 - Reports is a card catalog for admin, teacher, and student (analytics stay on dashboards).
