@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-14 — Report catalog and PDF/CSV downloads
+
+Command: `php artisan test --compact` — **289 passed** (1019 assertions)
+
+Notable suites:
+- Catalog cards for admin/teacher/student (no analytics dashboard on Reports)
+- PDF (`application/pdf`, `%PDF`) and CSV exports
+- New reports: enrollment, at-risk, staff attendance, exam results, teacher assignments
+- Teacher 403 when filtering enrollment to another class; student catalog `viewOwn`
+
+Notes: DomPDF via `barryvdh/laravel-dompdf` (ADR 0017). Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Compact list filter bar
 
 Command: `php artisan test --compact tests/Feature/ListFiltersPaginationTest.php tests/Feature/Admin/StudentManagementTest.php tests/Feature/Admin/ActivityLogTest.php` — **16 passed**

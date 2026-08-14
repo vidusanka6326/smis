@@ -1,11 +1,14 @@
-<x-layouts::app :title="__('Demographics')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <div>
-            <flux:heading size="xl">{{ __('Student demographics') }}</flux:heading>
-            <flux:text class="mt-1">{{ __('Grade, class, subject, and gender breakdowns.') }}</flux:text>
-        </div>
+<x-layouts::app :title="__('Student demographics')">
+    <x-report.page
+        :title="__('Student demographics')"
+        :description="__('Grade, class, subject, and gender breakdowns.')"
+        :catalog-route="$catalogRoute"
+    >
+        <x-slot:aside>
+            <x-report.exports :query="$exportQuery" />
+        </x-slot:aside>
 
-        <x-list.filters :action="route('admin.reports.demographics')" :filters="$filters" :submit="__('Apply')" :with-per-page="false" class="no-print">
+        <x-list.filters :action="$action" :filters="$filters" :submit="__('Apply')" :with-per-page="false">
             <flux:select name="school_class_id" :label="__('Class')" :placeholder="__('All classes')">
                 @foreach ($schoolClasses as $class)
                     <flux:select.option :value="$class->id" :selected="(string) ($filters['school_class_id'] ?? '') === (string) $class->id">{{ $class->code }}</flux:select.option>
@@ -17,12 +20,6 @@
                 @endforeach
             </flux:select>
         </x-list.filters>
-
-        <x-report-toolbar :print="$print">
-            <flux:button :href="route('admin.reports.demographics', ['school_class_id' => $filters['school_class_id'] ?? null, 'subject_id' => $filters['subject_id'] ?? null, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
-            <flux:button :href="route('admin.reports.demographics', ['school_class_id' => $filters['school_class_id'] ?? null, 'subject_id' => $filters['subject_id'] ?? null, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
-            <flux:button :href="route('admin.reports.dashboard')" variant="ghost" wire:navigate>{{ __('Dashboard') }}</flux:button>
-        </x-report-toolbar>
 
         <x-dashboard.stat :label="__('Total students')" :value="$data['total']" class="max-w-xs" />
 
@@ -49,5 +46,5 @@
                 </table>
             </div>
         </div>
-    </div>
+    </x-report.page>
 </x-layouts::app>

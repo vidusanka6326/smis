@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use App\Http\Controllers\Concerns\RespondsWithReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Report;
 use App\Services\Reporting\PerformanceRankingService;
 use App\Services\Reporting\ReportCsvExporter;
+use App\Services\Reporting\ReportPdfExporter;
 use App\Services\Reporting\TeacherReportScope;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class PerformanceReportController extends Controller
 {
+    use RespondsWithReportExport;
+
     public function __invoke(
         Request $request,
         TeacherReportScope $scope,
         PerformanceRankingService $ranking,
         ReportCsvExporter $csv,
-    ): View|StreamedResponse {
+        ReportPdfExporter $pdf,
+    ): View|Response {
         $this->authorize('viewAny', Report::class);
 
         $teacher = $request->user()->teacher;
@@ -44,28 +49,60 @@ class PerformanceReportController extends Controller
             ? $ranking->forExam($exam, $subjectId, $scope->accessibleStudentIds($teacher, $subjectId), $limit)
             : ['best' => [], 'poor' => []];
 
-        if ($request->string('export')->toString() === 'csv') {
-            $rows = collect($ranks['best'])->map(fn (array $row): array => [
-                'best', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
-            ])->merge(collect($ranks['poor'])->map(fn (array $row): array => [
-                'poor', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
-            ]));
+        $headers = [__('Band'), __('Rank'), __('Student'), __('Class'), __('%')];
+        $rows = collect($ranks['best'])->map(fn (array $row): array => [
+            'best', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
+        ])->merge(collect($ranks['poor'])->map(fn (array $row): array => [
+            'poor', $row['rank'], $row['name'], $row['class'] ?? '—', $row['percentage'],
+        ]));
 
-            return $csv->download(
-                'teacher-performance.csv',
-                [__('Band'), __('Rank'), __('Student'), __('Class'), __('%')],
-                $rows,
-            );
+        $exported = $this->exportIfRequested(
+            $request,
+            $csv,
+            $pdf,
+            'teacher-performance',
+            $headers,
+            $rows,
+            __('Best & poor performers'),
+            [
+                [
+                    'title' => __('Best'),
+                    'headers' => [__('Rank'), __('Student'), __('Class'), __('%')],
+                    'rows' => collect($ranks['best'])->map(fn (array $row): array => [
+                        $row['rank'],
+                        $row['name'],
+                        $row['class'] ?? '—',
+                        $row['percentage'],
+                    ])->all(),
+                ],
+                [
+                    'title' => __('Needs improvement'),
+                    'headers' => [__('Rank'), __('Student'), __('Class'), __('%')],
+                    'rows' => collect($ranks['poor'])->map(fn (array $row): array => [
+                        $row['rank'],
+                        $row['name'],
+                        $row['class'] ?? '—',
+                        $row['percentage'],
+                    ])->all(),
+                ],
+            ],
+            $exam?->name,
+        );
+
+        if ($exported !== null) {
+            return $exported;
         }
 
-        return view('teacher.reports.performance', [
+        return view('reports.performance', [
             'exams' => $exams,
             'exam' => $exam,
             'ranks' => $ranks,
             'selectedExamId' => $examId,
             'selectedSubjectId' => $subjectId,
             'limit' => $limit,
-            'print' => $request->boolean('print'),
+            'action' => route('teacher.reports.performance'),
+            'catalogRoute' => 'teacher.reports.dashboard',
+            'exportQuery' => ['exam_id' => $examId, 'subject_id' => $subjectId, 'limit' => $limit],
         ]);
     }
 }

@@ -283,7 +283,7 @@
                         <div>
                             <h3 class="font-display text-lg font-semibold">{{ __('Review and report') }}</h3>
                             <p class="mt-2 font-reading text-base leading-relaxed text-[var(--home-ink)]/80">
-                                {{ __('Publish results, open analytics dashboards, export CSV or print reports, and inspect the activity log when changes need tracing.') }}
+                                {{ __('Publish results, open the reports catalog, download PDF or CSV, and inspect the activity log when changes need tracing.') }}
                             </p>
                         </div>
                     </li>

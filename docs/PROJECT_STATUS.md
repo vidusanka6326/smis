@@ -2,6 +2,10 @@
 
 ## Current Phase
 
+**UI — Report catalog & PDF/CSV exports** (Done)
+
+Reports is a card catalog per role (not an analytics dashboard). Each report has filters plus PDF (DomPDF) and CSV download (ADR 0017).
+
 **UI — List filters & pagination** (Done)
 
 Shared `x-list.filters` / table / Flux pagination on every index, plus per-page (10/20/50/100).
@@ -27,7 +31,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries; audited upserts |
 | Timetable | Done | 100% | Feature + policy + conflict + period schedule unit | 2026-08-10 | Visual period×day grid + default times |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock; audited marks/publish |
-| Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class unit coverage | 2026-08-14 | At-risk attendance, by_class exam stats, themed UI |
+| Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
 
@@ -48,6 +52,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Reports catalog per role (cards, not analytics dashboards). Each report filters data and downloads PDF (DomPDF) or CSV. Added at-risk, teacher attendance, enrollment, exam results, and teacher-assignment reports (ADR 0017).
 - **2026-08-14** — Aligned the compact per-page select with other filter controls (same height as Apply).
 - **2026-08-14** — Compacted list filter bars to a single row (no heading copy; small per-page select; Apply at the end).
 - **2026-08-14** — Shared list kit (ADR 0016): filters + Flux pagination + per-page on every index (students, teachers, officers, academic structure, exams, marks, attendance, activity log, relief, reports, student results).
@@ -84,7 +89,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 - Overall ≥80% line coverage not yet measured — install pcov or xdebug, then run `php artisan test --coverage` and log in `docs/testing/coverage-log.md`.
 - `admins` profile extension table still deferred.
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
-- True DomPDF / XLSX packages not installed — CSV + browser print used instead.
+- Spreadsheet export is CSV only (no Excel package).
 - Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log` and `manage-officers` / `officer` role.
 
 ## Decisions Needed From Product Owner
@@ -104,7 +109,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Grade letters | A≥75, B≥65, C≥55, S≥40, else F (of max marks) | Assumed |
 | Pass/fail | `marks_obtained >= pass_mark` (per exam subject; default pass 40/100) | Assumed |
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
-| Report exports | CSV download + browser print-to-PDF (no DomPDF/Excel packages yet) | Assumed |
+| Report exports | CSV download + DomPDF PDF files (ADR 0017) | **Decided** |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
 | Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |

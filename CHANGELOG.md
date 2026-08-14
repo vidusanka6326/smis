@@ -6,6 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Report catalog and PDF downloads (2026-08-14)
+
+- Reports is a card catalog for admin, teacher, and student (analytics stay on dashboards).
+- Each report page filters data and downloads PDF (DomPDF) or CSV (ADR 0017).
+- Added at-risk attendance, teacher attendance, class enrollment, exam results, and teacher-assignment reports.
+
 ### List filters and pagination (2026-08-14)
 
 - Shared `x-list.filters` / table / Flux pagination on every index, with a single-row filter bar and a compact per-page select (ADR 0016).

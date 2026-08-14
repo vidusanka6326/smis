@@ -91,8 +91,8 @@
                         <flux:sidebar.item icon="document-text" :href="route('student.results')" :current="request()->routeIs('student.results')" wire:navigate>
                             {{ __('My results') }}
                         </flux:sidebar.item>
-                        <flux:sidebar.item icon="chart-bar" :href="route('student.report')" :current="request()->routeIs('student.report')" wire:navigate>
-                            {{ __('My report') }}
+                        <flux:sidebar.item icon="chart-bar" :href="route('student.reports')" :current="request()->routeIs(['student.reports', 'student.reports.*', 'student.report'])" wire:navigate>
+                            {{ __('Reports') }}
                         </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>

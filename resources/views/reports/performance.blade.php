@@ -1,11 +1,14 @@
-<x-layouts::app :title="__('Performance')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <div>
-            <flux:heading size="xl">{{ __('Best & poor performers') }}</flux:heading>
-            <flux:text class="mt-1">{{ __('Ranked by average percentage across selected exam subjects.') }}</flux:text>
-        </div>
+<x-layouts::app :title="__('Best & poor performers')">
+    <x-report.page
+        :title="__('Best & poor performers')"
+        :description="__('Ranked by average percentage across selected exam subjects.')"
+        :catalog-route="$catalogRoute"
+    >
+        <x-slot:aside>
+            <x-report.exports :query="$exportQuery" />
+        </x-slot:aside>
 
-        <x-list.filters :action="route('admin.reports.performance')" :filters="array_filter(['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit])" :submit="__('Load')" :with-per-page="false" class="no-print">
+        <x-list.filters :action="$action" :filters="array_filter(['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit])" :submit="__('Apply')" :with-per-page="false">
             <flux:select name="exam_id" :label="__('Exam')">
                 @foreach ($exams as $option)
                     <flux:select.option :value="$option->id" :selected="(string) $selectedExamId === (string) $option->id">{{ $option->name }}</flux:select.option>
@@ -20,11 +23,6 @@
             @endif
             <flux:input type="number" name="limit" :label="__('Top/bottom N')" :value="$limit" min="1" max="50" />
         </x-list.filters>
-
-        <x-report-toolbar :print="$print">
-            <flux:button :href="route('admin.reports.performance', ['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
-            <flux:button :href="route('admin.reports.performance', ['exam_id' => $selectedExamId, 'subject_id' => $selectedSubjectId, 'limit' => $limit, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
-        </x-report-toolbar>
 
         <div class="grid gap-4 lg:grid-cols-2">
             <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
@@ -54,5 +52,5 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </x-report.page>
 </x-layouts::app>

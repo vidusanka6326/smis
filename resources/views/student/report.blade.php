@@ -1,19 +1,16 @@
 <x-layouts::app :title="__('My report')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6">
-        <div>
-            <flux:heading size="xl">{{ __('My report') }}</flux:heading>
-            <flux:text class="mt-1">{{ $student->user?->name }} — {{ $student->currentClass?->code ?? '—' }}</flux:text>
-        </div>
+    <x-report.page
+        :title="__('Report card')"
+        :description="$student->user?->name.' — '.($student->currentClass?->code ?? '—')"
+        :catalog-route="$catalogRoute"
+    >
+        <x-slot:aside>
+            <x-report.exports :query="$exportQuery" />
+        </x-slot:aside>
 
-        <form method="GET" class="no-print flex flex-wrap items-end gap-3">
+        <x-list.filters :action="route('student.report')" :filters="['month' => $month]" :submit="__('Apply')" :with-per-page="false">
             <x-form.month-select :label="__('Attendance month')" :value="$month" />
-            <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
-        </form>
-
-        <x-report-toolbar :print="$print">
-            <flux:button :href="route('student.report', ['month' => $month, 'export' => 'csv'])" variant="filled">{{ __('CSV results') }}</flux:button>
-            <flux:button :href="route('student.report', ['month' => $month, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
-        </x-report-toolbar>
+        </x-list.filters>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <x-dashboard.stat
@@ -65,5 +62,5 @@
                 {{ __('No published results.') }}
             </div>
         @endforelse
-    </div>
+    </x-report.page>
 </x-layouts::app>

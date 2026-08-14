@@ -6,13 +6,12 @@ Phase 7 asks for exportable PDF/Excel reports and Chart.js dashboards. Adding Do
 
 ## Decision
 
-1. **Charts:** Chart.js 4 via CDN on admin/teacher dashboards.
+1. **Charts:** Chart.js 4 via CDN on **role dashboards** (not on Reports).
 2. **Tabular export:** streamed CSV (`ReportCsvExporter`) — Excel-compatible.
-3. **PDF:** print-optimized views with `?print=1` (browser print-to-PDF).
+3. **PDF:** originally browser print (`?print=1`). **Superseded for report downloads by ADR 0017** (DomPDF).
 4. **Best/poor:** top/bottom N by average exam percentage (default 5).
 
 ## Consequences
 
-- No new Composer packages for Phase 7.
-- Product owner can later approve DomPDF / maatwebsite/excel without schema changes.
-- CSV is the supported machine-readable export format for now.
+- CSV remains the spreadsheet export (Excel packages still not installed).
+- Report PDF downloads are documented in ADR 0017.
