@@ -18,10 +18,10 @@
             {{ $slot }}
         </div>
 
-        <div class="flex shrink-0 flex-wrap items-end gap-2">
+        <div class="flex shrink-0 flex-wrap items-end gap-3">
             @if ($withPerPage)
-                <div class="w-24">
-                    <flux:select name="per_page" size="sm" :label="__('Per page')">
+                <div class="w-28 shrink-0">
+                    <flux:select name="per_page" :label="__('Per page')">
                         @foreach (\App\Support\ListQuery::PER_PAGE_OPTIONS as $option)
                             <flux:select.option :value="$option" :selected="(int) request('per_page', \App\Support\ListQuery::DEFAULT_PER_PAGE) === $option">
                                 {{ $option }}
@@ -31,13 +31,15 @@
                 </div>
             @endif
 
-            <flux:button type="submit" variant="primary">{{ $submit }}</flux:button>
+            <div class="flex h-10 items-center gap-2">
+                <flux:button type="submit" variant="primary">{{ $submit }}</flux:button>
 
-            @if ($activeCount > 0)
-                <flux:button :href="$clearUrl" variant="ghost" wire:navigate>{{ __('Clear') }}</flux:button>
-            @endif
+                @if ($activeCount > 0)
+                    <flux:button :href="$clearUrl" variant="ghost" wire:navigate>{{ __('Clear') }}</flux:button>
+                @endif
 
-            {{ $actions ?? '' }}
+                {{ $actions ?? '' }}
+            </div>
         </div>
     </div>
 </form>

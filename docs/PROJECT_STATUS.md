@@ -48,6 +48,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-14** — Aligned the compact per-page select with other filter controls (same height as Apply).
 - **2026-08-14** — Compacted list filter bars to a single row (no heading copy; small per-page select; Apply at the end).
 - **2026-08-14** — Shared list kit (ADR 0016): filters + Flux pagination + per-page on every index (students, teachers, officers, academic structure, exams, marks, attendance, activity log, relief, reports, student results).
 - **2026-08-14** — Flux selects open a custom dropdown menu (ADR 0014); native OS picker is hidden. Fixed Blade `@if` leaking into the trigger button.

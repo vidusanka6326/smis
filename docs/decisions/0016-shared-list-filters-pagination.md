@@ -8,7 +8,7 @@ Index screens mixed Laravel’s default Tailwind paginator with ad-hoc GET forms
 
 Use one GET-based list kit across admin, teacher, and student indexes:
 
-- `x-list.filters` — one row: search + dropdowns, a narrow per-page select (10/20/50/100), then Apply / Clear
+- Shared `x-list.filters` — one row: search + dropdowns, a compact per-page select aligned to other controls, then Apply / Clear
 - `x-list.table` — shared bordered table chrome
 - `x-list.pagination` + `pagination.flux` — “Showing X to Y of Z” with HTTP page links (not Livewire `wire:click`)
 - `App\Support\ListQuery` — trim/drop empty filters, cap `per_page`, `paginate()` / `paginateCollection()`
