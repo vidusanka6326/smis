@@ -6,17 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreGradeRequest;
 use App\Http\Requests\Admin\UpdateGradeRequest;
 use App\Models\Grade;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class GradeController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', Grade::class);
 
+        $filters = ListQuery::filters($request, ['search']);
+
         return view('admin.grades.index', [
-            'grades' => Grade::query()->orderBy('number')->paginate(20),
+            'grades' => ListQuery::paginate(
+                Grade::query()->filter($filters)->orderBy('number'),
+                $request,
+            ),
+            'filters' => $filters,
         ]);
     }
 

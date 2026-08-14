@@ -12,6 +12,7 @@ use App\Http\Requests\Teacher\UpdateStudentRequest;
 use App\Models\AcademicYear;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,13 +27,20 @@ class StudentController extends Controller
         abort_if($teacher === null, 403);
 
         $classIds = $this->homeroomClassIds($teacher->id);
+        $filters = ListQuery::filters($request, ['search', 'gender', 'class_id']);
 
         return view('teacher.students.index', [
-            'students' => Student::query()
-                ->with(['user', 'currentClass'])
-                ->whereIn('current_class_id', $classIds)
-                ->latest('id')
-                ->paginate(20),
+            'students' => ListQuery::paginate(
+                Student::query()
+                    ->with(['user', 'currentClass'])
+                    ->whereIn('current_class_id', $classIds)
+                    ->filter($filters)
+                    ->latest('id'),
+                $request,
+            ),
+            'filters' => $filters,
+            'genders' => Gender::cases(),
+            'classes' => SchoolClass::query()->whereIn('id', $classIds)->orderBy('code')->get(),
         ]);
     }
 

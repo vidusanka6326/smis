@@ -11,45 +11,63 @@
             </div>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-3 py-2 text-left">{{ __('Name') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Type') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Scope') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Dates') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Status') }}</th>
-                        <th class="px-3 py-2 text-left"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($exams as $exam)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-3 py-2">{{ $exam->name }}</td>
-                            <td class="px-3 py-2">{{ $exam->type->label() }}</td>
-                            <td class="px-3 py-2">
-                                {{ $exam->schoolClass?->code ?? $exam->grade?->name ?? '—' }}
-                            </td>
-                            <td class="px-3 py-2">{{ $exam->starts_on->toDateString() }} → {{ $exam->ends_on->toDateString() }}</td>
-                            <td class="px-3 py-2">{{ $exam->isPublished() ? __('Published') : __('Draft') }}</td>
-                            <td class="px-3 py-2">
-                                <a class="underline" href="{{ route('admin.exams.edit', $exam) }}">{{ __('Open') }}</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="6" class="px-3 py-6 text-zinc-500">{{ __('No exams yet.') }}</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.filters :action="route('admin.exams.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Exam name') }}" />
+            <flux:select name="academic_year_id" :label="__('Academic year')" :placeholder="__('All')">
+                @foreach ($academicYears as $year)
+                    <flux:select.option :value="$year->id" :selected="(string) ($filters['academic_year_id'] ?? '') === (string) $year->id">{{ $year->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="type" :label="__('Type')" :placeholder="__('All')">
+                @foreach ($types as $type)
+                    <flux:select.option :value="$type->value" :selected="($filters['type'] ?? null) === $type->value">{{ $type->label() }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="grade_id" :label="__('Grade')" :placeholder="__('All')">
+                @foreach ($grades as $grade)
+                    <flux:select.option :value="$grade->id" :selected="(string) ($filters['grade_id'] ?? '') === (string) $grade->id">{{ $grade->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="school_class_id" :label="__('Class')" :placeholder="__('All')">
+                @foreach ($schoolClasses as $class)
+                    <flux:select.option :value="$class->id" :selected="(string) ($filters['school_class_id'] ?? '') === (string) $class->id">{{ $class->code }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="status" :label="__('Status')" :placeholder="__('All')">
+                <flux:select.option value="draft" :selected="($filters['status'] ?? null) === 'draft'">{{ __('Draft') }}</flux:select.option>
+                <flux:select.option value="published" :selected="($filters['status'] ?? null) === 'published'">{{ __('Published') }}</flux:select.option>
+            </flux:select>
+        </x-list.filters>
 
-        {{ $exams->links() }}
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('Name') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Type') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Scope') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Dates') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
+                <th class="px-4 py-3 font-medium"></th>
+            </x-slot:head>
+            @forelse ($exams as $exam)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3">{{ $exam->name }}</td>
+                    <td class="px-4 py-3">{{ $exam->type->label() }}</td>
+                    <td class="px-4 py-3">{{ $exam->schoolClass?->code ?? $exam->grade?->name ?? '—' }}</td>
+                    <td class="px-4 py-3">{{ $exam->starts_on->toDateString() }} → {{ $exam->ends_on->toDateString() }}</td>
+                    <td class="px-4 py-3">{{ $exam->isPublished() ? __('Published') : __('Draft') }}</td>
+                    <td class="px-4 py-3">
+                        <flux:button size="sm" :href="route('admin.exams.edit', $exam)" variant="ghost" wire:navigate>{{ __('Open') }}</flux:button>
+                    </td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="6" class="px-4 py-10 text-center text-muted-foreground">{{ __('No exams match these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
+
+        <x-list.pagination :paginator="$exams" />
     </div>
 </x-layouts::app>

@@ -10,19 +10,9 @@
             </flux:button>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        @if ($errors->any())
-            <flux:callout variant="danger" icon="x-circle">
-                <flux:callout.heading>{{ $errors->first() }}</flux:callout.heading>
-            </flux:callout>
-        @endif
-
-        <form method="GET" action="{{ route('admin.timetables.index') }}" class="flex flex-wrap items-end gap-3">
+        <x-list.filters :action="route('admin.timetables.index')" :filters="array_filter(['academic_year_id' => $selectedAcademicYearId, 'school_class_id' => $selectedSchoolClassId])" :submit="__('Load')" :with-per-page="false">
             <flux:select name="academic_year_id" :label="__('Academic year')">
                 @foreach ($academicYears as $year)
                     <flux:select.option :value="$year->id" :selected="(string) $selectedAcademicYearId === (string) $year->id">
@@ -37,8 +27,7 @@
                     </flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
-        </form>
+        </x-list.filters>
 
         @if ($schoolClass)
             <div class="flex flex-wrap items-end justify-between gap-2">

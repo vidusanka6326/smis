@@ -20,10 +20,10 @@ Teacher profiles, assignment types (class / subject / PT-PD), assigned classes/s
 
 | Method | Path | Name | Notes |
 |---|---|---|---|
-| resource | `/admin/teachers` | `admin.teachers.*` | Admin CRUD |
+| resource | `/admin/teachers` | `admin.teachers.*` | Admin CRUD; search/class/subject/assignment filters + pagination |
 | GET/PUT | `/admin/teachers/{teacher}/assignments` | `admin.teachers.assignments.*` | Sync year assignments; Flux selects in Alpine rows |
 | GET | `/teacher/dashboard` | `teacher.dashboard` | Pulse hero, 3 KPIs, attendance chart, today + attention lists |
-| resource | `/teacher/students` | `teacher.students.*` | except show/destroy |
+| resource | `/teacher/students` | `teacher.students.*` | Scoped; search/gender/class filters + pagination; limited update |
 
 ## Key business rules
 

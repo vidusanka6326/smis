@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Report;
+use App\Models\SchoolClass;
+use App\Models\Subject;
 use App\Services\Reporting\DemographicsReport;
 use App\Services\Reporting\ReportCsvExporter;
 use Illuminate\Http\Request;
@@ -16,8 +18,14 @@ class DemographicsReportController extends Controller
     {
         $this->authorize('viewAny', Report::class);
 
+        $subjectId = $request->filled('subject_id') ? $request->integer('subject_id') : null;
+        $classIds = $request->filled('school_class_id')
+            ? [$request->integer('school_class_id')]
+            : null;
+
         $data = $report->summarize(
-            subjectId: $request->filled('subject_id') ? $request->integer('subject_id') : null,
+            schoolClassIds: $classIds,
+            subjectId: $subjectId,
         );
 
         if ($request->string('export')->toString() === 'csv') {
@@ -32,6 +40,12 @@ class DemographicsReportController extends Controller
         return view('admin.reports.demographics', [
             'data' => $data,
             'print' => $request->boolean('print'),
+            'filters' => array_filter([
+                'school_class_id' => $classIds[0] ?? null,
+                'subject_id' => $subjectId,
+            ], fn ($value) => filled($value)),
+            'schoolClasses' => SchoolClass::query()->orderBy('code')->get(),
+            'subjects' => Subject::query()->orderBy('name')->get(),
         ]);
     }
 }

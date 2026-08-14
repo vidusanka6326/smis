@@ -5,47 +5,42 @@
             <flux:text class="mt-1">{{ __('Audit trail for sensitive actions (users, marks, attendance, publish).') }}</flux:text>
         </div>
 
-        <form method="GET" action="{{ route('admin.activity-logs.index') }}" class="flex flex-wrap items-end gap-3">
-            <flux:select name="action" :label="__('Action')" class="min-w-56">
-                <flux:select.option value="">{{ __('All actions') }}</flux:select.option>
+        <x-list.filters :action="route('admin.activity-logs.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Description, actor, or IP') }}" />
+            <flux:select name="action" :label="__('Action')" :placeholder="__('All actions')">
                 @foreach ($actions as $action)
-                    <flux:select.option :value="$action->value" :selected="$selectedAction === $action->value">
+                    <flux:select.option :value="$action->value" :selected="($filters['action'] ?? null) === $action->value">
                         {{ $action->label() }}
                     </flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:button type="submit" variant="primary">{{ __('Filter') }}</flux:button>
-        </form>
+            <flux:input type="date" name="date_from" :label="__('From')" :value="$filters['date_from'] ?? ''" />
+            <flux:input type="date" name="date_to" :label="__('To')" :value="$filters['date_to'] ?? ''" />
+        </x-list.filters>
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-3 py-2 text-left">{{ __('When') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Actor') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Action') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Description') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('IP') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($logs as $log)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-3 py-2 whitespace-nowrap">{{ $log->created_at?->toDateTimeString() }}</td>
-                            <td class="px-3 py-2">{{ $log->causer?->name ?? __('System') }}</td>
-                            <td class="px-3 py-2">{{ $log->action->label() }}</td>
-                            <td class="px-3 py-2">{{ $log->description }}</td>
-                            <td class="px-3 py-2">{{ $log->ip_address ?? '—' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-3 py-6 text-zinc-500">{{ __('No activity recorded yet.') }}</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('When') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Actor') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Action') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Description') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('IP') }}</th>
+            </x-slot:head>
+            @forelse ($logs as $log)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3 whitespace-nowrap">{{ $log->created_at?->toDateTimeString() }}</td>
+                    <td class="px-4 py-3">{{ $log->causer?->name ?? __('System') }}</td>
+                    <td class="px-4 py-3">{{ $log->action->label() }}</td>
+                    <td class="px-4 py-3">{{ $log->description }}</td>
+                    <td class="px-4 py-3">{{ $log->ip_address ?? '—' }}</td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="5" class="px-4 py-10 text-center text-muted-foreground">{{ __('No activity matches these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
 
-        {{ $logs->links() }}
+        <x-list.pagination :paginator="$logs" />
     </div>
 </x-layouts::app>

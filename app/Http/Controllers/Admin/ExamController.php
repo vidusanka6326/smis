@@ -12,6 +12,7 @@ use App\Models\AcademicYear;
 use App\Models\Exam;
 use App\Models\Grade;
 use App\Models\SchoolClass;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,17 +23,21 @@ class ExamController extends Controller
     {
         $this->authorize('viewAny', Exam::class);
 
-        $exams = Exam::query()
-            ->with(['academicYear', 'grade', 'schoolClass'])
-            ->when($request->filled('academic_year_id'), fn ($q) => $q->where('academic_year_id', $request->integer('academic_year_id')))
-            ->orderByDesc('starts_on')
-            ->paginate(20)
-            ->withQueryString();
+        $filters = ListQuery::filters($request, ['search', 'academic_year_id', 'type', 'grade_id', 'school_class_id', 'status']);
 
         return view('admin.exams.index', [
-            'exams' => $exams,
+            'exams' => ListQuery::paginate(
+                Exam::query()
+                    ->with(['academicYear', 'grade', 'schoolClass'])
+                    ->filter($filters)
+                    ->orderByDesc('starts_on'),
+                $request,
+            ),
+            'filters' => $filters,
+            'types' => ExamType::cases(),
             'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
-            'selectedAcademicYearId' => $request->integer('academic_year_id'),
+            'grades' => Grade::query()->orderBy('number')->get(),
+            'schoolClasses' => SchoolClass::query()->orderBy('code')->get(),
         ]);
     }
 

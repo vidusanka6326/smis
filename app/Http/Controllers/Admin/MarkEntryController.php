@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Examination\UpsertMarks;
+use App\Enums\ExamType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpsertMarksRequest;
+use App\Models\AcademicYear;
 use App\Models\Exam;
 use App\Models\ExamSubject;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,13 +20,19 @@ class MarkEntryController extends Controller
     {
         $this->authorize('viewAny', Exam::class);
 
-        $exams = Exam::query()
-            ->with(['academicYear', 'examSubjects.subject'])
-            ->orderByDesc('starts_on')
-            ->paginate(20);
+        $filters = ListQuery::filters($request, ['search', 'academic_year_id', 'type', 'status']);
 
         return view('admin.marks.index', [
-            'exams' => $exams,
+            'exams' => ListQuery::paginate(
+                Exam::query()
+                    ->with(['academicYear', 'examSubjects.subject'])
+                    ->filter($filters)
+                    ->orderByDesc('starts_on'),
+                $request,
+            ),
+            'filters' => $filters,
+            'types' => ExamType::cases(),
+            'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
         ]);
     }
 

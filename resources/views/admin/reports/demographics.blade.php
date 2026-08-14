@@ -5,9 +5,22 @@
             <flux:text class="mt-1">{{ __('Grade, class, subject, and gender breakdowns.') }}</flux:text>
         </div>
 
+        <x-list.filters :action="route('admin.reports.demographics')" :filters="$filters" :submit="__('Apply')" :with-per-page="false" class="no-print">
+            <flux:select name="school_class_id" :label="__('Class')" :placeholder="__('All classes')">
+                @foreach ($schoolClasses as $class)
+                    <flux:select.option :value="$class->id" :selected="(string) ($filters['school_class_id'] ?? '') === (string) $class->id">{{ $class->code }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="subject_id" :label="__('Subject')" :placeholder="__('All subjects')">
+                @foreach ($subjects as $subject)
+                    <flux:select.option :value="$subject->id" :selected="(string) ($filters['subject_id'] ?? '') === (string) $subject->id">{{ $subject->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+        </x-list.filters>
+
         <x-report-toolbar :print="$print">
-            <flux:button :href="route('admin.reports.demographics', ['export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
-            <flux:button :href="route('admin.reports.demographics', ['print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
+            <flux:button :href="route('admin.reports.demographics', ['school_class_id' => $filters['school_class_id'] ?? null, 'subject_id' => $filters['subject_id'] ?? null, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
+            <flux:button :href="route('admin.reports.demographics', ['school_class_id' => $filters['school_class_id'] ?? null, 'subject_id' => $filters['subject_id'] ?? null, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
             <flux:button :href="route('admin.reports.dashboard')" variant="ghost" wire:navigate>{{ __('Dashboard') }}</flux:button>
         </x-report-toolbar>
 

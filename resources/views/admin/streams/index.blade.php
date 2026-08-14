@@ -8,52 +8,40 @@
             <flux:button :href="route('admin.streams.create')" variant="primary" wire:navigate>{{ __('Add stream') }}</flux:button>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        @if ($errors->any())
-            <flux:callout variant="danger" icon="x-circle">
-                <flux:callout.heading>{{ $errors->first() }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.filters :action="route('admin.streams.index')" :filters="$filters">
+            <flux:input name="search" :label="__('Search')" :value="$filters['search'] ?? ''" placeholder="{{ __('Name or code') }}" />
+        </x-list.filters>
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 text-left dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-4 py-3 font-medium">{{ __('Name') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Code') }}</th>
-                        <th class="px-4 py-3 font-medium">{{ __('Actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($streams as $stream)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-4 py-3">{{ $stream->name }}</td>
-                            <td class="px-4 py-3">{{ $stream->code }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex flex-wrap gap-2">
-                                    <flux:button size="sm" :href="route('admin.streams.edit', $stream)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>
-                                    <form method="POST" action="{{ route('admin.streams.destroy', $stream) }}" onsubmit="return confirm(@js(__('Delete this stream?')))">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button size="sm" type="submit" variant="danger">{{ __('Delete') }}</flux:button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td colspan="3" class="px-4 py-6 text-zinc-500">{{ __('No streams yet.') }}</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('Name') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Code') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Actions') }}</th>
+            </x-slot:head>
+            @forelse ($streams as $stream)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3">{{ $stream->name }}</td>
+                    <td class="px-4 py-3">{{ $stream->code }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                            <flux:button size="sm" :href="route('admin.streams.edit', $stream)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>
+                            <form method="POST" action="{{ route('admin.streams.destroy', $stream) }}" onsubmit="return confirm(@js(__('Delete this stream?')))">
+                                @csrf
+                                @method('DELETE')
+                                <flux:button size="sm" type="submit" variant="danger">{{ __('Delete') }}</flux:button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="3" class="px-4 py-10 text-center text-muted-foreground">{{ __('No streams match these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
 
-        {{ $streams->links() }}
+        <x-list.pagination :paginator="$streams" />
     </div>
 </x-layouts::app>

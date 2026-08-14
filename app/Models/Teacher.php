@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TeacherAssignmentRole;
 use Database\Factories\TeacherFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,6 +47,38 @@ class Teacher extends Model
     public function homeroomClasses(): HasMany
     {
         return $this->hasMany(SchoolClass::class, 'class_teacher_id');
+    }
+
+    /**
+     * @param  Builder<Teacher>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<Teacher>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['class_id'] ?? null, function (Builder $q, int|string $classId): void {
+                $q->where(function (Builder $inner) use ($classId): void {
+                    $inner->whereHas('homeroomClasses', fn (Builder $classQuery) => $classQuery->whereKey($classId))
+                        ->orWhereHas('assignments', fn (Builder $assignmentQuery) => $assignmentQuery->where('school_class_id', $classId));
+                });
+            })
+            ->when($filters['subject_id'] ?? null, function (Builder $q, int|string $subjectId): void {
+                $q->whereHas('assignments', fn (Builder $assignmentQuery) => $assignmentQuery->where('subject_id', $subjectId));
+            })
+            ->when($filters['role'] ?? null, function (Builder $q, string $role): void {
+                $q->whereHas('assignments', fn (Builder $assignmentQuery) => $assignmentQuery->where('role_in_assignment', $role));
+            })
+            ->when($filters['search'] ?? null, function (Builder $q, string $search): void {
+                $q->where(function (Builder $inner) use ($search): void {
+                    $inner->where('employee_no', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhereHas('user', function (Builder $userQuery) use ($search): void {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            });
     }
 
     /**

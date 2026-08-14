@@ -26,7 +26,7 @@ Admin manages Officers and all school data. Officers share operational admin rou
 |---|---|---|---|
 | GET | `/admin/dashboard` | `admin.dashboard` | School glance hero, 3 KPIs, 2 charts, attention + activity (`role:admin\|officer`) |
 | resource | `/admin/officers` | `admin.officers.*` | Admin-only Officers CRUD (`manage-officers`; ADR 0013) |
-| GET | `/admin/activity-logs` | `admin.activity-logs.index` | Audit viewer for admin + officer (`view-activity-log`); Flux action filter |
+| GET | `/admin/activity-logs` | `admin.activity-logs.index` | Audit viewer for admin + officer (`view-activity-log`); action/search/date filters + pagination |
 | resource | `/admin/academic-years` | `admin.academic-years.*` | except show |
 | resource | `/admin/grades` | `admin.grades.*` | except show |
 | resource | `/admin/streams` | `admin.streams.*` | except show |
@@ -38,6 +38,7 @@ Admin manages Officers and all school data. Officers share operational admin rou
 - Academic CRUD requires `manage-system-config` (admin/officer) via policies.
 - Officers section is **admin-only**; officers cannot create or manage other officers (ADR 0013).
 - Create/edit screens use shared `x-form.*` sectioned multi-column layouts (not single-column field stacks).
+- Index lists use shared `x-list.filters` / `x-list.table` / `x-list.pagination` (search + dropdowns + per-page; ADR 0016).
 - Dropdowns use Flux `flux:select` (including Alpine assignment rows via `x-bind:name` + `x-model`).
 - Month filters use shared `x-form.month-select`.
 - Grades 12–13 **require** a stream; grades 1–11 **must not** have a stream.

@@ -12,60 +12,63 @@
             </div>
         </div>
 
-        @if (session('status'))
-            <flux:callout variant="success" icon="check-circle">
-                <flux:callout.heading>{{ session('status') }}</flux:callout.heading>
-            </flux:callout>
-        @endif
+        <x-list.flash />
 
-        <form method="GET" action="{{ route('admin.attendance.sessions.index') }}" class="flex flex-wrap items-end gap-3">
-            <flux:select name="academic_year_id" :label="__('Academic year')">
+        <x-list.filters :action="route('admin.attendance.sessions.index')" :filters="$filters">
+            <flux:select name="academic_year_id" :label="__('Academic year')" :placeholder="__('All')">
                 @foreach ($academicYears as $year)
-                    <flux:select.option :value="$year->id" :selected="(string) $selectedAcademicYearId === (string) $year->id">{{ $year->name }}</flux:select.option>
+                    <flux:select.option :value="$year->id" :selected="(string) ($filters['academic_year_id'] ?? '') === (string) $year->id">{{ $year->name }}</flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:select name="school_class_id" :label="__('Class')">
-                <flux:select.option value="">{{ __('All classes') }}</flux:select.option>
+            <flux:select name="school_class_id" :label="__('Class')" :placeholder="__('All')">
                 @foreach ($schoolClasses as $class)
-                    <flux:select.option :value="$class->id" :selected="(string) $selectedSchoolClassId === (string) $class->id">{{ $class->code }}</flux:select.option>
+                    <flux:select.option :value="$class->id" :selected="(string) ($filters['school_class_id'] ?? '') === (string) $class->id">{{ $class->code }}</flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:button type="submit" variant="filled">{{ __('Filter') }}</flux:button>
-        </form>
+            <flux:select name="subject_id" :label="__('Subject')" :placeholder="__('All')">
+                @foreach ($subjects as $subject)
+                    <flux:select.option :value="$subject->id" :selected="(string) ($filters['subject_id'] ?? '') === (string) $subject->id">{{ $subject->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:select name="scope" :label="__('Scope')" :placeholder="__('All')">
+                <flux:select.option value="class" :selected="($filters['scope'] ?? null) === 'class'">{{ __('Class') }}</flux:select.option>
+                <flux:select.option value="subject" :selected="($filters['scope'] ?? null) === 'subject'">{{ __('Subject') }}</flux:select.option>
+            </flux:select>
+            <flux:select name="status" :label="__('Status')" :placeholder="__('All')">
+                <flux:select.option value="open" :selected="($filters['status'] ?? null) === 'open'">{{ __('Open') }}</flux:select.option>
+                <flux:select.option value="finalized" :selected="($filters['status'] ?? null) === 'finalized'">{{ __('Finalized') }}</flux:select.option>
+            </flux:select>
+            <flux:input type="date" name="date_from" :label="__('From')" :value="$filters['date_from'] ?? ''" />
+            <flux:input type="date" name="date_to" :label="__('To')" :value="$filters['date_to'] ?? ''" />
+        </x-list.filters>
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-            <table class="min-w-full text-sm">
-                <thead class="bg-zinc-50 dark:bg-zinc-900">
-                    <tr>
-                        <th class="px-3 py-2 text-left">{{ __('Date') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Class') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Scope') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Taken by') }}</th>
-                        <th class="px-3 py-2 text-left">{{ __('Status') }}</th>
-                        <th class="px-3 py-2 text-left"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($sessions as $session)
-                        <tr class="border-t border-zinc-200 dark:border-zinc-700">
-                            <td class="px-3 py-2">{{ $session->date->toDateString() }}</td>
-                            <td class="px-3 py-2">{{ $session->schoolClass?->code }}</td>
-                            <td class="px-3 py-2">{{ $session->subject?->name ?? __('Class') }}</td>
-                            <td class="px-3 py-2">{{ $session->takenByTeacher?->user?->name ?? '—' }}</td>
-                            <td class="px-3 py-2">{{ $session->isFinalized() ? __('Finalized') : __('Open') }}</td>
-                            <td class="px-3 py-2">
-                                <a class="underline" href="{{ route('admin.attendance.sessions.edit', $session) }}">{{ __('Open') }}</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-3 py-6 text-zinc-500">{{ __('No attendance sessions yet.') }}</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <x-list.table>
+            <x-slot:head>
+                <th class="px-4 py-3 font-medium">{{ __('Date') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Class') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Scope') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Taken by') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
+                <th class="px-4 py-3 font-medium"></th>
+            </x-slot:head>
+            @forelse ($sessions as $session)
+                <tr class="border-t border-border">
+                    <td class="px-4 py-3">{{ $session->date->toDateString() }}</td>
+                    <td class="px-4 py-3">{{ $session->schoolClass?->code }}</td>
+                    <td class="px-4 py-3">{{ $session->subject?->name ?? __('Class') }}</td>
+                    <td class="px-4 py-3">{{ $session->takenByTeacher?->user?->name ?? '—' }}</td>
+                    <td class="px-4 py-3">{{ $session->isFinalized() ? __('Finalized') : __('Open') }}</td>
+                    <td class="px-4 py-3">
+                        <flux:button size="sm" :href="route('admin.attendance.sessions.edit', $session)" variant="ghost" wire:navigate>{{ __('Open') }}</flux:button>
+                    </td>
+                </tr>
+            @empty
+                <tr class="border-t border-border">
+                    <td colspan="6" class="px-4 py-10 text-center text-muted-foreground">{{ __('No attendance sessions match these filters.') }}</td>
+                </tr>
+            @endforelse
+        </x-list.table>
 
-        {{ $sessions->links() }}
+        <x-list.pagination :paginator="$sessions" />
     </div>
 </x-layouts::app>

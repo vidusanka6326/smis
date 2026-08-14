@@ -13,6 +13,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,30 +24,31 @@ class AttendanceSessionController extends Controller
     {
         $this->authorize('viewAny', AttendanceSession::class);
 
-        $academicYearId = (int) $request->integer(
-            'academic_year_id',
-            AcademicYear::query()->where('is_current', true)->value('id')
-                ?? AcademicYear::query()->latest('starts_on')->value('id')
-                ?? 0,
-        );
+        $filters = ListQuery::filters($request, ['academic_year_id', 'school_class_id', 'subject_id', 'scope', 'status', 'date_from', 'date_to']);
 
-        $sessions = AttendanceSession::query()
-            ->with(['schoolClass', 'subject', 'takenByTeacher.user'])
-            ->when($academicYearId > 0, fn ($q) => $q->where('academic_year_id', $academicYearId))
-            ->when($request->filled('school_class_id'), fn ($q) => $q->where('school_class_id', $request->integer('school_class_id')))
-            ->orderByDesc('date')
-            ->paginate(20)
-            ->withQueryString();
+        $academicYearId = (int) ($filters['academic_year_id'] ?? AcademicYear::query()->where('is_current', true)->value('id')
+            ?? AcademicYear::query()->latest('starts_on')->value('id')
+            ?? 0);
+
+        if ($academicYearId > 0 && ! isset($filters['academic_year_id'])) {
+            $filters['academic_year_id'] = (string) $academicYearId;
+        }
 
         return view('admin.attendance.sessions.index', [
-            'sessions' => $sessions,
+            'sessions' => ListQuery::paginate(
+                AttendanceSession::query()
+                    ->with(['schoolClass', 'subject', 'takenByTeacher.user'])
+                    ->filter($filters)
+                    ->orderByDesc('date'),
+                $request,
+            ),
+            'filters' => $filters,
             'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
             'schoolClasses' => SchoolClass::query()
                 ->when($academicYearId > 0, fn ($q) => $q->where('academic_year_id', $academicYearId))
                 ->orderBy('code')
                 ->get(),
-            'selectedAcademicYearId' => $academicYearId,
-            'selectedSchoolClassId' => $request->integer('school_class_id'),
+            'subjects' => Subject::query()->orderBy('name')->get(),
         ]);
     }
 

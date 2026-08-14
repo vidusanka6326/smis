@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendanceSession;
 use App\Models\SchoolClass;
 use App\Services\Attendance\AttendanceMonthlySummary;
+use App\Support\ListQuery;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,13 +27,20 @@ class AttendanceMonthlySummaryController extends Controller
             ? $summary->forClass($schoolClassId, $start, $end, $subjectId)
             : [];
 
+        $filters = array_filter([
+            'month' => $month,
+            'school_class_id' => $schoolClassId > 0 ? (string) $schoolClassId : null,
+            'subject_id' => $subjectId,
+        ], fn ($value) => filled($value));
+
         return view('admin.attendance.monthly', [
             'month' => $month,
             'schoolClasses' => SchoolClass::query()->orderBy('code')->get(),
             'selectedSchoolClassId' => $schoolClassId,
             'selectedSubjectId' => $subjectId,
-            'rows' => $rows,
+            'rows' => ListQuery::paginateCollection($rows, $request),
             'schoolClass' => $schoolClassId > 0 ? SchoolClass::query()->with('subjects')->find($schoolClassId) : null,
+            'filters' => $filters,
         ]);
     }
 }

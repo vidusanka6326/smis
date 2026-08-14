@@ -5,14 +5,18 @@
             <flux:text class="mt-1">{{ __('Class averages, students below :pct%, and full monthly detail.', ['pct' => (int) $data['summary']['threshold']]) }}</flux:text>
         </div>
 
-        <form method="GET" action="{{ route('admin.reports.attendance') }}" class="no-print flex flex-wrap items-end gap-3">
+        <x-list.filters :action="route('admin.reports.attendance')" :filters="$filters" :submit="__('Load')" class="no-print">
             <x-form.month-select :value="$month" />
-            <flux:button type="submit" variant="filled">{{ __('Load') }}</flux:button>
-        </form>
+            <flux:select name="school_class_id" :label="__('Class')" :placeholder="__('All classes')">
+                @foreach ($schoolClasses as $class)
+                    <flux:select.option :value="$class->id" :selected="(string) $selectedSchoolClassId === (string) $class->id">{{ $class->code }}</flux:select.option>
+                @endforeach
+            </flux:select>
+        </x-list.filters>
 
         <x-report-toolbar :print="$print">
-            <flux:button :href="route('admin.reports.attendance', ['month' => $month, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
-            <flux:button :href="route('admin.reports.attendance', ['month' => $month, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
+            <flux:button :href="route('admin.reports.attendance', ['month' => $month, 'school_class_id' => $selectedSchoolClassId, 'export' => 'csv'])" variant="filled">{{ __('CSV') }}</flux:button>
+            <flux:button :href="route('admin.reports.attendance', ['month' => $month, 'school_class_id' => $selectedSchoolClassId, 'print' => 1])" variant="filled">{{ __('Print / PDF') }}</flux:button>
         </x-report-toolbar>
 
         <div class="grid gap-4 sm:grid-cols-3">
@@ -98,7 +102,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($data['student_rows'] as $row)
+                    @forelse ($studentRows as $row)
                         <tr class="border-t border-border">
                             <td class="px-3 py-2">{{ $row['name'] }}</td>
                             <td class="px-3 py-2">{{ $row['class'] }}</td>
@@ -111,5 +115,7 @@
                 </tbody>
             </table>
         </div>
+
+        <x-list.pagination :paginator="$studentRows" class="no-print" />
     </div>
 </x-layouts::app>

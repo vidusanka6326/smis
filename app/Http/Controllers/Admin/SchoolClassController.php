@@ -14,22 +14,33 @@ use App\Models\Stream;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\TeacherAssignment;
+use App\Support\ListQuery;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class SchoolClassController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', SchoolClass::class);
 
+        $filters = ListQuery::filters($request, ['search', 'academic_year_id', 'grade_id', 'stream_id']);
+
         return view('admin.classes.index', [
-            'schoolClasses' => SchoolClass::query()
-                ->with(['academicYear', 'grade', 'stream', 'classTeacher.user'])
-                ->latest('id')
-                ->paginate(20),
+            'schoolClasses' => ListQuery::paginate(
+                SchoolClass::query()
+                    ->with(['academicYear', 'grade', 'stream', 'classTeacher.user'])
+                    ->filter($filters)
+                    ->latest('id'),
+                $request,
+            ),
+            'filters' => $filters,
+            'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
+            'grades' => Grade::query()->orderBy('number')->get(),
+            'streams' => Stream::query()->orderBy('name')->get(),
         ]);
     }
 

@@ -7,19 +7,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAcademicYearRequest;
 use App\Http\Requests\Admin\UpdateAcademicYearRequest;
 use App\Models\AcademicYear;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AcademicYearController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', AcademicYear::class);
 
+        $filters = ListQuery::filters($request, ['search', 'is_current']);
+
         return view('admin.academic-years.index', [
-            'academicYears' => AcademicYear::query()
-                ->orderByDesc('starts_on')
-                ->paginate(15),
+            'academicYears' => ListQuery::paginate(
+                AcademicYear::query()
+                    ->filter($filters)
+                    ->orderByDesc('starts_on'),
+                $request,
+            ),
+            'filters' => $filters,
         ]);
     }
 

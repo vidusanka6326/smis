@@ -6,28 +6,39 @@ use App\Actions\Timetable\AssignReliefTeacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreReliefTeacherAssignmentRequest;
 use App\Models\ReliefTeacherAssignment;
+use App\Models\SchoolClass;
 use App\Models\Teacher;
 use App\Models\TimetableEntry;
+use App\Support\ListQuery;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ReliefTeacherAssignmentController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->authorize('viewAny', ReliefTeacherAssignment::class);
 
+        $filters = ListQuery::filters($request, ['search', 'date_from', 'date_to', 'school_class_id', 'teacher_id']);
+
         return view('admin.relief-assignments.index', [
-            'assignments' => ReliefTeacherAssignment::query()
-                ->with([
-                    'reliefTeacher.user',
-                    'timetableEntry.schoolClass',
-                    'timetableEntry.subject',
-                    'timetableEntry.teacher.user',
-                    'assignedByUser',
-                ])
-                ->latest('date')
-                ->paginate(20),
+            'assignments' => ListQuery::paginate(
+                ReliefTeacherAssignment::query()
+                    ->with([
+                        'reliefTeacher.user',
+                        'timetableEntry.schoolClass',
+                        'timetableEntry.subject',
+                        'timetableEntry.teacher.user',
+                        'assignedByUser',
+                    ])
+                    ->filter($filters)
+                    ->latest('date'),
+                $request,
+            ),
+            'filters' => $filters,
+            'schoolClasses' => SchoolClass::query()->orderBy('code')->get(),
+            'teachers' => Teacher::query()->with('user')->orderBy('employee_no')->get(),
         ]);
     }
 

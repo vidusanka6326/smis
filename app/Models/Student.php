@@ -81,6 +81,9 @@ class Student extends Model
             ->when($filters['subject_id'] ?? null, function (Builder $q, int|string $subjectId): void {
                 $q->whereHas('currentClass.subjects', fn (Builder $subjectQuery) => $subjectQuery->where('subjects.id', $subjectId));
             })
+            ->when($filters['status'] ?? null, function (Builder $q, string $status): void {
+                $q->whereHas('user', fn (Builder $userQuery) => $userQuery->where('status', $status));
+            })
             ->when($filters['search'] ?? null, function (Builder $q, string $search): void {
                 $q->where(function (Builder $inner) use ($search): void {
                     $inner->where('admission_no', 'like', "%{$search}%")

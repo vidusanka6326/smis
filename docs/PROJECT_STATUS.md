@@ -2,7 +2,9 @@
 
 ## Current Phase
 
-**Demo dataset — Sri Lankan national school seed** (Done)
+**UI — List filters & pagination** (Done)
+
+Shared `x-list.filters` / table / Flux pagination on every index, plus per-page (10/20/50/100).
 
 `migrate:fresh --seed` now loads a Type 1AB-style school: 1 admin, 5 officers, 30 teachers, 600 students, 28 classes (grades 6–13). Junior 12 subjects, O/L 9, A/L 3 per stream (ADR 0015). Sinhala personal names in English; UI copy stays English.
 
@@ -19,9 +21,9 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
 | Auth | Done | 100% | Feature + policy tests passing | 2026-08-14 | Roles incl. officer; Officers CRUD; inactive gate; role dashboards |
-| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + officers + dashboard | 2026-08-14 | Shared with officers for data entry |
-| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-14 | Scoped reports enrichment + theme |
-| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-14 | Report-card depth + theme |
+| Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + officers + dashboard | 2026-08-14 | Shared list filters + pagination (ADR 0016) |
+| Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-14 | Scoped lists filtered + paginated |
+| Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-14 | Attendance/results lists paginated |
 | Attendance | Done | 100% | Feature + policy + % calculator unit coverage | 2026-08-10 | Sessions, teacher attendance, monthly summaries; audited upserts |
 | Timetable | Done | 100% | Feature + policy + conflict + period schedule unit | 2026-08-10 | Visual period×day grid + default times |
 | Examination | Done | 100% | Feature + policy + grade/pass unit branch coverage | 2026-08-10 | Exams, subjects, marks, publish lock; audited marks/publish |
@@ -46,7 +48,9 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
-- **2026-08-14** — Realistic demo school seed (ADR 0015): 1 admin, 5 officers, 30 teachers, 600 students; Sri Lankan junior/O/L/A/L subjects; Sinhala names in English.
+- **2026-08-14** — Aligned the compact per-page select with other filter controls (same height as Apply).
+- **2026-08-14** — Compacted list filter bars to a single row (no heading copy; small per-page select; Apply at the end).
+- **2026-08-14** — Shared list kit (ADR 0016): filters + Flux pagination + per-page on every index (students, teachers, officers, academic structure, exams, marks, attendance, activity log, relief, reports, student results).
 - **2026-08-14** — Flux selects open a custom dropdown menu (ADR 0014); native OS picker is hidden. Fixed Blade `@if` leaking into the trigger button.
 - **2026-08-14** — Dashboard sidebar brand shows muted subtitle “Never miss a class” under SMIS.
 - **2026-08-14** — Finished Flux form controls: month filters (`x-form.month-select`), attendance finalize checkboxes, marks number inputs, remaining native action buttons.

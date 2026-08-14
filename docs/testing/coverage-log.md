@@ -1,5 +1,22 @@
 # Coverage Log
 
+## 2026-08-14 — Compact list filter bar
+
+Command: `php artisan test --compact tests/Feature/ListFiltersPaginationTest.php tests/Feature/Admin/StudentManagementTest.php tests/Feature/Admin/ActivityLogTest.php` — **16 passed**
+
+Notes: Filter heading copy removed; Apply sits on the same row as fields; per-page select is `w-24` / `size="sm"`.
+
+## 2026-08-14 — Shared list filters and pagination
+
+Command: `php artisan test --compact` — **276 passed** (971 assertions)
+
+Notable suites:
+- `ListQuery` unit tests (trim/drop empty filters, per-page allow-list, collection pagination)
+- Feature: student pagination with query string, teacher search, class-by-grade, exam type, officer status, teacher/student filter bars
+- Existing student/activity-log/officer index tests still pass
+
+Notes: Pagination view is `pagination::flux` (HTTP links, not Livewire `wire:click`). Full `--coverage` still blocked without pcov/xdebug.
+
 ## 2026-08-14 — Flux select dropdown override
 
 Command: `php artisan test --compact` — **261 passed** (874 assertions)
