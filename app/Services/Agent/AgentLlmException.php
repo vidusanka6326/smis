@@ -4,7 +4,7 @@ namespace App\Services\Agent;
 
 use RuntimeException;
 
-class GeminiRequestException extends RuntimeException
+class AgentLlmException extends RuntimeException
 {
     /**
      * @param  array<string, mixed>  $context

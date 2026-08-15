@@ -2,7 +2,7 @@
 
 ## Purpose
 
-In-app Gemini assistant for **admin**, **officer**, and **teacher**. Staff chat in a ChatGPT-style UI; the model calls permissioned tools that read and change school data through existing Actions, Policies, and services. Anything the signed-in user can do in the web UI is available as a tool; anything they cannot do is hidden and rejected.
+In-app assistant for **admin**, **officer**, and **teacher**. Staff chat in a ChatGPT-style UI; the model calls permissioned tools that read and change school data through existing Actions, Policies, and services. Anything the signed-in user can do in the web UI is available as a tool; anything they cannot do is hidden and rejected.
 
 ## User roles involved
 
@@ -56,10 +56,10 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 
 ## Key business rules
 
-- Gemini key is `config('services.gemini.key')` (`GEMINI_API_KEY`). Missing key returns a setup message instead of calling Google.
-- Live replies use `models/gemini-flash-latest:generateContent` (Google AI Studio sample). Model 404, quota 429, bad-key 403, and (when `APP_DEBUG`) Gemini 400 messages are shown in chat instead of a generic failure.
+- LLM keys: `OPENROUTER_API_KEY` and/or `GEMINI_API_KEY`. `AGENT_LLM_PROVIDERS` (default `openrouter,gemini`) picks the **first listed provider that has a key**. Missing both keys returns a setup message.
+- OpenRouter live replies use `https://openrouter.ai/api/v1/chat/completions` (`OPENROUTER_MODEL`, default `openai/gpt-oss-20b:free`). Gemini uses `models/{GEMINI_MODEL}:generateContent` (default `gemini-flash-latest`). Provider 401/403/404/429 errors are shown in chat.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
-- The chat is a full-height shell: conversation list (title + relative time), compact composer, and Gemini/setup failures as Flux callouts (with an AI Studio link for quota errors).
+- The chat is a full-height shell: conversation list (title + relative time), compact composer, and provider/setup failures as Flux callouts (OpenRouter credits or Google AI Studio links).
 - Assigning a **named teacher to a free period** creates a timetable entry (subject required). Relief is only for an existing lesson on a matching weekday date.
 - Teachers may inspect timetables of classes they are assigned to (assumption; class/subject/PT-PD via `TeacherReportScope`).
 - Class teachers may create students only in their homeroom (`StudentPolicy::createInClass`). They cannot change status, password, or class.
@@ -72,8 +72,8 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 - Ambiguous teacher/student/exam names return matches and expect `offer_choices`.
 - `10A` normalizes to `10-A`.
 - Cross-user conversations 403.
-- Unauthorized tools are omitted from Gemini’s function list; calling one anyway returns a role error.
-- Tools with no arguments must JSON-encode `parameters.properties` as `{}`. PHP empty arrays become `[]`, which Gemini rejects with HTTP 400 (`Cannot bind a list to map for field 'properties'`).
+- Unauthorized tools are omitted from the model’s function list; calling one anyway returns a role error.
+- Tools with no arguments must JSON-encode `parameters.properties` as `{}`. PHP empty arrays become `[]`, which OpenAI-compatible APIs reject.
 
 ## Status
 

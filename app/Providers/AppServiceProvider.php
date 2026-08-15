@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Policies\ReportPolicy;
 use App\Services\Agent\AgentToolRegistry;
 use App\Services\Agent\GeminiAgentLlm;
+use App\Services\Agent\OpenRouterAgentLlm;
+use App\Services\Agent\PreferConfiguredAgentLlm;
 use App\Services\Agent\Tools\AssignReliefTeacherTool;
 use App\Services\Agent\Tools\AssignTimetableSlotTool;
 use App\Services\Agent\Tools\DeleteTimetableSlotTool;
@@ -59,7 +61,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(AgentLlm::class, GeminiAgentLlm::class);
+        $this->app->singleton(AgentLlm::class, function ($app): AgentLlm {
+            $map = [
+                'openrouter' => $app->make(OpenRouterAgentLlm::class),
+                'gemini' => $app->make(GeminiAgentLlm::class),
+            ];
+
+            $providers = [];
+
+            foreach (config('services.agent.providers', ['openrouter', 'gemini']) as $name) {
+                if (! is_string($name) || ! isset($map[$name])) {
+                    continue;
+                }
+
+                $providers[] = $map[$name];
+            }
+
+            return new PreferConfiguredAgentLlm($providers);
+        });
 
         $this->app->tag([
             OfferChoicesTool::class,

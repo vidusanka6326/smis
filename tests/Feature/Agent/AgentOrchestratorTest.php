@@ -11,8 +11,8 @@ use App\Models\Teacher;
 use App\Models\TimetableEntry;
 use App\Models\User;
 use App\Services\Agent\AgentLlmEvent;
+use App\Services\Agent\AgentLlmException;
 use App\Services\Agent\AgentOrchestrator;
-use App\Services\Agent\GeminiRequestException;
 use Tests\Support\ScriptedAgentLlm;
 
 test('orchestrator calls tools then stores markdown and choices', function () {
@@ -78,7 +78,7 @@ test('orchestrator calls tools then stores markdown and choices', function () {
         ->and($conversation->messages()->count())->toBe(2);
 });
 
-test('orchestrator surfaces gemini request errors in the chat', function () {
+test('orchestrator surfaces llm request errors in the chat', function () {
     $this->app->instance(AgentLlm::class, new class implements AgentLlm
     {
         public function isConfigured(): bool
@@ -88,7 +88,7 @@ test('orchestrator surfaces gemini request errors in the chat', function () {
 
         public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
         {
-            throw new GeminiRequestException('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.');
+            throw new AgentLlmException('OpenRouter credits are exhausted. Add credits and retry.');
         }
     });
 
@@ -103,5 +103,5 @@ test('orchestrator surfaces gemini request errors in the chat', function () {
         function (string $status): void {},
     );
 
-    expect($result->markdown)->toContain('credits or quota');
+    expect($result->markdown)->toContain('credits');
 });

@@ -32,6 +32,9 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="AGENT_LLM_PROVIDERS" value="openrouter,gemini"/>
+        <env name="OPENROUTER_API_KEY" value=""/>
+        <env name="OPENROUTER_MODEL" value="openai/gpt-oss-20b:free"/>
         <env name="GEMINI_API_KEY" value=""/>
         <env name="GEMINI_MODEL" value="gemini-flash-latest"/>
     </php>

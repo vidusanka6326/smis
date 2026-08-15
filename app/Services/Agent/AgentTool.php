@@ -11,7 +11,7 @@ interface AgentTool
     public function description(): string;
 
     /**
-     * Gemini function-declaration JSON schema (uppercase types).
+     * OpenAI-compatible JSON Schema for this tool’s arguments.
      *
      * @return array<string, mixed>
      */

@@ -37,7 +37,7 @@ class AgentToolRegistry
     }
 
     /**
-     * Gemini functionDeclarations for the signed-in user.
+     * OpenAI-compatible tool declarations for the signed-in user.
      *
      * @return list<array<string, mixed>>
      */

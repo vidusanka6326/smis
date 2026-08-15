@@ -1,5 +1,7 @@
 # ADR 0018 — SMIS Agent via Gemini function calling
 
+**Superseded by [ADR 0019](0019-smis-agent-openrouter.md)** (OpenRouter `chat/completions`). Role gating and tools from this ADR still apply.
+
 ## Context
 
 Staff need to ask operational questions (free periods in 10-A, who is free, assign a named teacher) without leaving the app. The school already has Policies, Actions, and Spatie permissions. A general-purpose LLM must not bypass them.

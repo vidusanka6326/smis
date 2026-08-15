@@ -17,7 +17,7 @@ abstract class AbstractAgentTool implements AgentTool
     protected function stringParam(string $description): array
     {
         return [
-            'type' => 'STRING',
+            'type' => 'string',
             'description' => $description,
         ];
     }
@@ -28,7 +28,7 @@ abstract class AbstractAgentTool implements AgentTool
     protected function integerParam(string $description): array
     {
         return [
-            'type' => 'INTEGER',
+            'type' => 'integer',
             'description' => $description,
         ];
     }
@@ -39,7 +39,7 @@ abstract class AbstractAgentTool implements AgentTool
     protected function booleanParam(string $description): array
     {
         return [
-            'type' => 'BOOLEAN',
+            'type' => 'boolean',
             'description' => $description,
         ];
     }
@@ -51,7 +51,7 @@ abstract class AbstractAgentTool implements AgentTool
     protected function arrayParam(string $description, array $itemSchema): array
     {
         return [
-            'type' => 'ARRAY',
+            'type' => 'array',
             'description' => $description,
             'items' => $itemSchema,
         ];
@@ -65,8 +65,8 @@ abstract class AbstractAgentTool implements AgentTool
     protected function objectSchema(array $properties, array $required = []): array
     {
         $schema = [
-            'type' => 'OBJECT',
-            // Empty PHP arrays JSON-encode as lists. Gemini requires `properties` to be a map.
+            'type' => 'object',
+            // Empty PHP arrays JSON-encode as lists. OpenAI-compatible APIs require `properties` to be a map.
             'properties' => $properties === [] ? (object) [] : $properties,
         ];
 

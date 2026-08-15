@@ -51,7 +51,7 @@ class AgentMessage extends Model
     }
 
     /**
-     * Gemini/setup failures should render as a callout, not a chat bubble.
+     * Provider/setup failures should render as a callout, not a chat bubble.
      */
     public function isServiceNotice(): bool
     {
@@ -59,7 +59,7 @@ class AgentMessage extends Model
     }
 
     /**
-     * Gemini/setup failures should render as a callout, not a chat bubble.
+     * Provider/setup failures should render as a callout, not a chat bubble.
      *
      * @return 'warning'|'danger'|null
      */
@@ -71,13 +71,15 @@ class AgentMessage extends Model
 
         $content = $this->content;
 
-        if (str_contains($content, 'credits or quota')
+        if (str_contains($content, 'credits')
+            || str_contains($content, 'rate-limited')
             || str_contains($content, 'not configured')
             || str_contains($content, 'rejected the API key')) {
             return 'warning';
         }
 
         if (str_contains($content, 'could not complete')
+            || str_contains($content, 'OpenRouter rejected')
             || str_contains($content, 'Gemini rejected')
             || str_contains($content, 'safety filters')
             || str_contains($content, 'model is not available')) {

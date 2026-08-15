@@ -1,5 +1,17 @@
 # Coverage Log
 
+## 2026-08-15 — Dual LLM providers (OpenRouter + Gemini)
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **53 passed** (120 assertions). PHPStan clean on `app/Services/Agent`.
+
+Notes: `AGENT_LLM_PROVIDERS` picks the first configured of OpenRouter / Gemini. Gemini `generateContent` restored; orchestrator still uses OpenAI-shaped messages.
+
+## 2026-08-14 — OpenRouter `openai/gpt-oss-20b:free`
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **42 passed** (96 assertions). PHPStan clean on `app/Services/Agent`.
+
+Notes: Gemini client removed. Agent posts to OpenRouter `chat/completions`. Tests fake 200/400/404/429.
+
 ## 2026-08-14 — SMIS Agent chat UI
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **43 passed** (98 assertions). PHPStan clean on chat UI files.
