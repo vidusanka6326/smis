@@ -5,7 +5,7 @@ namespace App\Services\Agent;
 final readonly class AgentLlmEvent
 {
     /**
-     * @param  list<array{name: string, args: array<string, mixed>}>  $functionCalls
+     * @param  list<array{id?: string, name: string, args: array<string, mixed>}>  $functionCalls
      */
     public function __construct(
         public ?string $textDelta = null,

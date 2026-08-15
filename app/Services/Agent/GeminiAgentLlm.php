@@ -6,11 +6,10 @@ use App\Contracts\AgentLlm;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use stdClass;
 
 class GeminiAgentLlm implements AgentLlm
 {
-    public function __construct(private GeminiSseDecoder $decoder) {}
-
     public function isConfigured(): bool
     {
         $key = config('services.gemini.key');
@@ -21,14 +20,14 @@ class GeminiAgentLlm implements AgentLlm
     public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
     {
         if (! $this->isConfigured()) {
-            throw new GeminiRequestException('Gemini is not configured.');
+            throw new AgentLlmException('Gemini is not configured.');
         }
 
         $payload = [
             'systemInstruction' => [
                 'parts' => [['text' => $systemInstruction]],
             ],
-            'contents' => $contents,
+            'contents' => $this->geminiContents($contents),
             'generationConfig' => [
                 'temperature' => 0.3,
                 'maxOutputTokens' => 2048,
@@ -37,7 +36,14 @@ class GeminiAgentLlm implements AgentLlm
 
         if ($tools !== []) {
             $payload['tools'] = [
-                ['functionDeclarations' => $tools],
+                ['functionDeclarations' => array_map(
+                    fn (array $tool): array => [
+                        'name' => $tool['name'],
+                        'description' => $tool['description'] ?? '',
+                        'parameters' => $this->geminiSchema($tool['parameters'] ?? ['type' => 'object', 'properties' => new stdClass]),
+                    ],
+                    $tools,
+                )],
             ];
         }
 
@@ -50,7 +56,7 @@ class GeminiAgentLlm implements AgentLlm
             ->post($this->endpoint(), $payload);
 
         if ($response->failed()) {
-            throw new GeminiRequestException(
+            throw new AgentLlmException(
                 $this->userMessageFromResponse($response),
                 [
                     'gemini_status' => $response->status(),
@@ -62,16 +68,16 @@ class GeminiAgentLlm implements AgentLlm
         $decoded = $response->json();
 
         if (! is_array($decoded)) {
-            throw new GeminiRequestException(__('SMIS Agent could not complete that request. Please try again.'));
+            throw new AgentLlmException(__('SMIS Agent could not complete that request. Please try again.'));
         }
 
         $blockReason = data_get($decoded, 'promptFeedback.blockReason');
 
         if (is_string($blockReason) && $blockReason !== '') {
-            throw new GeminiRequestException(__('That request was blocked by Gemini safety filters. Rephrase and try again.'));
+            throw new AgentLlmException(__('That request was blocked by Gemini safety filters. Rephrase and try again.'));
         }
 
-        $event = $this->decoder->eventFromPayload($decoded);
+        $event = $this->eventFromPayload($decoded);
 
         if ($event->textDelta !== null) {
             yield new AgentLlmEvent(
@@ -92,6 +98,223 @@ class GeminiAgentLlm implements AgentLlm
         $model = (string) config('services.gemini.model');
 
         return "{$base}/models/{$model}:generateContent";
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $messages
+     * @return list<array<string, mixed>>
+     */
+    private function geminiContents(array $messages): array
+    {
+        $callNames = [];
+
+        foreach ($messages as $message) {
+            if (($message['role'] ?? '') !== 'assistant') {
+                continue;
+            }
+
+            foreach ($message['tool_calls'] ?? [] as $call) {
+                if (! is_array($call)) {
+                    continue;
+                }
+
+                $id = $call['id'] ?? null;
+                $name = data_get($call, 'function.name');
+
+                if (is_string($id) && $id !== '' && is_string($name) && $name !== '') {
+                    $callNames[$id] = $name;
+                }
+            }
+        }
+
+        $contents = [];
+        $pendingResponses = [];
+
+        foreach ($messages as $message) {
+            $role = $message['role'] ?? 'user';
+
+            if ($role === 'system') {
+                continue;
+            }
+
+            if ($role === 'tool') {
+                $id = $message['tool_call_id'] ?? '';
+                $name = is_string($id) ? ($callNames[$id] ?? 'unknown') : 'unknown';
+                $raw = $message['content'] ?? '{}';
+                $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+                $pendingResponses[] = [
+                    'functionResponse' => [
+                        'name' => $name,
+                        'response' => is_array($decoded) ? $decoded : ['result' => $raw],
+                    ],
+                ];
+
+                continue;
+            }
+
+            if ($pendingResponses !== []) {
+                $contents[] = ['role' => 'user', 'parts' => $pendingResponses];
+                $pendingResponses = [];
+            }
+
+            if ($role === 'assistant') {
+                $parts = [];
+                $text = $message['content'] ?? null;
+
+                if (is_string($text) && $text !== '') {
+                    $parts[] = ['text' => $text];
+                }
+
+                foreach ($message['tool_calls'] ?? [] as $call) {
+                    if (! is_array($call)) {
+                        continue;
+                    }
+
+                    $name = data_get($call, 'function.name');
+
+                    if (! is_string($name) || $name === '') {
+                        continue;
+                    }
+
+                    $parts[] = [
+                        'functionCall' => [
+                            'name' => $name,
+                            'args' => $this->decodeArguments(data_get($call, 'function.arguments')),
+                        ],
+                    ];
+                }
+
+                if ($parts !== []) {
+                    $contents[] = ['role' => 'model', 'parts' => $parts];
+                }
+
+                continue;
+            }
+
+            $text = $message['content'] ?? '';
+            $contents[] = [
+                'role' => 'user',
+                'parts' => [['text' => is_string($text) ? $text : '']],
+            ];
+        }
+
+        if ($pendingResponses !== []) {
+            $contents[] = ['role' => 'user', 'parts' => $pendingResponses];
+        }
+
+        return $contents;
+    }
+
+    /**
+     * @return array<string, mixed>|stdClass
+     */
+    private function geminiSchema(mixed $schema): array|stdClass
+    {
+        if ($schema instanceof stdClass) {
+            return $schema;
+        }
+
+        if (! is_array($schema)) {
+            return ['type' => 'OBJECT', 'properties' => new stdClass];
+        }
+
+        $converted = [];
+
+        foreach ($schema as $key => $value) {
+            if ($key === 'type' && is_string($value)) {
+                $converted[$key] = strtoupper($value);
+
+                continue;
+            }
+
+            if ($key === 'properties') {
+                if ($value instanceof stdClass || $value === []) {
+                    $converted[$key] = new stdClass;
+                } elseif (is_array($value)) {
+                    $converted[$key] = [];
+
+                    foreach ($value as $propName => $propSchema) {
+                        $converted[$key][$propName] = $this->geminiSchema($propSchema);
+                    }
+                }
+
+                continue;
+            }
+
+            if ($key === 'items') {
+                $converted[$key] = $this->geminiSchema($value);
+
+                continue;
+            }
+
+            $converted[$key] = $value;
+        }
+
+        return $converted;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function eventFromPayload(array $payload): AgentLlmEvent
+    {
+        $parts = data_get($payload, 'candidates.0.content.parts', []);
+        $text = '';
+        $functionCalls = [];
+
+        if (is_array($parts)) {
+            foreach ($parts as $index => $part) {
+                if (! is_array($part)) {
+                    continue;
+                }
+
+                if (isset($part['thought']) && $part['thought'] === true) {
+                    continue;
+                }
+
+                if (isset($part['text']) && is_string($part['text'])) {
+                    $text .= $part['text'];
+                }
+
+                if (isset($part['functionCall']) && is_array($part['functionCall'])) {
+                    $name = $part['functionCall']['name'] ?? null;
+                    $args = $part['functionCall']['args'] ?? [];
+
+                    if (is_string($name) && $name !== '') {
+                        $functionCalls[] = [
+                            'id' => 'call_'.$index,
+                            'name' => $name,
+                            'args' => is_array($args) ? $args : [],
+                        ];
+                    }
+                }
+            }
+        }
+
+        return new AgentLlmEvent(
+            textDelta: $text !== '' ? $text : null,
+            functionCalls: $functionCalls,
+            complete: true,
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeArguments(mixed $arguments): array
+    {
+        if (is_array($arguments)) {
+            /** @var array<string, mixed> $arguments */
+            return $arguments;
+        }
+
+        if (! is_string($arguments) || $arguments === '') {
+            return [];
+        }
+
+        $decoded = json_decode($arguments, true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     private function userMessageFromResponse(Response $response): string

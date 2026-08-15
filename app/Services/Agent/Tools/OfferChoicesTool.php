@@ -19,15 +19,11 @@ class OfferChoicesTool extends AbstractAgentTool
     public function parameters(): array
     {
         return $this->objectSchema([
-            'choices' => [
-                'type' => 'ARRAY',
-                'description' => 'Two to five choices.',
-                'items' => $this->objectSchema([
-                    'id' => $this->stringParam('Stable id such as show-free-teachers.'),
-                    'label' => $this->stringParam('Short button label shown in the chat.'),
-                    'message' => $this->stringParam('The user message to send when the button is clicked.'),
-                ], ['id', 'label', 'message']),
-            ],
+            'choices' => $this->arrayParam('Two to five choices.', $this->objectSchema([
+                'id' => $this->stringParam('Stable id such as show-free-teachers.'),
+                'label' => $this->stringParam('Short button label shown in the chat.'),
+                'message' => $this->stringParam('The user message to send when the button is clicked.'),
+            ], ['id', 'label', 'message'])),
         ], ['choices']);
     }
 

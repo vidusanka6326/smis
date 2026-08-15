@@ -1,7 +1,7 @@
 <?php
 
+use App\Services\Agent\AgentLlmException;
 use App\Services\Agent\GeminiAgentLlm;
-use App\Services\Agent\GeminiRequestException;
 use App\Services\Agent\Tools\ListCapabilitiesTool;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -32,7 +32,7 @@ test('generateContent yields text from gemini-flash-latest', function () {
     ]);
 
     $events = iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
     ));
@@ -44,11 +44,12 @@ test('generateContent yields text from gemini-flash-latest', function () {
     Http::assertSent(function ($request): bool {
         return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent'
             && $request->hasHeader('x-goog-api-key', 'test-gemini-key')
-            && $request['contents'][0]['parts'][0]['text'] === 'Hi';
+            && $request['contents'][0]['parts'][0]['text'] === 'Hi'
+            && $request['systemInstruction']['parts'][0]['text'] === 'You are SMIS Agent.';
     });
 });
 
-test('generateContent yields function calls', function () {
+test('generateContent yields function calls and converts json schema types', function () {
     Http::preventStrayRequests();
     Http::fake([
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
@@ -67,14 +68,66 @@ test('generateContent yields function calls', function () {
     ]);
 
     $events = iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Free periods']]]],
-        [['name' => 'find_free_periods', 'description' => 'Find empty periods', 'parameters' => ['type' => 'object']]],
+        [['role' => 'user', 'content' => 'Free periods']],
+        [['name' => 'find_free_periods', 'description' => 'Find empty periods', 'parameters' => ['type' => 'object', 'properties' => (object) []]]],
         'You are SMIS Agent.',
     ));
 
     expect($events[0]->functionCalls[0]['name'])->toBe('find_free_periods')
         ->and($events[0]->functionCalls[0]['args']['class_code'])->toBe('10-A')
         ->and($events[0]->complete)->toBeTrue();
+
+    Http::assertSent(function ($request): bool {
+        $body = $request->body();
+
+        return str_contains($body, '"type":"OBJECT"')
+            && str_contains($body, '"properties":{}');
+    });
+});
+
+test('converts openai tool results into gemini function responses', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'Monday is free.']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [
+            ['role' => 'user', 'content' => 'Free periods in 10-A'],
+            [
+                'role' => 'assistant',
+                'tool_calls' => [[
+                    'id' => 'call_1',
+                    'type' => 'function',
+                    'function' => [
+                        'name' => 'find_free_periods',
+                        'arguments' => '{"class_code":"10-A"}',
+                    ],
+                ]],
+            ],
+            [
+                'role' => 'tool',
+                'tool_call_id' => 'call_1',
+                'content' => '{"ok":true}',
+            ],
+        ],
+        [],
+        'You are SMIS Agent.',
+    ));
+
+    Http::assertSent(function ($request): bool {
+        return $request['contents'][1]['role'] === 'model'
+            && $request['contents'][1]['parts'][0]['functionCall']['name'] === 'find_free_periods'
+            && $request['contents'][2]['role'] === 'user'
+            && $request['contents'][2]['parts'][0]['functionResponse']['name'] === 'find_free_periods';
+    });
 });
 
 test('empty properties encode as a json object in the gemini payload', function () {
@@ -91,7 +144,7 @@ test('empty properties encode as a json object in the gemini payload', function 
     ]);
 
     iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [['role' => 'user', 'content' => 'Hi']],
         [[
             'name' => 'list_capabilities',
             'description' => 'List capabilities',
@@ -121,31 +174,10 @@ test('unavailable model explains how to switch', function () {
     ]);
 
     expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
-    )))->toThrow(GeminiRequestException::class, 'gemini-flash-latest');
-});
-
-test('invalid tool schema includes gemini’s message when debug is on', function () {
-    config(['app.debug' => true]);
-
-    Http::preventStrayRequests();
-    Http::fake([
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
-            'error' => [
-                'code' => 400,
-                'message' => "Invalid value at 'tools[0].function_declarations[1].parameters' (Map), Cannot bind a list to map for field 'properties'.",
-                'status' => 'INVALID_ARGUMENT',
-            ],
-        ], 400),
-    ]);
-
-    expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
-        [],
-        'You are SMIS Agent.',
-    )))->toThrow(GeminiRequestException::class, 'Cannot bind a list to map');
+    )))->toThrow(AgentLlmException::class, 'gemini-flash-latest');
 });
 
 test('exhausted credits explain billing', function () {
@@ -161,8 +193,8 @@ test('exhausted credits explain billing', function () {
     ]);
 
     expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
-        [['role' => 'user', 'parts' => [['text' => 'Hi']]]],
+        [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
-    )))->toThrow(GeminiRequestException::class, 'credits or quota');
+    )))->toThrow(AgentLlmException::class, 'credits or quota');
 });

@@ -3,7 +3,6 @@
 use App\Enums\AgentMessageRole;
 use App\Models\AgentMessage;
 use App\Services\Agent\AgentMarkdown;
-use App\Services\Agent\GeminiSseDecoder;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -16,28 +15,10 @@ test('markdown renderer allows headings and strips scripts', function () {
         ->and($html)->not->toContain('<script>');
 });
 
-test('sse decoder reads text and function calls', function () {
-    $event = app(GeminiSseDecoder::class)->eventFromPayload([
-        'candidates' => [[
-            'content' => [
-                'parts' => [
-                    ['text' => 'Hello '],
-                    ['functionCall' => ['name' => 'find_free_periods', 'args' => ['class_code' => '10-A']]],
-                ],
-            ],
-            'finishReason' => 'STOP',
-        ]],
-    ]);
-
-    expect($event->textDelta)->toBe('Hello ')
-        ->and($event->functionCalls[0]['name'])->toBe('find_free_periods')
-        ->and($event->complete)->toBeTrue();
-});
-
 test('quota replies are warning service notices', function () {
     $message = new AgentMessage([
         'role' => AgentMessageRole::Assistant,
-        'content' => 'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
+        'content' => 'OpenRouter credits are exhausted. Add credits and retry.',
     ]);
 
     expect($message->isServiceNotice())->toBeTrue()
@@ -47,7 +28,7 @@ test('quota replies are warning service notices', function () {
 test('user messages are not service notices', function () {
     $message = new AgentMessage([
         'role' => AgentMessageRole::User,
-        'content' => 'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
+        'content' => 'OpenRouter credits are exhausted. Add credits and retry.',
     ]);
 
     expect($message->isServiceNotice())->toBeFalse();

@@ -6,7 +6,7 @@ use App\Models\AgentConversation;
 use App\Models\AgentMessage;
 use App\Models\User;
 use App\Services\Agent\AgentLlmEvent;
-use App\Services\Agent\GeminiRequestException;
+use App\Services\Agent\AgentLlmException;
 use Livewire\Livewire;
 use Tests\Support\ScriptedAgentLlm;
 
@@ -58,7 +58,7 @@ test('clicking a choice sends that follow-up', function () {
         ->assertSee('Nimal Perera is free.');
 });
 
-test('unconfigured gemini explains how to enable the agent', function () {
+test('unconfigured llm explains how to enable the agent', function () {
     $this->app->instance(AgentLlm::class, new ScriptedAgentLlm([], configured: false));
 
     $admin = User::factory()->admin()->create();
@@ -67,6 +67,7 @@ test('unconfigured gemini explains how to enable the agent', function () {
         ->test(Chat::class)
         ->set('draft', 'Hello')
         ->call('send')
+        ->assertSee('OPENROUTER_API_KEY')
         ->assertSee('GEMINI_API_KEY');
 });
 
@@ -102,8 +103,8 @@ test('quota errors render as a notice with a billing link', function () {
 
         public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
         {
-            throw new GeminiRequestException(
-                'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
+            throw new AgentLlmException(
+                'OpenRouter credits are exhausted. Add credits and retry.',
             );
         }
     });
@@ -114,6 +115,6 @@ test('quota errors render as a notice with a billing link', function () {
         ->test(Chat::class)
         ->set('draft', 'Hello')
         ->call('send')
-        ->assertSee('credits or quota')
-        ->assertSee('Open Google AI Studio');
+        ->assertSee('credits')
+        ->assertSee('Open OpenRouter');
 });

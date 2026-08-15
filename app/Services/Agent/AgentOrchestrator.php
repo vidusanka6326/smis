@@ -55,7 +55,7 @@ class AgentOrchestrator
         $conversation->touch();
 
         if (! $this->llm->isConfigured()) {
-            $markdown = __('SMIS Agent is not configured. Add GEMINI_API_KEY to the environment and retry.');
+            $markdown = __('SMIS Agent is not configured. Add OPENROUTER_API_KEY or GEMINI_API_KEY and retry.');
             $this->persistAssistant($conversation, $markdown);
 
             return new AgentTurnResult($markdown);
@@ -94,23 +94,31 @@ class AgentOrchestrator
                     break;
                 }
 
-                $modelParts = [];
+                $toolCallsPayload = [];
 
-                foreach ($functionCalls as $call) {
-                    $modelParts[] = [
-                        'functionCall' => [
+                foreach ($functionCalls as $index => $call) {
+                    $id = $call['id'] ?? 'call_'.$index;
+                    $functionCalls[$index]['id'] = $id;
+                    $toolCallsPayload[] = [
+                        'id' => $id,
+                        'type' => 'function',
+                        'function' => [
                             'name' => $call['name'],
-                            'args' => $call['args'],
+                            'arguments' => json_encode($call['args']),
                         ],
                     ];
                 }
 
-                $contents[] = [
-                    'role' => 'model',
-                    'parts' => $modelParts,
+                $assistantMessage = [
+                    'role' => 'assistant',
+                    'tool_calls' => $toolCallsPayload,
                 ];
 
-                $responseParts = [];
+                if ($bufferedText !== '') {
+                    $assistantMessage['content'] = $bufferedText;
+                }
+
+                $contents[] = $assistantMessage;
 
                 foreach ($functionCalls as $call) {
                     $name = $call['name'];
@@ -125,20 +133,14 @@ class AgentOrchestrator
                         $choices = $this->normalizeChoices($result['choices']);
                     }
 
-                    $responseParts[] = [
-                        'functionResponse' => [
-                            'name' => $name,
-                            'response' => $result,
-                        ],
+                    $contents[] = [
+                        'role' => 'tool',
+                        'tool_call_id' => $call['id'],
+                        'content' => json_encode($result),
                     ];
                 }
-
-                $contents[] = [
-                    'role' => 'user',
-                    'parts' => $responseParts,
-                ];
             }
-        } catch (GeminiRequestException $exception) {
+        } catch (AgentLlmException $exception) {
             report($exception);
             $finalMarkdown = $exception->getMessage();
         } catch (Throwable $exception) {
@@ -191,8 +193,8 @@ class AgentOrchestrator
 
         foreach ($conversation->messages()->orderBy('id')->get() as $message) {
             $history[] = [
-                'role' => $message->role === AgentMessageRole::Assistant ? 'model' : 'user',
-                'parts' => [['text' => $message->content]],
+                'role' => $message->role === AgentMessageRole::Assistant ? 'assistant' : 'user',
+                'content' => $message->content,
             ];
         }
 
