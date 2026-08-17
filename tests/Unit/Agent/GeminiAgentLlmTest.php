@@ -347,6 +347,33 @@ test('overloaded primary model falls through to a fallback', function () {
     Http::assertSentCount(3);
 });
 
+test('timed-out primary model falls through to a fallback', function () {
+    config(['services.gemini.fallbacks' => ['gemini-3.5-flash']]);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => function () {
+            throw new ConnectionException('cURL error 28: Operation timed out');
+        },
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'Hello after timeout.']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    $events = iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'content' => 'Hi']],
+        [],
+        'You are SMIS Agent.',
+    ));
+
+    expect($events[0]->textDelta)->toBe('Hello after timeout.');
+});
+
 test('connection failures explain the timeout', function () {
     Http::preventStrayRequests();
     Http::fake([

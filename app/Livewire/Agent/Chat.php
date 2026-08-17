@@ -182,6 +182,12 @@ class Chat extends Component
 
         RateLimiter::hit($rateKey, 60);
 
+        $timeout = max(1, (int) config('services.gemini.timeout', 90));
+
+        if ((int) ini_get('max_execution_time') > 0) {
+            set_time_limit(max(120, ($timeout + 20) * 3));
+        }
+
         $message = trim($this->draft);
         $conversation = $this->conversationFor($user);
         $this->conversationId = $conversation->id;
