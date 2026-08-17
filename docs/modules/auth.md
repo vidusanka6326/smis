@@ -45,7 +45,7 @@ Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogge
 - Inactive users cannot authenticate (`Fortify::authenticateUsing`) and are logged out by `EnsureUserIsActive`.
 - Authorization via Policies + Spatie permissions; route middleware enforces role shells.
 - Optional TOTP 2FA remains; WebAuthn passkeys are **not** enabled (ADR 0012).
-- UI language is English, Sinhala, or Tamil (`App\Enums\AppLocale`). Guests store it in session; signed-in users also persist `users.locale` (ADR 0022). Dashboard, login, and Settings use a split **ENG | SIN | TAM** letter selector; the homepage uses native names.
+- UI language is English, Sinhala, or Tamil (`App\Enums\AppLocale`). Guests store it in session; signed-in users also persist `users.locale` (ADR 0022). Homepage, dashboard, login, and Settings use a split **ENG | SIN | TAM** letter selector.
 
 ## Edge cases
 
