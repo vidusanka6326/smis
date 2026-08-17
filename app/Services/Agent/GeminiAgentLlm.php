@@ -3,6 +3,7 @@
 namespace App\Services\Agent;
 
 use App\Contracts\AgentLlm;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -30,7 +31,7 @@ class GeminiAgentLlm implements AgentLlm
             'contents' => $this->geminiContents($contents),
             'generationConfig' => [
                 'temperature' => 0.3,
-                'maxOutputTokens' => 2048,
+                'maxOutputTokens' => 8192,
             ],
         ];
 
@@ -47,13 +48,18 @@ class GeminiAgentLlm implements AgentLlm
             ];
         }
 
-        $response = Http::timeout((int) config('services.gemini.timeout'))
-            ->connectTimeout((int) config('services.gemini.connect_timeout'))
-            ->withHeaders([
-                'Content-Type' => 'application/json',
-                'x-goog-api-key' => (string) config('services.gemini.key'),
-            ])
-            ->post($this->endpoint(), $payload);
+        try {
+            $response = $this->postGenerateContent($payload);
+
+            if (in_array($response->status(), [502, 503], true)) {
+                $response = $this->postGenerateContent($payload);
+            }
+        } catch (ConnectionException $exception) {
+            throw new AgentLlmException(
+                __('Gemini did not respond in time. Wait a moment and retry.'),
+                ['gemini_message' => $exception->getMessage()],
+            );
+        }
 
         if ($response->failed()) {
             throw new AgentLlmException(
@@ -101,6 +107,21 @@ class GeminiAgentLlm implements AgentLlm
     }
 
     /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function postGenerateContent(array $payload): Response
+    {
+        return Http::timeout((int) config('services.gemini.timeout'))
+            ->connectTimeout((int) config('services.gemini.connect_timeout'))
+            ->acceptJson()
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'x-goog-api-key' => (string) config('services.gemini.key'),
+            ])
+            ->post($this->endpoint(), $payload);
+    }
+
+    /**
      * @param  list<array<string, mixed>>  $messages
      * @return list<array<string, mixed>>
      */
@@ -145,7 +166,7 @@ class GeminiAgentLlm implements AgentLlm
                 $pendingResponses[] = [
                     'functionResponse' => [
                         'name' => $name,
-                        'response' => is_array($decoded) ? $decoded : ['result' => $raw],
+                        'response' => $this->jsonObject(is_array($decoded) ? $decoded : ['result' => $raw]),
                     ],
                 ];
 
@@ -176,12 +197,20 @@ class GeminiAgentLlm implements AgentLlm
                         continue;
                     }
 
-                    $parts[] = [
+                    $part = [
                         'functionCall' => [
                             'name' => $name,
-                            'args' => $this->decodeArguments(data_get($call, 'function.arguments')),
+                            'args' => $this->jsonObject($this->decodeArguments(data_get($call, 'function.arguments'))),
                         ],
                     ];
+
+                    $signature = $call['thoughtSignature'] ?? null;
+
+                    if (is_string($signature) && $signature !== '') {
+                        $part['thoughtSignature'] = $signature;
+                    }
+
+                    $parts[] = $part;
                 }
 
                 if ($parts !== []) {
@@ -281,11 +310,19 @@ class GeminiAgentLlm implements AgentLlm
                     $args = $part['functionCall']['args'] ?? [];
 
                     if (is_string($name) && $name !== '') {
-                        $functionCalls[] = [
+                        $call = [
                             'id' => 'call_'.$index,
                             'name' => $name,
                             'args' => is_array($args) ? $args : [],
                         ];
+
+                        $signature = $part['thoughtSignature'] ?? $part['thought_signature'] ?? null;
+
+                        if (is_string($signature) && $signature !== '') {
+                            $call['thoughtSignature'] = $signature;
+                        }
+
+                        $functionCalls[] = $call;
                     }
                 }
             }
@@ -326,6 +363,7 @@ class GeminiAgentLlm implements AgentLlm
             401, 403 => __('Gemini rejected the API key. Check GEMINI_API_KEY and retry.'),
             404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-flash-latest and retry.'),
             429 => __('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.'),
+            502, 503 => __('Gemini is busy right now. Wait a moment and retry.'),
             default => __('SMIS Agent could not complete that request. Please try again.'),
         };
     }
@@ -346,5 +384,16 @@ class GeminiAgentLlm implements AgentLlm
         $message = data_get($response->json(), 'error.message');
 
         return is_string($message) && $message !== '' ? $message : null;
+    }
+
+    /**
+     * Gemini Struct fields must be JSON objects. PHP empty arrays encode as [].
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>|stdClass
+     */
+    private function jsonObject(array $data): array|stdClass
+    {
+        return $data === [] ? new stdClass : $data;
     }
 }

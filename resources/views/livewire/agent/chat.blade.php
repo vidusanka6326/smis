@@ -92,11 +92,7 @@
                                     >
                                         <flux:callout.heading>{{ $message->content }}</flux:callout.heading>
                                     </flux:callout>
-                                    @if (str_contains($message->content, 'OpenRouter'))
-                                        <flux:button href="https://openrouter.ai/settings/credits" target="_blank" size="sm" icon="arrow-top-right-on-square">
-                                            {{ __('Open OpenRouter') }}
-                                        </flux:button>
-                                    @elseif (str_contains($message->content, 'Gemini') || str_contains($message->content, 'Google AI Studio'))
+                                    @if (str_contains($message->content, 'Gemini') || str_contains($message->content, 'Google AI Studio') || str_contains($message->content, 'GEMINI_API_KEY'))
                                         <flux:button href="https://aistudio.google.com/" target="_blank" size="sm" icon="arrow-top-right-on-square">
                                             {{ __('Open Google AI Studio') }}
                                         </flux:button>

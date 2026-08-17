@@ -1,8 +1,10 @@
 <?php
 
+use App\Contracts\AgentLlm;
 use App\Services\Agent\AgentLlmException;
 use App\Services\Agent\GeminiAgentLlm;
 use App\Services\Agent\Tools\ListCapabilitiesTool;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -197,4 +199,93 @@ test('exhausted credits explain billing', function () {
         [],
         'You are SMIS Agent.',
     )))->toThrow(AgentLlmException::class, 'credits or quota');
+});
+
+test('agent llm contract resolves to gemini', function () {
+    expect(app(AgentLlm::class))->toBeInstanceOf(GeminiAgentLlm::class);
+});
+
+test('empty function call args encode as a json object', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'Done.']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [
+            ['role' => 'user', 'content' => 'What can you do?'],
+            [
+                'role' => 'assistant',
+                'thoughtSignature' => 'sig-1',
+                'tool_calls' => [[
+                    'id' => 'call_1',
+                    'type' => 'function',
+                    'thoughtSignature' => 'sig-1',
+                    'function' => [
+                        'name' => 'list_capabilities',
+                        'arguments' => '{}',
+                    ],
+                ]],
+            ],
+            [
+                'role' => 'tool',
+                'tool_call_id' => 'call_1',
+                'content' => '{"ok":true}',
+            ],
+        ],
+        [],
+        'You are SMIS Agent.',
+    ));
+
+    Http::assertSent(function ($request): bool {
+        $body = $request->body();
+
+        return str_contains($body, '"args":{}')
+            && ! str_contains($body, '"args":[]')
+            && str_contains($body, '"thoughtSignature":"sig-1"')
+            && str_contains($body, '"response":{"ok":true}');
+    });
+});
+
+test('busy gemini retries then explains the outage', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'error' => [
+                'code' => 503,
+                'message' => 'This model is currently experiencing high demand.',
+                'status' => 'UNAVAILABLE',
+            ],
+        ], 503),
+    ]);
+
+    expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'content' => 'Hi']],
+        [],
+        'You are SMIS Agent.',
+    )))->toThrow(AgentLlmException::class, 'busy right now');
+
+    Http::assertSentCount(2);
+});
+
+test('connection failures explain the timeout', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => function () {
+            throw new ConnectionException('cURL error 28: Operation timed out');
+        },
+    ]);
+
+    expect(fn () => iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'content' => 'Hi']],
+        [],
+        'You are SMIS Agent.',
+    )))->toThrow(AgentLlmException::class, 'did not respond in time');
 });

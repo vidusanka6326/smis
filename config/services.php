@@ -35,21 +35,6 @@ return [
         ],
     ],
 
-    'agent' => [
-        'providers' => array_values(array_filter(array_map(
-            trim(...),
-            explode(',', (string) env('AGENT_LLM_PROVIDERS', 'openrouter,gemini')),
-        ))),
-    ],
-
-    'openrouter' => [
-        'key' => env('OPENROUTER_API_KEY'),
-        'model' => env('OPENROUTER_MODEL', 'openai/gpt-oss-20b:free'),
-        'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
-        'timeout' => (int) env('OPENROUTER_TIMEOUT', 90),
-        'connect_timeout' => (int) env('OPENROUTER_CONNECT_TIMEOUT', 10),
-    ],
-
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-flash-latest'),

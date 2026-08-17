@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Gemini-only SMIS Agent
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (103 assertions).
+
+Notes: OpenRouter client and `AGENT_LLM_PROVIDERS` removed. Gemini `generateContent` is the only transport. Empty `functionCall.args` encode as `{}`; 503 retries once then explains the outage.
+
 ## 2026-08-15 — Dual LLM providers (OpenRouter + Gemini)
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **53 passed** (120 assertions). PHPStan clean on `app/Services/Agent`.

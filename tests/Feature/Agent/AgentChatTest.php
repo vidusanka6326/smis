@@ -67,8 +67,8 @@ test('unconfigured llm explains how to enable the agent', function () {
         ->test(Chat::class)
         ->set('draft', 'Hello')
         ->call('send')
-        ->assertSee('OPENROUTER_API_KEY')
-        ->assertSee('GEMINI_API_KEY');
+        ->assertSee('GEMINI_API_KEY')
+        ->assertDontSee('OPENROUTER_API_KEY');
 });
 
 test('empty chat shows suggested prompts', function () {
@@ -104,7 +104,7 @@ test('quota errors render as a notice with a billing link', function () {
         public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
         {
             throw new AgentLlmException(
-                'OpenRouter credits are exhausted. Add credits and retry.',
+                'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
             );
         }
     });
@@ -116,5 +116,5 @@ test('quota errors render as a notice with a billing link', function () {
         ->set('draft', 'Hello')
         ->call('send')
         ->assertSee('credits')
-        ->assertSee('Open OpenRouter');
+        ->assertSee('Open Google AI Studio');
 });

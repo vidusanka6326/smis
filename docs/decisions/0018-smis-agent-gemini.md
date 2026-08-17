@@ -1,6 +1,6 @@
 # ADR 0018 — SMIS Agent via Gemini function calling
 
-**Superseded by [ADR 0019](0019-smis-agent-openrouter.md)** (OpenRouter `chat/completions`). Role gating and tools from this ADR still apply.
+**Current transport: [ADR 0021](0021-smis-agent-gemini-only.md).** ADR 0019/0020 briefly added OpenRouter; the agent is Gemini-only again. Role gating and tools from this ADR still apply.
 
 ## Context
 
