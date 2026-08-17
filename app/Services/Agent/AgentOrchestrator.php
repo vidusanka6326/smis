@@ -66,6 +66,7 @@ class AgentOrchestrator
         $system = $this->systemInstruction($user);
         $choices = [];
         $trace = [];
+        $visibleParts = [];
         $finalMarkdown = '';
 
         try {
@@ -80,7 +81,7 @@ class AgentOrchestrator
                         $bufferedText .= $event->textDelta;
 
                         if ($functionCalls === []) {
-                            $onDelta($bufferedText);
+                            $onDelta($this->joinMarkdown($visibleParts, $bufferedText));
                         }
                     }
 
@@ -89,9 +90,19 @@ class AgentOrchestrator
                     }
                 }
 
+                $text = trim($bufferedText);
+
                 if ($functionCalls === []) {
-                    $finalMarkdown = trim($bufferedText);
+                    if ($text !== '') {
+                        $visibleParts[] = $text;
+                    }
+
                     break;
+                }
+
+                if ($text !== '') {
+                    $visibleParts[] = $text;
+                    $onDelta($this->joinMarkdown($visibleParts));
                 }
 
                 $toolCallsPayload = [];
@@ -148,6 +159,8 @@ class AgentOrchestrator
                     ];
                 }
             }
+
+            $finalMarkdown = $this->joinMarkdown($visibleParts);
         } catch (AgentLlmException $exception) {
             report($exception);
             $finalMarkdown = $exception->getMessage();
@@ -241,6 +254,27 @@ class AgentOrchestrator
         }
 
         return $choices;
+    }
+
+    /**
+     * Keep every user-visible chunk from the turn. A later offer_choices follow-up
+     * must not replace the answer that was already streamed into the chat preview.
+     *
+     * @param  list<string>  $parts
+     */
+    private function joinMarkdown(array $parts, string $pending = ''): string
+    {
+        $chunks = $parts;
+        $pending = trim($pending);
+
+        if ($pending !== '') {
+            $chunks[] = $pending;
+        }
+
+        return implode("\n\n", array_values(array_filter(
+            $chunks,
+            fn (string $chunk): bool => $chunk !== '',
+        )));
     }
 
     private function systemInstruction(User $user): string

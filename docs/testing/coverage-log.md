@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Keep streamed agent answer with choices
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **50 passed** (118 assertions).
+
+Notes: Text streamed before `offer_choices` is persisted with the follow-up so the live preview is not discarded.
+
 ## 2026-08-17 — Agent PHP max_execution_time
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **49 passed** (112 assertions).

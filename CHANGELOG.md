@@ -13,6 +13,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 - Default Gemini model is `gemini-3.5-flash`. New API keys 404 on `gemini-2.5-flash`; 503 capacity errors fall through to backup models.
 - Agent turns raise PHP `max_execution_time` so a slow Gemini curl is not a 30s fatal under `php artisan serve`.
 - Chat shows a compact Thinking row on send; welcome prompts and prior messages stay visible during long Gemini turns.
+- Streamed answer text is kept when `offer_choices` follows, so the live preview is not replaced by a follow-up that refers to “above”.
 - Permissioned tools cover every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports), still gated by Policies.
 - Full-height chat UI with conversation history, compact composer, and quota/setup errors as callouts.
 
