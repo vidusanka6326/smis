@@ -11,7 +11,7 @@ SMIS is used in Sri Lankan schools where staff and students work in English, Sin
 3. `SetLocale` web middleware applies session locale, then the user column, then `config('app.locale')`.
 4. `POST /locale` (`locale.update`) is available to guests and authenticated users (throttled).
 5. JSON translations (`lang/si.json`, `lang/ta.json`) map the existing English `__()` keys. PHP files cover `auth`, `pagination`, `passwords`, and `validation`.
-6. Language switcher lives on the homepage, login/auth layout, sidebar, and Settings → Appearance. Noto Sans Sinhala/Tamil are loaded as font fallbacks.
+6. Dashboard, login, and Settings use a split **ENG | SIN | TAM** letter selector (tablet-friendly). The homepage keeps full native names. Noto Sans Sinhala/Tamil are loaded as font fallbacks.
 
 ## Consequences
 

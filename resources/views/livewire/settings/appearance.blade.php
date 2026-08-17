@@ -7,20 +7,7 @@
         <div class="space-y-8">
             <div>
                 <flux:heading size="sm" class="mb-3">{{ __('Language') }}</flux:heading>
-                <div class="flex flex-wrap gap-2">
-                    @foreach (\App\Enums\AppLocale::cases() as $locale)
-                        <form method="POST" action="{{ route('locale.update') }}">
-                            @csrf
-                            <input type="hidden" name="locale" value="{{ $locale->value }}">
-                            <flux:button
-                                type="submit"
-                                :variant="\App\Enums\AppLocale::current() === $locale ? 'primary' : 'filled'"
-                            >
-                                {{ $locale->nativeName() }}
-                            </flux:button>
-                        </form>
-                    @endforeach
-                </div>
+                <x-language-switcher class="w-full max-w-xs" />
             </div>
 
             <div>

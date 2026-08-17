@@ -106,7 +106,7 @@
 
             <flux:spacer />
 
-            <x-language-switcher class="hidden lg:block" />
+            <x-language-switcher class="hidden w-full lg:flex" />
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
@@ -117,7 +117,7 @@
 
             <flux:spacer />
 
-            <x-language-switcher />
+            <x-language-switcher class="shrink-0" />
 
             <flux:dropdown position="top" align="end">
                 <flux:profile

@@ -1,5 +1,5 @@
 @props([
-    'variant' => 'menu',
+    'variant' => 'letters',
 ])
 
 @php
@@ -23,26 +23,24 @@
         @endforeach
     </div>
 @else
-    <flux:dropdown {{ $attributes }}>
-        <flux:button variant="ghost" size="sm" icon="globe-alt" :aria-label="__('Language')" data-test="language-switcher">
-            {{ $current->nativeName() }}
-        </flux:button>
-
-        <flux:menu>
-            @foreach (\App\Enums\AppLocale::cases() as $locale)
-                <form method="POST" action="{{ route('locale.update') }}">
-                    @csrf
-                    <input type="hidden" name="locale" value="{{ $locale->value }}">
-                    <flux:menu.item
-                        as="button"
-                        type="submit"
-                        class="w-full cursor-pointer"
-                        :icon="$locale === $current ? 'check' : null"
-                    >
-                        {{ $locale->nativeName() }}
-                    </flux:menu.item>
-                </form>
-            @endforeach
-        </flux:menu>
-    </flux:dropdown>
+    <div
+        {{ $attributes->class('inline-flex overflow-hidden rounded-lg border border-border bg-card') }}
+        role="group"
+        aria-label="{{ __('Language') }}"
+        data-test="language-switcher"
+    >
+        @foreach (\App\Enums\AppLocale::cases() as $locale)
+            <form method="POST" action="{{ route('locale.update') }}" class="min-w-0 flex-1 border-e border-border last:border-e-0">
+                @csrf
+                <input type="hidden" name="locale" value="{{ $locale->value }}">
+                <button
+                    type="submit"
+                    title="{{ $locale->nativeName() }}"
+                    aria-label="{{ $locale->nativeName() }}"
+                    @if ($locale === $current) aria-current="true" @endif
+                    class="min-h-9 w-full whitespace-nowrap px-2.5 py-1.5 text-center text-[11px] font-semibold tracking-wide {{ $locale === $current ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                >{{ $locale->shortCode() }}</button>
+            </form>
+        @endforeach
+    </div>
 @endif

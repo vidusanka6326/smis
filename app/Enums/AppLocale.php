@@ -17,6 +17,15 @@ enum AppLocale: string
         };
     }
 
+    public function shortCode(): string
+    {
+        return match ($this) {
+            self::English => 'ENG',
+            self::Sinhala => 'SIN',
+            self::Tamil => 'TAM',
+        };
+    }
+
     public function englishName(): string
     {
         return match ($this) {

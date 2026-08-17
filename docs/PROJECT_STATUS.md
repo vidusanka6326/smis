@@ -61,6 +61,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — Dashboard/login language control is a split **ENG | SIN | TAM** letter selector for tablet tap targets.
 - **2026-08-17** — English / Sinhala / Tamil UI locale: `POST /locale`, session + `users.locale`, JSON translations, switcher on home/login/sidebar/settings (ADR 0022).
 - **2026-08-17** — Agent chat was dropping the streamed answer when `offer_choices` followed. The live preview showed the table, then the saved message was only the “highlighted above” follow-up. Visible chunks from the turn are now kept together.
 - **2026-08-17** — `php artisan serve` was killing Gemini curls at 30s (`Maximum execution time of 30+2 seconds exceeded`). Agent turns now raise PHP `max_execution_time`; hung models fall through to fallbacks instead of a fatal.

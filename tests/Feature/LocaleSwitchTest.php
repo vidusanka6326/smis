@@ -62,6 +62,18 @@ test('saved user locale is applied on a new session', function () {
         ->assertSee('lang="ta"', false);
 });
 
+test('dashboard shows a split eng sin tam language selector', function () {
+    $user = User::factory()->admin()->create();
+
+    $this->actingAs($user)
+        ->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSee('data-test="language-switcher"', false)
+        ->assertSee('>ENG<', false)
+        ->assertSee('>SIN<', false)
+        ->assertSee('>TAM<', false);
+});
+
 test('language switcher is shown on the homepage and login', function () {
     $this->get(route('home'))
         ->assertOk()
@@ -70,5 +82,8 @@ test('language switcher is shown on the homepage and login', function () {
 
     $this->get(route('login'))
         ->assertOk()
-        ->assertSee('data-test="language-switcher"', false);
+        ->assertSee('data-test="language-switcher"', false)
+        ->assertSee('>ENG<', false)
+        ->assertSee('>SIN<', false)
+        ->assertSee('>TAM<', false);
 });
