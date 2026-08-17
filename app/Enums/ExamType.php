@@ -12,10 +12,10 @@ enum ExamType: string
     public function label(): string
     {
         return match ($this) {
-            self::TermTest => 'Term test',
-            self::Scholarship => 'Scholarship',
-            self::Ol => 'O/L',
-            self::Al => 'A/L',
+            self::TermTest => __('Term test'),
+            self::Scholarship => __('Scholarship'),
+            self::Ol => __('O/L'),
+            self::Al => __('A/L'),
         };
     }
 

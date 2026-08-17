@@ -2,6 +2,10 @@
 
 ## Current Phase
 
+**Localization (English / Sinhala / Tamil)** (Done)
+
+UI language switcher (`en` / `si` / `ta`) with JSON translations, session + `users.locale`, and Noto Sinhala/Tamil font fallbacks (ADR 0022).
+
 **SMIS Agent** (Done)
 
 Role-scoped Gemini agent (admin / officer / teacher). Tools cover every staff UI action the signed-in user is already allowed to perform, still gated by Policies and Actions.
@@ -28,7 +32,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 | Module | Status | % Complete | Test Coverage | Last Updated | Notes |
 |---|---|---|---|---|---|
-| Auth | Done | 100% | Feature + policy tests passing | 2026-08-14 | Roles incl. officer; Officers CRUD; inactive gate; role dashboards |
+| Auth | Done | 100% | Feature + policy tests passing | 2026-08-17 | Roles incl. officer; Officers CRUD; inactive gate; role dashboards; en/si/ta locale |
 | Admin | Done | 100% | Academic + people + attendance + exams + reports + activity log + officers + dashboard | 2026-08-14 | Shared list filters + pagination (ADR 0016) |
 | Teacher | Done | 100% | Profiles, assignments, students, timetable, attendance, marks, reports, dashboard | 2026-08-14 | Scoped lists filtered + paginated |
 | Student | Done | 100% | CRUD, enrollment, filters, timetable, attendance, results, own report, dashboard | 2026-08-14 | Attendance/results lists paginated |
@@ -57,6 +61,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — English / Sinhala / Tamil UI locale: `POST /locale`, session + `users.locale`, JSON translations, switcher on home/login/sidebar/settings (ADR 0022).
 - **2026-08-17** — Agent chat was dropping the streamed answer when `offer_choices` followed. The live preview showed the table, then the saved message was only the “highlighted above” follow-up. Visible chunks from the turn are now kept together.
 - **2026-08-17** — `php artisan serve` was killing Gemini curls at 30s (`Maximum execution time of 30+2 seconds exceeded`). Agent turns now raise PHP `max_execution_time`; hung models fall through to fallbacks instead of a fatal.
 - **2026-08-17** — New Gemini keys 404 on `gemini-2.5-flash` (`no longer available to new users`). Default is `gemini-3.5-flash`; 404/503 fall through to `gemini-flash-latest` / `gemini-3.5-flash-lite`.
@@ -131,6 +136,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
 | Report exports | CSV download + DomPDF PDF files (ADR 0017) | **Decided** |
 | SMIS Agent | Gemini function-calling over existing Policies/Actions | **Decided — ADR 0021** |
+| UI language | English, Sinhala, and Tamil via `lang/` JSON + switcher | **Decided — ADR 0022** |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
 | Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |

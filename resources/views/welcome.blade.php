@@ -13,7 +13,7 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=sora:500,600,700|source-serif-4:400,500" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=sora:500,600,700|source-serif-4:400,500|noto-sans-sinhala:400,500,600,700|noto-sans-tamil:400,500,600,700" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -26,11 +26,11 @@
             }
 
             .font-display {
-                font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+                font-family: 'Sora', 'Noto Sans Sinhala', 'Noto Sans Tamil', ui-sans-serif, system-ui, sans-serif;
             }
 
             .font-reading {
-                font-family: 'Source Serif 4', ui-serif, Georgia, serif;
+                font-family: 'Source Serif 4', 'Noto Sans Sinhala', 'Noto Sans Tamil', ui-serif, Georgia, serif;
             }
 
             .home-hero-media {
@@ -108,6 +108,7 @@
                                 {{ __('Log in') }}
                             </a>
                         @endauth
+                        <x-language-switcher variant="pills" />
                     </nav>
                 @endif
             </div>

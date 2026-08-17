@@ -6,9 +6,10 @@ smis/
 │   ├── Actions/           # Prefer for multi-step writes
 │   ├── Services/          # Calculators, report builders, Audit/ActivityLogger
 │   ├── Policies/          # Model authorization
-│   ├── Enums/             # Backed enums for domain values
+│   ├── Enums/             # Backed enums for domain values (incl. AppLocale)
 │   ├── Http/
-│   │   ├── Controllers/
+│   │   ├── Controllers/    # Thin HTTP adapters (incl. LocaleController)
+│   │   ├── Middleware/     # EnsureUserIsActive, SetLocale
 │   │   └── Requests/      # Form Requests (all validation)
 │   ├── Livewire/
 │   ├── Models/
@@ -26,6 +27,7 @@ smis/
 │   ├── factories/
 │   ├── migrations/
 │   └── seeders/
+├── lang/                  # en PHP files + si/ta JSON + PHP translations
 ├── resources/views/
 ├── routes/
 │   ├── web.php
