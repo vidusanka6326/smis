@@ -12,6 +12,7 @@ ADR 0020 kept OpenRouter and Gemini behind `AGENT_LLM_PROVIDERS`. OpenRouter fre
 4. Echo `thoughtSignature` on function-call follow-ups. Show 401/403/404/429/502/503 and timeouts in chat instead of a generic failure.
 5. HTTP 503 from Google is model capacity, not billing. Retry once, then try `GEMINI_MODEL_FALLBACKS` (`gemini-flash-latest`, `gemini-3.5-flash-lite`).
 6. New Google AI Studio keys 404 on `gemini-2.5-flash` (`no longer available to new users`) even though ListModels still returns it. Do not default to 2.5 Flash.
+7. `php artisan serve` uses `max_execution_time=30`. Raise it for agent turns so a slow Gemini curl is a caught timeout, not a PHP fatal. Connection timeouts fall through to fallback models.
 
 ## Consequences
 

@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Agent PHP max_execution_time
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **49 passed** (112 assertions).
+
+Notes: Agent turns raise PHP `max_execution_time` so `php artisan serve` does not fatal at 30s. Connection timeouts fall through to fallback models.
+
 ## 2026-08-17 — Gemini 3.5 Flash default (2.5-flash 404)
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **48 passed** (111 assertions).

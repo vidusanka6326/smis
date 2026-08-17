@@ -39,6 +39,7 @@ composer run dev
 | `MAIL_*` | Mail | Default `log` driver locally |
 | `GEMINI_API_KEY` | SMIS Agent (Gemini) | Required for `/agent` chat |
 | `GEMINI_MODEL` | Gemini model id | Default `gemini-3.5-flash`. New keys 404 on `gemini-2.5-flash` even though ListModels still lists it. |
+| `GEMINI_TIMEOUT` | Gemini HTTP timeout (seconds) | Default `90`. Agent turns also raise PHP `max_execution_time` so `php artisan serve` does not fatal at 30s. |
 | `VITE_APP_NAME` | Frontend title | Mirrors `APP_NAME` |
 
 ## Seeding

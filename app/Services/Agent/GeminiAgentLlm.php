@@ -110,9 +110,16 @@ class GeminiAgentLlm implements AgentLlm
     private function postUntilAvailable(array $payload): Response
     {
         $response = null;
+        $timeout = null;
 
         foreach ($this->models() as $index => $model) {
-            $response = $this->postGenerateContent($payload, $model);
+            try {
+                $response = $this->postGenerateContent($payload, $model);
+            } catch (ConnectionException $exception) {
+                $timeout = $exception;
+
+                continue;
+            }
 
             if ($response->successful()) {
                 return $response;
@@ -120,7 +127,14 @@ class GeminiAgentLlm implements AgentLlm
 
             if (in_array($response->status(), [502, 503], true) && $index === 0) {
                 $this->pauseBeforeRetry();
-                $response = $this->postGenerateContent($payload, $model);
+
+                try {
+                    $response = $this->postGenerateContent($payload, $model);
+                } catch (ConnectionException $exception) {
+                    $timeout = $exception;
+
+                    continue;
+                }
 
                 if ($response->successful()) {
                     return $response;
@@ -132,7 +146,11 @@ class GeminiAgentLlm implements AgentLlm
             }
         }
 
-        return $response ?? $this->postGenerateContent($payload, (string) config('services.gemini.model'));
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        throw $timeout ?? new ConnectionException('Gemini did not respond in time.');
     }
 
     /**
@@ -140,14 +158,45 @@ class GeminiAgentLlm implements AgentLlm
      */
     private function postGenerateContent(array $payload, string $model): Response
     {
-        return Http::timeout((int) config('services.gemini.timeout'))
-            ->connectTimeout((int) config('services.gemini.connect_timeout'))
+        [$timeout, $connect] = $this->httpTimeouts();
+
+        return Http::timeout($timeout)
+            ->connectTimeout($connect)
             ->acceptJson()
             ->withHeaders([
                 'Content-Type' => 'application/json',
                 'x-goog-api-key' => (string) config('services.gemini.key'),
             ])
             ->post($this->endpoint($model), $payload);
+    }
+
+    /**
+     * php artisan serve defaults to max_execution_time=30. A blocking Gemini curl
+     * longer than that becomes a fatal error instead of a caught timeout.
+     * Do not call set_time_limit() when the limit is 0 (CLI / tests are unlimited).
+     *
+     * @return array{0: int, 1: int}
+     */
+    private function httpTimeouts(): array
+    {
+        $timeout = max(1, (int) config('services.gemini.timeout'));
+        $connect = max(1, (int) config('services.gemini.connect_timeout'));
+        $phpLimit = (int) ini_get('max_execution_time');
+
+        if ($phpLimit > 0) {
+            $budget = $timeout + $connect + 15;
+
+            if ($phpLimit < $budget) {
+                set_time_limit($budget);
+                $phpLimit = (int) ini_get('max_execution_time');
+            }
+
+            if ($phpLimit > 0 && ($timeout + $connect) >= $phpLimit) {
+                $timeout = max(5, $phpLimit - $connect - 2);
+            }
+        }
+
+        return [$timeout, $connect];
     }
 
     /**
