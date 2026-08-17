@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Agent waiting UI
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (106 assertions).
+
+Notes: Waiting spinner is always in the DOM (`wire:loading` + stream targets). Gemini `thinkingBudget` is 0.
+
 ## 2026-08-17 — Gemini-only SMIS Agent
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (103 assertions).

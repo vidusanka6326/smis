@@ -31,7 +31,10 @@ class GeminiAgentLlm implements AgentLlm
             'contents' => $this->geminiContents($contents),
             'generationConfig' => [
                 'temperature' => 0.3,
-                'maxOutputTokens' => 8192,
+                'maxOutputTokens' => 2048,
+                'thinkingConfig' => [
+                    'thinkingBudget' => 0,
+                ],
             ],
         ];
 

@@ -190,6 +190,7 @@ class Chat extends Component
         $this->streamingHtml = '';
         $this->status = __('Thinking…');
         unset($this->thread, $this->conversationList);
+        $this->stream(e($this->status), replace: true, name: 'agent-status');
 
         $orchestrator->run(
             $user,

@@ -38,7 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
-| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | Gemini-only generateContent; Policy-gated tools |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | Gemini-only; waiting UI for long turns |
 
 ## Deliverables Checklist
 
@@ -57,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — Agent chat shows a Thinking spinner as soon as you send. Stream targets stay in the DOM so long Gemini turns no longer blank the pane. Gemini thinking budget is 0 for faster replies.
 - **2026-08-17** — SMIS Agent is Gemini-only (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed. Empty function-call `args` encode as `{}`; 502/503 and timeouts show in chat.
 - **2026-08-15** — SMIS Agent supports OpenRouter and Gemini. `AGENT_LLM_PROVIDERS` (default `openrouter,gemini`) uses the first listed provider that has an API key (ADR 0020).
 - **2026-08-14** — SMIS Agent now uses OpenRouter `openai/gpt-oss-20b:free` (`chat/completions`). Gemini client removed (ADR 0019).

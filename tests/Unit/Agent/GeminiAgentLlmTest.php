@@ -47,7 +47,8 @@ test('generateContent yields text from gemini-flash-latest', function () {
         return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent'
             && $request->hasHeader('x-goog-api-key', 'test-gemini-key')
             && $request['contents'][0]['parts'][0]['text'] === 'Hi'
-            && $request['systemInstruction']['parts'][0]['text'] === 'You are SMIS Agent.';
+            && $request['systemInstruction']['parts'][0]['text'] === 'You are SMIS Agent.'
+            && $request['generationConfig']['thinkingConfig']['thinkingBudget'] === 0;
     });
 });
 

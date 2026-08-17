@@ -45,7 +45,11 @@
                     'min-h-full justify-center' => $this->thread->isEmpty() && ! $isStreaming,
                 ])>
                     @if ($this->thread->isEmpty() && ! $isStreaming)
-                        <div class="flex flex-col items-center gap-5 text-center">
+                        <div
+                            wire:loading.class="hidden"
+                            wire:target="send,choose,useSuggestion"
+                            class="flex flex-col items-center gap-5 text-center"
+                        >
                             <span class="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
                                 <flux:icon.bot class="size-7" />
                             </span>
@@ -127,22 +131,30 @@
                         </div>
                     @endforeach
 
-                    @if ($isStreaming)
-                        <div class="flex w-full gap-3">
-                            <span class="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <flux:icon.bot class="size-4" />
-                            </span>
-                            <div class="min-w-0 flex-1 space-y-2">
-                                <p wire:stream="agent-status" class="text-xs text-muted-foreground">{{ $status }}</p>
-                                <div class="text-sm text-foreground">
-                                    <div wire:stream="assistant-stream" class="agent-markdown">
-                                        {!! $streamingHtml !!}
-                                    </div>
-                                    <span class="mt-1 inline-block h-4 w-1.5 animate-pulse bg-primary align-middle"></span>
-                                </div>
+                    <div
+                        wire:loading.class.remove="hidden"
+                        wire:target="send,choose,useSuggestion"
+                        @class([
+                            'flex w-full gap-3',
+                            'min-h-[40vh] flex-col items-center justify-center text-center' => $this->thread->isEmpty(),
+                            'hidden' => ! $isStreaming,
+                        ])
+                    >
+                        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <flux:icon.arrow-path class="size-5 animate-spin" />
+                        </span>
+                        <div @class([
+                            'space-y-2',
+                            'min-w-0 flex-1 text-start' => $this->thread->isNotEmpty(),
+                        ])>
+                            <p wire:stream="agent-status" class="text-sm text-muted-foreground">
+                                {{ $status !== '' ? $status : __('Thinking…') }}
+                            </p>
+                            <div wire:stream="assistant-stream" class="agent-markdown text-sm text-foreground">
+                                {!! $streamingHtml !!}
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
 

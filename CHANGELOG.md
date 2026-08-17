@@ -10,6 +10,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 - Gemini-only `generateContent` backend (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed.
 - Empty function-call `args` encode as `{}`; 502/503 and timeouts are shown in chat instead of a generic failure.
+- Chat shows a Thinking spinner immediately on send so long Gemini turns no longer blank the pane.
 - Permissioned tools cover every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports), still gated by Policies.
 - Full-height chat UI with conversation history, compact composer, and quota/setup errors as callouts.
 

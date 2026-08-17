@@ -78,7 +78,10 @@ test('empty chat shows suggested prompts', function () {
         ->test(Chat::class)
         ->assertSee('How can I help?')
         ->assertSee('Free periods in 10-A')
-        ->assertSee('Free teachers');
+        ->assertSee('Free teachers')
+        ->assertSee('Thinking…')
+        ->assertSeeHtml('wire:stream="agent-status"')
+        ->assertSeeHtml('wire:stream="assistant-stream"');
 });
 
 test('chat history lists conversation titles', function () {
