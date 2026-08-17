@@ -30,6 +30,8 @@ composer run dev
 | Variable | Purpose | Notes |
 |---|---|---|
 | `APP_NAME` | Application name | Default: `SMIS` |
+| `APP_LOCALE` | Default UI locale | `en` (English). Switcher also supports `si` (Sinhala) and `ta` (Tamil). |
+| `APP_FALLBACK_LOCALE` | Missing translation fallback | `en` |
 | `APP_URL` | Base URL | Used for links / Sanctum later |
 | `DB_CONNECTION` | `sqlite` or `mysql` | Local default `sqlite` |
 | `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | MySQL settings | Uncomment for MySQL |
@@ -59,7 +61,7 @@ This runs:
 7. `AttendanceSeeder` — last 10 school days of class + teacher attendance
 8. `ExaminationSeeder` — published First Term tests (grades 6, 8, 10, 11 and each A/L class) with marks
 
-There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). **Reports** is a card catalog (admin/teacher/student): open a report, filter, then download PDF or CSV. **SMIS Agent** (`/agent`) is a streaming Gemini chat for admin, officer, and teacher (ADR 0021).
+There is **no public registration**. Admins create **Officers** under Admin → Officers; teachers/students via Admin → Teachers / Students. Officers share operational data-entry modules and the activity log. Academic structure is under Admin → Academic years / Grades / Streams / Subjects / Classes. Timetables and relief are under Admin → Timetables / Relief. Attendance is under Admin/Teacher → Attendance (students also have My attendance). Exams/marks are under Admin → Exams / Marks (teachers: Marks; students: My results). **Reports** is a card catalog (admin/teacher/student): open a report, filter, then download PDF or CSV. **SMIS Agent** (`/agent`) is a streaming Gemini chat for admin, officer, and teacher (ADR 0021). The header, login, sidebar, and Settings → Appearance include an **English / සිංහල / தமிழ்** language switcher (ADR 0022).
 
 ## Tests
 

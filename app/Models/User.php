@@ -25,6 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property UserStatus $status
+ * @property string $locale
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -33,12 +34,19 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['name', 'email', 'password', 'status'])]
+#[Fillable(['name', 'email', 'password', 'status', 'locale'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'locale' => 'en',
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -51,6 +59,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatus::class,
+            'locale' => 'string',
         ];
     }
 

@@ -90,8 +90,8 @@
 }
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: 'Lora', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-sans: 'Plus Jakarta Sans', 'Noto Sans Sinhala', 'Noto Sans Tamil', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Lora', 'Noto Sans Sinhala', 'Noto Sans Tamil', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
     --color-background: var(--background);

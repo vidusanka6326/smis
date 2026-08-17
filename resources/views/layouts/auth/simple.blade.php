@@ -12,6 +12,9 @@
                     </span>
                     <span class="sr-only">{{ config('app.name', 'SMIS') }}</span>
                 </a>
+                <div class="flex justify-center">
+                    <x-language-switcher />
+                </div>
                 <div class="flex flex-col gap-6">
                     {{ $slot }}
                 </div>

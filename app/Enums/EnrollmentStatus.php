@@ -12,10 +12,10 @@ enum EnrollmentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Active => 'Active',
-            self::Completed => 'Completed',
-            self::Transferred => 'Transferred',
-            self::Withdrawn => 'Withdrawn',
+            self::Active => __('Active'),
+            self::Completed => __('Completed'),
+            self::Transferred => __('Transferred'),
+            self::Withdrawn => __('Withdrawn'),
         };
     }
 }

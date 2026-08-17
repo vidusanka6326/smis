@@ -6,6 +6,11 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
+### Localization (2026-08-17)
+
+- English, Sinhala, and Tamil UI via Laravel `lang/` JSON files and a language switcher (ADR 0022).
+- Choice is stored in the session for guests and on `users.locale` when signed in.
+
 ### SMIS Agent (2026-08-17)
 
 - Gemini-only `generateContent` backend (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed.
@@ -31,7 +36,7 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 ### Realistic demo school (2026-08-14)
 
 - Seeded a Type 1AB-style dataset: 1 admin, 5 officers, 30 teachers, 600 students, 28 classes (grades 6–13).
-- Subjects follow the Sri Lankan national curriculum (12 junior, 9 O/L, 3 A/L per stream). Names are Sinhala in English; UI copy stays English (ADR 0015).
+- Subjects follow the Sri Lankan national curriculum (12 junior, 9 O/L, 3 A/L per stream). Names are Sinhala in English; UI copy can be switched to English, Sinhala, or Tamil (ADR 0015, ADR 0022).
 
 ### Flux selectors (2026-08-14)
 

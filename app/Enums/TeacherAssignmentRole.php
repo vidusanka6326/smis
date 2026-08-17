@@ -11,9 +11,9 @@ enum TeacherAssignmentRole: string
     public function label(): string
     {
         return match ($this) {
-            self::ClassTeacher => 'Class teacher',
-            self::SubjectTeacher => 'Subject teacher',
-            self::PtPdTeacher => 'PT/PD teacher',
+            self::ClassTeacher => __('Class teacher'),
+            self::SubjectTeacher => __('Subject teacher'),
+            self::PtPdTeacher => __('PT/PD teacher'),
         };
     }
 

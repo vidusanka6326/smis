@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\TeacherAttendanceController as AdminTeacherAttend
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TimetableController as AdminTimetableController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\OwnAttendanceReportController as StudentOwnAttendanceReportController;
@@ -56,6 +57,10 @@ use App\Livewire\Agent\Chat as AgentChat;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
+
+Route::post('locale', LocaleController::class)
+    ->middleware('throttle:30,1')
+    ->name('locale.update');
 
 Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

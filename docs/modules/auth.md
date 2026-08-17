@@ -10,13 +10,14 @@ Admin, Officer, Teacher, Student (Spatie roles). Teacher subtypes (class / subje
 
 ## DB tables used
 
-- `users` — `status` (`active`/`inactive`), SoftDeletes
+- `users` — `status` (`active`/`inactive`), `locale` (`en` / `si` / `ta`), SoftDeletes
 - Spatie: `roles`, `permissions`, `model_has_roles`, `model_has_permissions`, `role_has_permissions`
 
 ## Routes
 
 | Method | Path | Name | Middleware | Notes |
 |---|---|---|---|---|
+| POST | `/locale` | `locale.update` | web, throttle | Session + optional `users.locale` (ADR 0022) |
 | GET/POST | `/login` | `login` / `login.store` | guest | Fortify |
 | POST | `/logout` | `logout` | auth | Fortify |
 | GET/POST | password reset | Fortify routes | guest | Enabled |
@@ -44,6 +45,7 @@ Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogge
 - Inactive users cannot authenticate (`Fortify::authenticateUsing`) and are logged out by `EnsureUserIsActive`.
 - Authorization via Policies + Spatie permissions; route middleware enforces role shells.
 - Optional TOTP 2FA remains; WebAuthn passkeys are **not** enabled (ADR 0012).
+- UI language is English, Sinhala, or Tamil (`App\Enums\AppLocale`). Guests store it in session; signed-in users also persist `users.locale` (ADR 0022). Dashboard, login, and Settings use a split **ENG | SIN | TAM** letter selector; the homepage uses native names.
 
 ## Edge cases
 
@@ -53,4 +55,4 @@ Sensitive Actions write to `activity_logs` via `App\Services\Audit\ActivityLogge
 
 ## Status
 
-Done (Phase 1 + Officer role ADR 0013).
+Done (Phase 1 + Officer role ADR 0013 + locale switcher ADR 0022).
