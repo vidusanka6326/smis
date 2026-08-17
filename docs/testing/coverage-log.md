@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Gemini 3.5 Flash default (2.5-flash 404)
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **48 passed** (111 assertions).
+
+Notes: New Google AI Studio keys 404 on `gemini-2.5-flash`. Default `gemini-3.5-flash`; 404/503 fall through to `gemini-flash-latest` and `gemini-3.5-flash-lite`.
+
 ## 2026-08-17 — Gemini 503 model fallbacks
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **47 passed** (109 assertions).

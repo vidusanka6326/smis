@@ -166,6 +166,42 @@ test('empty properties encode as a json object in the gemini payload', function 
     });
 });
 
+test('retired model falls through to a fallback', function () {
+    config([
+        'services.gemini.model' => 'gemini-2.5-flash',
+        'services.gemini.fallbacks' => ['gemini-3.5-flash'],
+    ]);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent' => Http::response([
+            'error' => [
+                'code' => 404,
+                'message' => 'This model models/gemini-2.5-flash is no longer available to new users.',
+                'status' => 'NOT_FOUND',
+            ],
+        ], 404),
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'Hello from gemini-3.5-flash.']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    $events = iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'content' => 'Hi']],
+        [],
+        'You are SMIS Agent.',
+    ));
+
+    expect($events[0]->textDelta)->toBe('Hello from gemini-3.5-flash.');
+
+    Http::assertSentCount(2);
+});
+
 test('unavailable model explains how to switch', function () {
     Http::preventStrayRequests();
     Http::fake([

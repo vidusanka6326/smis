@@ -419,9 +419,9 @@ class GeminiAgentLlm implements AgentLlm
         return match ($response->status()) {
             400 => $this->invalidArgumentMessage($upstream),
             401, 403 => __('Gemini rejected the API key. Check GEMINI_API_KEY and retry.'),
-            404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-2.5-flash and retry.'),
+            404 => __('The configured Gemini model is not available to this API key. Set GEMINI_MODEL to gemini-3.5-flash and retry.'),
             429 => __('Gemini quota was exceeded. Check billing in Google AI Studio and retry.'),
-            502, 503 => __('Google’s Gemini model is overloaded. This is not a billing issue — wait a moment or set GEMINI_MODEL to gemini-2.5-flash.'),
+            502, 503 => __('Google’s Gemini model is overloaded. This is not a billing issue — wait a moment and retry.'),
             default => __('SMIS Agent could not complete that request. Please try again.'),
         };
     }
