@@ -52,11 +52,7 @@ class GeminiAgentLlm implements AgentLlm
         }
 
         try {
-            $response = $this->postGenerateContent($payload);
-
-            if (in_array($response->status(), [502, 503], true)) {
-                $response = $this->postGenerateContent($payload);
-            }
+            $response = $this->postUntilAvailable($payload);
         } catch (ConnectionException $exception) {
             throw new AgentLlmException(
                 __('Gemini did not respond in time. Wait a moment and retry.'),
@@ -101,10 +97,9 @@ class GeminiAgentLlm implements AgentLlm
         );
     }
 
-    private function endpoint(): string
+    private function endpoint(string $model): string
     {
         $base = rtrim((string) config('services.gemini.base_url'), '/');
-        $model = (string) config('services.gemini.model');
 
         return "{$base}/models/{$model}:generateContent";
     }
@@ -112,7 +107,38 @@ class GeminiAgentLlm implements AgentLlm
     /**
      * @param  array<string, mixed>  $payload
      */
-    private function postGenerateContent(array $payload): Response
+    private function postUntilAvailable(array $payload): Response
+    {
+        $response = null;
+
+        foreach ($this->models() as $index => $model) {
+            $response = $this->postGenerateContent($payload, $model);
+
+            if ($response->successful()) {
+                return $response;
+            }
+
+            if (in_array($response->status(), [502, 503], true) && $index === 0) {
+                $this->pauseBeforeRetry();
+                $response = $this->postGenerateContent($payload, $model);
+
+                if ($response->successful()) {
+                    return $response;
+                }
+            }
+
+            if (! in_array($response->status(), [404, 502, 503], true)) {
+                return $response;
+            }
+        }
+
+        return $response ?? $this->postGenerateContent($payload, (string) config('services.gemini.model'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function postGenerateContent(array $payload, string $model): Response
     {
         return Http::timeout((int) config('services.gemini.timeout'))
             ->connectTimeout((int) config('services.gemini.connect_timeout'))
@@ -121,7 +147,36 @@ class GeminiAgentLlm implements AgentLlm
                 'Content-Type' => 'application/json',
                 'x-goog-api-key' => (string) config('services.gemini.key'),
             ])
-            ->post($this->endpoint(), $payload);
+            ->post($this->endpoint($model), $payload);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function models(): array
+    {
+        $primary = (string) config('services.gemini.model');
+        $fallbacks = config('services.gemini.fallbacks', []);
+
+        if (! is_array($fallbacks)) {
+            $fallbacks = [];
+        }
+
+        $models = [$primary, ...$fallbacks];
+
+        return array_values(array_unique(array_filter(
+            $models,
+            fn (mixed $model): bool => is_string($model) && $model !== '',
+        )));
+    }
+
+    private function pauseBeforeRetry(): void
+    {
+        $delay = (int) config('services.gemini.retry_delay_ms', 400);
+
+        if ($delay > 0) {
+            usleep($delay * 1000);
+        }
     }
 
     /**
@@ -364,9 +419,9 @@ class GeminiAgentLlm implements AgentLlm
         return match ($response->status()) {
             400 => $this->invalidArgumentMessage($upstream),
             401, 403 => __('Gemini rejected the API key. Check GEMINI_API_KEY and retry.'),
-            404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-flash-latest and retry.'),
-            429 => __('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.'),
-            502, 503 => __('Gemini is busy right now. Wait a moment and retry.'),
+            404 => __('The configured Gemini model is not available. Set GEMINI_MODEL to gemini-2.5-flash and retry.'),
+            429 => __('Gemini quota was exceeded. Check billing in Google AI Studio and retry.'),
+            502, 503 => __('Google’s Gemini model is overloaded. This is not a billing issue — wait a moment or set GEMINI_MODEL to gemini-2.5-flash.'),
             default => __('SMIS Agent could not complete that request. Please try again.'),
         };
     }

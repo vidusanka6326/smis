@@ -38,7 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
-| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | Gemini-only; compact waiting row keeps chat visible |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | gemini-2.5-flash + 503 fallbacks |
 
 ## Deliverables Checklist
 
@@ -57,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — Paid Gemini 503s were Google capacity on `gemini-flash-latest`, not billing. Default model is `gemini-2.5-flash` with fallbacks and a clearer overload message.
 - **2026-08-17** — Agent waiting UI is a compact status row. Welcome prompts and prior messages stay visible during long Gemini turns (no blank pane).
 - **2026-08-17** — Agent chat shows a Thinking spinner as soon as you send. Stream targets stay in the DOM so long Gemini turns no longer blank the pane. Gemini thinking budget is 0 for faster replies.
 - **2026-08-17** — SMIS Agent is Gemini-only (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed. Empty function-call `args` encode as `{}`; 502/503 and timeouts show in chat.
@@ -106,7 +107,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
 - Spreadsheet export is CSV only (no Excel package).
 - Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log`, `manage-officers` / `officer` role, and `use-smis-agent`.
-- SMIS Agent needs `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-flash-latest`). Tests use a scripted LLM.
+- SMIS Agent needs `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-2.5-flash`). Tests use a scripted LLM.
 
 ## Decisions Needed From Product Owner
 

@@ -72,10 +72,12 @@ class AgentMessage extends Model
         $content = $this->content;
 
         if (str_contains($content, 'credits')
+            || str_contains($content, 'quota')
             || str_contains($content, 'rate-limited')
             || str_contains($content, 'not configured')
             || str_contains($content, 'rejected the API key')
             || str_contains($content, 'busy right now')
+            || str_contains($content, 'overloaded')
             || str_contains($content, 'did not respond in time')) {
             return 'warning';
         }

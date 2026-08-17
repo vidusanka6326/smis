@@ -14,9 +14,11 @@ beforeEach(function () {
     config([
         'services.gemini.key' => 'test-gemini-key',
         'services.gemini.model' => 'gemini-flash-latest',
+        'services.gemini.fallbacks' => [],
         'services.gemini.base_url' => 'https://generativelanguage.googleapis.com/v1beta',
         'services.gemini.timeout' => 5,
         'services.gemini.connect_timeout' => 2,
+        'services.gemini.retry_delay_ms' => 0,
     ]);
 });
 
@@ -180,7 +182,7 @@ test('unavailable model explains how to switch', function () {
         [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
-    )))->toThrow(AgentLlmException::class, 'gemini-flash-latest');
+    )))->toThrow(AgentLlmException::class, 'not available');
 });
 
 test('exhausted credits explain billing', function () {
@@ -199,7 +201,7 @@ test('exhausted credits explain billing', function () {
         [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
-    )))->toThrow(AgentLlmException::class, 'credits or quota');
+    )))->toThrow(AgentLlmException::class, 'quota');
 });
 
 test('agent llm contract resolves to gemini', function () {
@@ -271,9 +273,42 @@ test('busy gemini retries then explains the outage', function () {
         [['role' => 'user', 'content' => 'Hi']],
         [],
         'You are SMIS Agent.',
-    )))->toThrow(AgentLlmException::class, 'busy right now');
+    )))->toThrow(AgentLlmException::class, 'overloaded');
 
     Http::assertSentCount(2);
+});
+
+test('overloaded primary model falls through to a fallback', function () {
+    config(['services.gemini.fallbacks' => ['gemini-2.5-flash']]);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent' => Http::response([
+            'error' => [
+                'code' => 503,
+                'message' => 'This model is currently experiencing high demand.',
+                'status' => 'UNAVAILABLE',
+            ],
+        ], 503),
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [['text' => 'Hello from fallback.']],
+                ],
+                'finishReason' => 'STOP',
+            ]],
+        ]),
+    ]);
+
+    $events = iterator_to_array(app(GeminiAgentLlm::class)->streamTurn(
+        [['role' => 'user', 'content' => 'Hi']],
+        [],
+        'You are SMIS Agent.',
+    ));
+
+    expect($events[0]->textDelta)->toBe('Hello from fallback.');
+
+    Http::assertSentCount(3);
 });
 
 test('connection failures explain the timeout', function () {

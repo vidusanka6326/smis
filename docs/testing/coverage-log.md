@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Gemini 503 model fallbacks
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **47 passed** (109 assertions).
+
+Notes: Default `gemini-2.5-flash`. 503 retries once then tries fallbacks. Chat copy says overload is not a billing issue.
+
 ## 2026-08-17 — Compact agent waiting row
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (107 assertions).

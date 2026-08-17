@@ -56,8 +56,8 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 
 ## Key business rules
 
-- LLM key: `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-flash-latest`). Missing key returns a setup message.
-- Live replies use Gemini `models/{GEMINI_MODEL}:generateContent`. 401/403/404/429/502/503 and timeouts are shown in chat.
+- LLM key: `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-2.5-flash`). Missing key returns a setup message.
+- Live replies use Gemini `models/{GEMINI_MODEL}:generateContent`. HTTP 503 is Google capacity (not billing); the client retries, then tries `GEMINI_MODEL_FALLBACKS`.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
 - The waiting row (spinner + “Thinking…”) stays in the DOM as a compact status line so long Gemini turns keep the welcome prompts or prior messages visible. Stream targets are always present.
 - The chat is a full-height shell: conversation list (title + relative time), compact composer, and Gemini quota/setup failures as Flux callouts (Google AI Studio link).
