@@ -1,5 +1,29 @@
 # Coverage Log
 
+## 2026-08-17 — Gemini 503 model fallbacks
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **47 passed** (109 assertions).
+
+Notes: Default `gemini-2.5-flash`. 503 retries once then tries fallbacks. Chat copy says overload is not a billing issue.
+
+## 2026-08-17 — Compact agent waiting row
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (107 assertions).
+
+Notes: Waiting UI no longer uses a tall empty panel. Empty-state prompts stay visible while Gemini runs.
+
+## 2026-08-17 — Agent waiting UI
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (106 assertions).
+
+Notes: Waiting spinner is always in the DOM (`wire:loading` + stream targets). Gemini `thinkingBudget` is 0.
+
+## 2026-08-17 — Gemini-only SMIS Agent
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (103 assertions).
+
+Notes: OpenRouter client and `AGENT_LLM_PROVIDERS` removed. Gemini `generateContent` is the only transport. Empty `functionCall.args` encode as `{}`; 503 retries once then explains the outage.
+
 ## 2026-08-15 — Dual LLM providers (OpenRouter + Gemini)
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **53 passed** (120 assertions). PHPStan clean on `app/Services/Agent`.

@@ -88,7 +88,7 @@ test('orchestrator surfaces llm request errors in the chat', function () {
 
         public function streamTurn(array $contents, array $tools, string $systemInstruction): iterable
         {
-            throw new AgentLlmException('OpenRouter credits are exhausted. Add credits and retry.');
+            throw new AgentLlmException('Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.');
         }
     });
 

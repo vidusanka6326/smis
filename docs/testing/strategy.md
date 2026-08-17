@@ -40,4 +40,4 @@ Scaffolding smoke test: `tests/Feature/PhaseZeroScaffoldingTest.php` asserts doc
 
 ## SMIS Agent
 
-Feature tests cover role access, Livewire chat persistence, tool authorization (including teacher 403 on assign), and the orchestrator tool loop with a scripted LLM (no live OpenRouter/Gemini calls).
+Feature tests cover role access, Livewire chat persistence, tool authorization (including teacher 403 on assign), and the orchestrator tool loop with a scripted LLM (no live Gemini calls).

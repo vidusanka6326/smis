@@ -1,6 +1,6 @@
 # Agent (web)
 
-SMIS Agent is a Livewire page, not a Sanctum API. Tools run in-process with the signed-in user’s Policies and cover every staff UI action that user is allowed to perform.
+SMIS Agent is a Livewire page, not a Sanctum API. Tools run in-process with the signed-in user’s Policies and cover every staff UI action that user is allowed to perform. The model is Gemini (`generateContent`, ADR 0021).
 
 | Method | Path | Auth | Notes |
 |---|---|---|---|

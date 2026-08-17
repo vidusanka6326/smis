@@ -55,7 +55,7 @@ class AgentOrchestrator
         $conversation->touch();
 
         if (! $this->llm->isConfigured()) {
-            $markdown = __('SMIS Agent is not configured. Add OPENROUTER_API_KEY or GEMINI_API_KEY and retry.');
+            $markdown = __('SMIS Agent is not configured. Add GEMINI_API_KEY and retry.');
             $this->persistAssistant($conversation, $markdown);
 
             return new AgentTurnResult($markdown);
@@ -99,14 +99,22 @@ class AgentOrchestrator
                 foreach ($functionCalls as $index => $call) {
                     $id = $call['id'] ?? 'call_'.$index;
                     $functionCalls[$index]['id'] = $id;
-                    $toolCallsPayload[] = [
+                    $toolCall = [
                         'id' => $id,
                         'type' => 'function',
                         'function' => [
                             'name' => $call['name'],
-                            'arguments' => json_encode($call['args']),
+                            'arguments' => json_encode($call['args'] === [] ? new \stdClass : $call['args']),
                         ],
                     ];
+
+                    $signature = $call['thoughtSignature'] ?? null;
+
+                    if (is_string($signature) && $signature !== '') {
+                        $toolCall['thoughtSignature'] = $signature;
+                    }
+
+                    $toolCallsPayload[] = $toolCall;
                 }
 
                 $assistantMessage = [

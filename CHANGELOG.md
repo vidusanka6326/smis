@@ -6,10 +6,12 @@ Detailed day-to-day notes live in `docs/PROJECT_STATUS.md`.
 
 ## [Unreleased]
 
-### SMIS Agent (2026-08-14)
+### SMIS Agent (2026-08-17)
 
-- OpenRouter and Gemini backends; `AGENT_LLM_PROVIDERS` uses the first listed provider that has an API key (ADR 0020).
-- OpenRouter default model `openai/gpt-oss-20b:free`; Gemini default `gemini-flash-latest`.
+- Gemini-only `generateContent` backend (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed.
+- Empty function-call `args` encode as `{}`; 502/503 and timeouts are shown in chat instead of a generic failure.
+- Default Gemini model is `gemini-2.5-flash`. HTTP 503 is treated as Google capacity (not billing) and falls through to backup models.
+- Chat shows a compact Thinking row on send; welcome prompts and prior messages stay visible during long Gemini turns.
 - Permissioned tools cover every staff UI action the signed-in user can already perform (academic structure, people, timetable, attendance, exams, reports), still gated by Policies.
 - Full-height chat UI with conversation history, compact composer, and quota/setup errors as callouts.
 

@@ -18,7 +18,7 @@ test('markdown renderer allows headings and strips scripts', function () {
 test('quota replies are warning service notices', function () {
     $message = new AgentMessage([
         'role' => AgentMessageRole::Assistant,
-        'content' => 'OpenRouter credits are exhausted. Add credits and retry.',
+        'content' => 'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
     ]);
 
     expect($message->isServiceNotice())->toBeTrue()
@@ -28,7 +28,7 @@ test('quota replies are warning service notices', function () {
 test('user messages are not service notices', function () {
     $message = new AgentMessage([
         'role' => AgentMessageRole::User,
-        'content' => 'OpenRouter credits are exhausted. Add credits and retry.',
+        'content' => 'Gemini credits or quota are exhausted. Add billing in Google AI Studio and retry.',
     ]);
 
     expect($message->isServiceNotice())->toBeFalse();

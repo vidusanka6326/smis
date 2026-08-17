@@ -1,5 +1,7 @@
 # ADR 0019 — SMIS Agent via OpenRouter
 
+**Superseded by [ADR 0021](0021-smis-agent-gemini-only.md).** OpenRouter is no longer used.
+
 ## Context
 
 ADR 0018 used Gemini `generateContent`. New Google AI Studio keys 404 on `gemini-2.5-flash`, and prepaid Gemini credits were exhausting in local use. Staff still need an in-app assistant that cannot bypass Policies.

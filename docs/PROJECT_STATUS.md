@@ -4,7 +4,7 @@
 
 **SMIS Agent** (Done)
 
-Role-scoped agent (admin / officer / teacher) over OpenRouter and/or Gemini. The first provider in `AGENT_LLM_PROVIDERS` that has an API key is used. Tools cover every staff UI action the signed-in user is already allowed to perform, still gated by Policies and Actions.
+Role-scoped Gemini agent (admin / officer / teacher). Tools cover every staff UI action the signed-in user is already allowed to perform, still gated by Policies and Actions.
 
 **UI — Report catalog & PDF/CSV exports** (Done)
 
@@ -38,7 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
-| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, OpenRouter + Gemini, provider selection, Livewire chat) | 2026-08-15 | Dual LLM: first configured of OpenRouter / Gemini; Policy-gated tools |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | gemini-2.5-flash + 503 fallbacks |
 
 ## Deliverables Checklist
 
@@ -57,6 +57,10 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — Paid Gemini 503s were Google capacity on `gemini-flash-latest`, not billing. Default model is `gemini-2.5-flash` with fallbacks and a clearer overload message.
+- **2026-08-17** — Agent waiting UI is a compact status row. Welcome prompts and prior messages stay visible during long Gemini turns (no blank pane).
+- **2026-08-17** — Agent chat shows a Thinking spinner as soon as you send. Stream targets stay in the DOM so long Gemini turns no longer blank the pane. Gemini thinking budget is 0 for faster replies.
+- **2026-08-17** — SMIS Agent is Gemini-only (ADR 0021). OpenRouter and `AGENT_LLM_PROVIDERS` removed. Empty function-call `args` encode as `{}`; 502/503 and timeouts show in chat.
 - **2026-08-15** — SMIS Agent supports OpenRouter and Gemini. `AGENT_LLM_PROVIDERS` (default `openrouter,gemini`) uses the first listed provider that has an API key (ADR 0020).
 - **2026-08-14** — SMIS Agent now uses OpenRouter `openai/gpt-oss-20b:free` (`chat/completions`). Gemini client removed (ADR 0019).
 - **2026-08-14** — Refactored SMIS Agent chat UI: full-height shell, wider history with two-line titles, compact composer, and provider quota/setup errors as callouts.
@@ -103,7 +107,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 - Period count fixed at 8 (Mon–Fri); make configurable later if needed.
 - Spreadsheet export is CSV only (no Excel package).
 - Re-run `RolesAndPermissionsSeeder` on existing environments to pick up `view-activity-log`, `manage-officers` / `officer` role, and `use-smis-agent`.
-- SMIS Agent needs `OPENROUTER_API_KEY` and/or `GEMINI_API_KEY`. `AGENT_LLM_PROVIDERS` (default `openrouter,gemini`) uses the first listed provider with a key. Tests use a scripted LLM.
+- SMIS Agent needs `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-2.5-flash`). Tests use a scripted LLM.
 
 ## Decisions Needed From Product Owner
 
@@ -123,7 +127,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Pass/fail | `marks_obtained >= pass_mark` (per exam subject; default pass 40/100) | Assumed |
 | Class teacher marks entry for all subjects | Allowed for own class | Assumed |
 | Report exports | CSV download + DomPDF PDF files (ADR 0017) | **Decided** |
-| SMIS Agent | OpenRouter and/or Gemini function-calling over existing Policies/Actions; first configured provider wins | **Decided — ADR 0020** |
+| SMIS Agent | Gemini function-calling over existing Policies/Actions | **Decided — ADR 0021** |
 | Best/poor performers | Top/bottom 5 by average % across exam subjects | Assumed |
 | Attendance at-risk threshold | Monthly attendance **&lt; 80%** flagged as needs attention | Assumed |
 | REST API (Phase 8) | Skip for current web-only release | **Decided — skipped** |

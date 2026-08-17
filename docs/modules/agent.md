@@ -56,10 +56,11 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 
 ## Key business rules
 
-- LLM keys: `OPENROUTER_API_KEY` and/or `GEMINI_API_KEY`. `AGENT_LLM_PROVIDERS` (default `openrouter,gemini`) picks the **first listed provider that has a key**. Missing both keys returns a setup message.
-- OpenRouter live replies use `https://openrouter.ai/api/v1/chat/completions` (`OPENROUTER_MODEL`, default `openai/gpt-oss-20b:free`). Gemini uses `models/{GEMINI_MODEL}:generateContent` (default `gemini-flash-latest`). Provider 401/403/404/429 errors are shown in chat.
+- LLM key: `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-2.5-flash`). Missing key returns a setup message.
+- Live replies use Gemini `models/{GEMINI_MODEL}:generateContent`. HTTP 503 is Google capacity (not billing); the client retries, then tries `GEMINI_MODEL_FALLBACKS`.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
-- The chat is a full-height shell: conversation list (title + relative time), compact composer, and provider/setup failures as Flux callouts (OpenRouter credits or Google AI Studio links).
+- The waiting row (spinner + “Thinking…”) stays in the DOM as a compact status line so long Gemini turns keep the welcome prompts or prior messages visible. Stream targets are always present.
+- The chat is a full-height shell: conversation list (title + relative time), compact composer, and Gemini quota/setup failures as Flux callouts (Google AI Studio link).
 - Assigning a **named teacher to a free period** creates a timetable entry (subject required). Relief is only for an existing lesson on a matching weekday date.
 - Teachers may inspect timetables of classes they are assigned to (assumption; class/subject/PT-PD via `TeacherReportScope`).
 - Class teachers may create students only in their homeroom (`StudentPolicy::createInClass`). They cannot change status, password, or class.
@@ -73,7 +74,8 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 - `10A` normalizes to `10-A`.
 - Cross-user conversations 403.
 - Unauthorized tools are omitted from the model’s function list; calling one anyway returns a role error.
-- Tools with no arguments must JSON-encode `parameters.properties` as `{}`. PHP empty arrays become `[]`, which OpenAI-compatible APIs reject.
+- Tools with no arguments must JSON-encode `parameters.properties` as `{}`. PHP empty arrays become `[]`, which Gemini rejects.
+- Function-call follow-ups must send `args` as `{}` (not `[]`) and echo `thoughtSignature` when Gemini provided one.
 
 ## Status
 

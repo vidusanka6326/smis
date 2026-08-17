@@ -1,5 +1,7 @@
 # ADR 0020 — SMIS Agent dual LLM providers
 
+**Superseded by [ADR 0021](0021-smis-agent-gemini-only.md).** The agent is Gemini-only.
+
 ## Context
 
 ADR 0019 switched the agent to OpenRouter and dropped Gemini. Local setups often have both keys. Staff should keep using whichever provider is ready without a code change.
