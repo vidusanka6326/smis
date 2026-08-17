@@ -77,8 +77,10 @@ test('dashboard shows a split eng sin tam language selector', function () {
 test('language switcher is shown on the homepage and login', function () {
     $this->get(route('home'))
         ->assertOk()
-        ->assertSee('සිංහල', false)
-        ->assertSee('தமிழ்', false);
+        ->assertSee('data-test="language-switcher"', false)
+        ->assertSee('>ENG<', false)
+        ->assertSee('>SIN<', false)
+        ->assertSee('>TAM<', false);
 
     $this->get(route('login'))
         ->assertOk()
