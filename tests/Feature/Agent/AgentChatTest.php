@@ -53,6 +53,7 @@ test('clicking a choice sends that follow-up', function () {
         ->test(Chat::class)
         ->set('draft', 'Free periods in 10-A')
         ->call('send')
+        ->assertSee('Here are free periods.')
         ->assertSee('Show free teachers')
         ->call('choose', 'Show teachers free on Monday period 1')
         ->assertSee('Nimal Perera is free.');

@@ -38,7 +38,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 | Reporting | Done | 100% | Feature + policy + ranking/stats + at-risk/by_class + catalog/PDF tests | 2026-08-14 | Catalog + PDF/CSV; extra reports (at-risk, staff attendance, enrollment, exam results, assignments) |
 | API (Sanctum) | Skipped | 0% | — | 2026-08-10 | Phase 8 skipped; see ADR 0009 |
 | Hardening / audit | Done | 100% | Feature + policy + unit logger tests | 2026-08-10 | Custom `activity_logs` (ADR 0010) |
-| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | gemini-3.5-flash; PHP time limit + 404/503 fallbacks |
+| SMIS Agent | Done | 100% | Feature + unit (access, tools, orchestrator, Gemini, Livewire chat) | 2026-08-17 | Keep streamed answer with offer_choices |
 
 ## Deliverables Checklist
 
@@ -57,6 +57,7 @@ Admin-only Officers CRUD replaces Create user; officers get school data-entry ac
 
 ## Changelog
 
+- **2026-08-17** — Agent chat was dropping the streamed answer when `offer_choices` followed. The live preview showed the table, then the saved message was only the “highlighted above” follow-up. Visible chunks from the turn are now kept together.
 - **2026-08-17** — `php artisan serve` was killing Gemini curls at 30s (`Maximum execution time of 30+2 seconds exceeded`). Agent turns now raise PHP `max_execution_time`; hung models fall through to fallbacks instead of a fatal.
 - **2026-08-17** — New Gemini keys 404 on `gemini-2.5-flash` (`no longer available to new users`). Default is `gemini-3.5-flash`; 404/503 fall through to `gemini-flash-latest` / `gemini-3.5-flash-lite`.
 - **2026-08-17** — Paid Gemini 503s were Google capacity on `gemini-flash-latest`, not billing. Default model is `gemini-2.5-flash` with fallbacks and a clearer overload message.

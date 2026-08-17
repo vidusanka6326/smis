@@ -1,6 +1,7 @@
 <?php
 
 use App\Contracts\AgentLlm;
+use App\Enums\AgentMessageRole;
 use App\Enums\DayOfWeek;
 use App\Models\AcademicYear;
 use App\Models\AgentConversation;
@@ -104,4 +105,43 @@ test('orchestrator surfaces llm request errors in the chat', function () {
     );
 
     expect($result->markdown)->toContain('credits');
+});
+
+test('orchestrator keeps streamed answer text when offer_choices follows', function () {
+    $this->app->instance(AgentLlm::class, new ScriptedAgentLlm([
+        [
+            new AgentLlmEvent(textDelta: "| Subject | Attention |\n| Math | High |", complete: false),
+            new AgentLlmEvent(functionCalls: [[
+                'name' => 'offer_choices',
+                'args' => [
+                    'choices' => [[
+                        'id' => 'math',
+                        'label' => 'View Grade 10 Math Results',
+                        'message' => 'Show Grade 10 Math results',
+                    ]],
+                ],
+            ]], complete: true),
+        ],
+        [new AgentLlmEvent(textDelta: 'I have highlighted the key subjects above.', complete: true)],
+    ]));
+
+    $admin = User::factory()->admin()->create();
+    $conversation = AgentConversation::factory()->create(['user_id' => $admin->id]);
+    $deltas = [];
+
+    $result = app(AgentOrchestrator::class)->run(
+        $admin,
+        $conversation,
+        'Which subjects need more attention?',
+        function (string $markdown) use (&$deltas): void {
+            $deltas[] = $markdown;
+        },
+        function (string $status): void {},
+    );
+
+    expect($result->markdown)->toContain('Math')
+        ->and($result->markdown)->toContain('highlighted the key subjects')
+        ->and($result->choices[0]['label'])->toBe('View Grade 10 Math Results')
+        ->and($deltas[0])->toContain('Math')
+        ->and($conversation->messages()->where('role', AgentMessageRole::Assistant)->value('content'))->toContain('Math');
 });
