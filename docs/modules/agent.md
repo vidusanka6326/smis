@@ -59,7 +59,7 @@ The model never writes the database itself. `AgentToolRegistry` exposes only too
 - LLM key: `GEMINI_API_KEY`. Optional `GEMINI_MODEL` (default `gemini-flash-latest`). Missing key returns a setup message.
 - Live replies use Gemini `models/{GEMINI_MODEL}:generateContent`. 401/403/404/429/502/503 and timeouts are shown in chat.
 - Livewire `stream()` still updates the composer; the model response arrives as one turn. Markdown is rendered with `Str::markdown()` (`html_input` strip).
-- The waiting row (spinner + “Thinking…”) stays in the DOM so long Gemini turns show status immediately instead of a blank pane. Stream targets are always present.
+- The waiting row (spinner + “Thinking…”) stays in the DOM as a compact status line so long Gemini turns keep the welcome prompts or prior messages visible. Stream targets are always present.
 - The chat is a full-height shell: conversation list (title + relative time), compact composer, and Gemini quota/setup failures as Flux callouts (Google AI Studio link).
 - Assigning a **named teacher to a free period** creates a timetable entry (subject required). Relief is only for an existing lesson on a matching weekday date.
 - Teachers may inspect timetables of classes they are assigned to (assumption; class/subject/PT-PD via `TeacherReportScope`).

@@ -1,5 +1,11 @@
 # Coverage Log
 
+## 2026-08-17 — Compact agent waiting row
+
+Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (107 assertions).
+
+Notes: Waiting UI no longer uses a tall empty panel. Empty-state prompts stay visible while Gemini runs.
+
 ## 2026-08-17 — Agent waiting UI
 
 Command: `php artisan test --compact tests/Feature/Agent tests/Unit/Agent` — **46 passed** (106 assertions).

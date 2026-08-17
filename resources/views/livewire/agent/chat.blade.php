@@ -37,19 +37,25 @@
 
             <div
                 class="min-h-0 flex-1 overflow-y-auto"
-                x-data="{ pin() { $nextTick(() => { $el.scrollTop = $el.scrollHeight }) } }"
-                x-init="pin(); new MutationObserver(() => pin()).observe($el, { childList: true, subtree: true, characterData: true })"
+                x-data="{
+                    pin() {
+                        const gap = $el.scrollHeight - $el.scrollTop - $el.clientHeight
+                        if (gap < 96) {
+                            $el.scrollTop = $el.scrollHeight
+                        }
+                    }
+                }"
+                x-init="
+                    $el.scrollTop = $el.scrollHeight
+                    new MutationObserver(() => pin()).observe($el, { childList: true, subtree: true, characterData: true })
+                "
             >
                 <div @class([
                     'mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-5 sm:px-6',
-                    'min-h-full justify-center' => $this->thread->isEmpty() && ! $isStreaming,
+                    'min-h-full justify-center' => $this->thread->isEmpty(),
                 ])>
-                    @if ($this->thread->isEmpty() && ! $isStreaming)
-                        <div
-                            wire:loading.class="hidden"
-                            wire:target="send,choose,useSuggestion"
-                            class="flex flex-col items-center gap-5 text-center"
-                        >
+                    @if ($this->thread->isEmpty())
+                        <div class="flex flex-col items-center gap-5 text-center">
                             <span class="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
                                 <flux:icon.bot class="size-7" />
                             </span>
@@ -135,18 +141,14 @@
                         wire:loading.class.remove="hidden"
                         wire:target="send,choose,useSuggestion"
                         @class([
-                            'flex w-full gap-3',
-                            'min-h-[40vh] flex-col items-center justify-center text-center' => $this->thread->isEmpty(),
+                            'flex w-full items-start gap-3',
                             'hidden' => ! $isStreaming,
                         ])
                     >
-                        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <flux:icon.arrow-path class="size-5 animate-spin" />
+                        <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <flux:icon.arrow-path class="size-4 animate-spin" />
                         </span>
-                        <div @class([
-                            'space-y-2',
-                            'min-w-0 flex-1 text-start' => $this->thread->isNotEmpty(),
-                        ])>
+                        <div class="min-w-0 flex-1 space-y-2">
                             <p wire:stream="agent-status" class="text-sm text-muted-foreground">
                                 {{ $status !== '' ? $status : __('Thinking…') }}
                             </p>
@@ -194,13 +196,26 @@
         </div>
     </div>
 
-    <flux:modal wire:model="showHistory" class="max-w-sm lg:hidden">
-        <div class="mb-3 flex items-center justify-between gap-2">
-            <flux:heading size="sm">{{ __('Chats') }}</flux:heading>
-            <flux:button size="sm" variant="primary" icon="plus" wire:click="newChat">
-                {{ __('New') }}
-            </flux:button>
-        </div>
-        <x-agent.conversation-list class="max-h-[70vh] p-0" :conversations="$this->conversationList" :active-id="$conversationId" />
-    </flux:modal>
+    <div
+        class="fixed inset-0 z-40 lg:hidden"
+        x-cloak
+        x-show="$wire.showHistory"
+        x-transition.opacity
+    >
+        <button
+            type="button"
+            class="absolute inset-0 bg-zinc-950/40"
+            wire:click="$set('showHistory', false)"
+            aria-label="{{ __('Close chats') }}"
+        ></button>
+        <aside class="relative flex h-full w-80 max-w-[85vw] flex-col border-e border-border bg-background">
+            <div class="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5">
+                <flux:heading size="sm">{{ __('Chats') }}</flux:heading>
+                <flux:button size="sm" variant="primary" icon="plus" wire:click="newChat">
+                    {{ __('New') }}
+                </flux:button>
+            </div>
+            <x-agent.conversation-list :conversations="$this->conversationList" :active-id="$conversationId" />
+        </aside>
+    </div>
 </div>

@@ -192,24 +192,26 @@ class Chat extends Component
         unset($this->thread, $this->conversationList);
         $this->stream(e($this->status), replace: true, name: 'agent-status');
 
-        $orchestrator->run(
-            $user,
-            $conversation->fresh() ?? $conversation,
-            $message,
-            function (string $markdown) use ($orchestrator): void {
-                $this->streamingHtml = $orchestrator->renderMarkdown($markdown);
-                $this->stream($this->streamingHtml, replace: true, name: 'assistant-stream');
-            },
-            function (string $label): void {
-                $this->status = $label;
-                $this->stream(e($label), replace: true, name: 'agent-status');
-            },
-        );
-
-        $this->isStreaming = false;
-        $this->streamingHtml = '';
-        $this->status = '';
-        unset($this->thread, $this->conversationList);
+        try {
+            $orchestrator->run(
+                $user,
+                $conversation->fresh() ?? $conversation,
+                $message,
+                function (string $markdown) use ($orchestrator): void {
+                    $this->streamingHtml = $orchestrator->renderMarkdown($markdown);
+                    $this->stream($this->streamingHtml, replace: true, name: 'assistant-stream');
+                },
+                function (string $label): void {
+                    $this->status = $label;
+                    $this->stream(e($label), replace: true, name: 'agent-status');
+                },
+            );
+        } finally {
+            $this->isStreaming = false;
+            $this->streamingHtml = '';
+            $this->status = '';
+            unset($this->thread, $this->conversationList);
+        }
     }
 
     private function conversationFor(User $user): AgentConversation
