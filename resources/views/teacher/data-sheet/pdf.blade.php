@@ -4,37 +4,37 @@
     <meta charset="utf-8">
     <title>EMIS Data Sheet</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; margin: 0; padding: 0; line-height: 1.5; }
-        .page { page-break-after: always; padding: 20px; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; margin: 0; padding: 0; line-height: 1.3; }
+        .page { page-break-after: always; padding: 15px; }
         .page:last-child { page-break-after: avoid; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
         .underline { text-decoration: underline; }
-        h1 { font-size: 13px; margin: 5px 0; }
-        h2 { font-size: 11px; margin: 5px 0; text-decoration: underline; }
-        h3 { font-size: 11px; font-weight: bold; margin: 10px 0 5px; }
+        h1 { font-size: 12px; margin: 4px 0; }
+        h2 { font-size: 10px; margin: 4px 0; text-decoration: underline; }
+        h3 { font-size: 10px; font-weight: bold; margin: 8px 0 4px; }
         
-        .table-border { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
-        .table-border th, .table-border td { border: 1px solid #000; padding: 4px; font-size: 11px; }
+        .table-border { border-collapse: collapse; width: 100%; margin-bottom: 8px; }
+        .table-border th, .table-border td { border: 1px solid #000; padding: 3px; font-size: 10px; }
         
-        .field-row { margin-bottom: 8px; display: table; width: 100%; }
+        .field-row { margin-bottom: 5px; display: table; width: 100%; }
         .field-label { display: table-cell; width: 250px; vertical-align: bottom; }
         .field-value { display: table-cell; border-bottom: 1px dotted #000; vertical-align: bottom; }
         .field-value-inline { border-bottom: 1px dotted #000; display: inline-block; padding: 0 5px; }
 
-        .flex-row { display: table; width: 100%; margin-bottom: 8px; }
+        .flex-row { display: table; width: 100%; margin-bottom: 5px; }
         .flex-col { display: table-cell; vertical-align: top; }
 
         .ol-list { list-style: none; padding-left: 20px; margin: 0; }
-        .ol-list li { margin-bottom: 6px; }
+        .ol-list li { margin-bottom: 4px; }
         .ol-list li span.dot { display: inline-block; width: 200px; border-bottom: 1px dotted #000; margin-left: 5px; }
         
-        .mt-20 { margin-top: 20px; }
-        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 12px; }
+        .mb-20 { margin-bottom: 12px; }
         
         /* Specific header table */
-        .header-table { width: 50%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-        .header-table th, .header-table td { border: 1px solid #000; padding: 4px; text-align: left; font-size: 11px; }
+        .header-table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; }
+        .header-table th, .header-table td { border: 1px solid #000; padding: 3px; text-align: left; font-size: 10px; }
         .header-table th { width: 150px; }
     </style>
 </head>
