@@ -119,6 +119,7 @@ class StudentController extends Controller
             'genders' => Gender::cases(),
             'academicYears' => AcademicYear::query()->orderByDesc('starts_on')->get(),
             'schoolClasses' => SchoolClass::query()->with(['grade', 'academicYear'])->orderBy('code')->get(),
+            'students' => Student::query()->with('user:id,name')->get(['id', 'admission_no', 'user_id']),
         ];
     }
 }

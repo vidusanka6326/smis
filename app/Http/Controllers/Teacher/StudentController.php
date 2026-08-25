@@ -67,6 +67,7 @@ class StudentController extends Controller
         return view('teacher.students.edit', [
             'student' => $student->load('user'),
             'genders' => Gender::cases(),
+            'students' => Student::query()->with('user:id,name')->get(['id', 'admission_no', 'user_id']),
         ]);
     }
 
@@ -100,6 +101,7 @@ class StudentController extends Controller
                 ->whereIn('id', $classIds)
                 ->orderBy('code')
                 ->get(),
+            'students' => Student::query()->with('user:id,name')->get(['id', 'admission_no', 'user_id']),
         ];
     }
 

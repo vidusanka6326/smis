@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ExaminationReportController as AdminExaminationRe
 use App\Http\Controllers\Admin\ExamResultsReportController as AdminExamResultsReportController;
 use App\Http\Controllers\Admin\ExamSubjectController;
 use App\Http\Controllers\Admin\GradeController;
+use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\MarkEntryController as AdminMarkEntryController;
 use App\Http\Controllers\Admin\OfficerController;
 use App\Http\Controllers\Admin\PerformanceReportController as AdminPerformanceReportController;
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
             ->name('teachers.assignments.update');
 
         Route::resource('students', AdminStudentController::class);
+        Route::resource('lessons', LessonController::class)->only(['index', 'show', 'destroy']);
 
         Route::get('timetables', [AdminTimetableController::class, 'index'])->name('timetables.index');
         Route::post('timetables', [AdminTimetableController::class, 'store'])->name('timetables.store');
@@ -148,6 +150,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('dashboard', TeacherDashboardController::class)->name('dashboard');
         Route::resource('students', TeacherStudentController::class)->except(['show', 'destroy']);
+        Route::resource('lessons', App\Http\Controllers\Teacher\LessonController::class);
         Route::get('timetable', TeacherTimetableController::class)->name('timetable');
 
         Route::get('data-sheet', Form::class)->name('data-sheet.index');
@@ -181,6 +184,8 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('timetable', StudentTimetableController::class)->name('timetable');
         Route::get('attendance', StudentAttendanceController::class)->name('attendance');
         Route::get('results', StudentResultController::class)->name('results');
+        Route::get('lessons', [App\Http\Controllers\Student\LessonController::class, 'index'])->name('lessons.index');
+        Route::get('lessons/{lesson}', [App\Http\Controllers\Student\LessonController::class, 'show'])->name('lessons.show');
         Route::get('reports', StudentReportCatalogController::class)->name('reports');
         Route::get('reports/attendance', StudentOwnAttendanceReportController::class)->name('reports.attendance');
         Route::get('reports/results', StudentOwnResultsReportController::class)->name('reports.results');

@@ -228,7 +228,7 @@ class Form extends Component
         $dataSheet = $this->saveToDb();
         $dataSheet->update(['submitted_at' => now()]);
         $this->isSubmitted = true;
-        
+
         Flux::toast(variant: 'success', text: __('Data sheet submitted successfully.'));
     }
 

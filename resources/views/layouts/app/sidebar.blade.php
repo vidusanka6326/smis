@@ -67,6 +67,9 @@
                         <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.activity-logs.index')" :current="request()->routeIs('admin.activity-logs.*')" wire:navigate>
                             {{ __('Activity log') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="video-camera" :href="route('admin.lessons.index')" :current="request()->routeIs('admin.lessons.*')" wire:navigate>
+                            {{ __('Video Lessons') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('teacher')
@@ -88,6 +91,9 @@
                         <flux:sidebar.item icon="identification" :href="route('teacher.data-sheet.index')" :current="request()->routeIs('teacher.data-sheet.*')" wire:navigate>
                             {{ __('EMIS Data Sheet') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="video-camera" :href="route('teacher.lessons.index')" :current="request()->routeIs('teacher.lessons.*')" wire:navigate>
+                            {{ __('Video Lessons') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('student')
@@ -102,6 +108,9 @@
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="chart-bar" :href="route('student.reports')" :current="request()->routeIs(['student.reports', 'student.reports.*', 'student.report'])" wire:navigate>
                             {{ __('Reports') }}
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="video-camera" :href="route('student.lessons.index')" :current="request()->routeIs('student.lessons.*')" wire:navigate>
+                            {{ __('Video Lessons') }}
                         </flux:sidebar.item>
                     @endrole
                 </flux:sidebar.group>
@@ -179,6 +188,7 @@
             </flux:toast.group>
         @endpersist
 
+        @stack('scripts')
         @fluxScripts
     </body>
 </html>

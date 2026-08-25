@@ -30,6 +30,11 @@ class CreateStudent
      *     guardian_phone?: string|null,
      *     guardian_email?: string|null,
      *     guardian_relationship?: string|null,
+     *     address?: string|null,
+     *     grama_niladari_division?: string|null,
+     *     travel_method?: string|null,
+     *     town?: string|null,
+     *     relations_in_school?: array|null,
      *     school_class_id: int,
      *     academic_year_id: int
      * }  $data
@@ -65,6 +70,11 @@ class CreateStudent
                 'guardian_email' => $data['guardian_email'] ?? null,
                 'guardian_relationship' => $data['guardian_relationship'] ?? null,
                 'current_class_id' => $schoolClass->id,
+                'address' => $data['address'] ?? null,
+                'grama_niladari_division' => $data['grama_niladari_division'] ?? null,
+                'travel_method' => $data['travel_method'] ?? null,
+                'town' => $data['town'] ?? null,
+                'relations_in_school' => $data['relations_in_school'] ?? null,
             ]);
 
             StudentEnrollment::query()->create([

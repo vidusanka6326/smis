@@ -38,6 +38,12 @@ class StoreStudentRequest extends FormRequest
             'guardian_phone' => ['nullable', 'string', 'max:30'],
             'guardian_email' => ['nullable', 'email', 'max:255'],
             'guardian_relationship' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:1000'],
+            'grama_niladari_division' => ['nullable', 'string', 'max:255'],
+            'travel_method' => ['nullable', 'string', 'max:255'],
+            'town' => ['nullable', 'string', 'max:255'],
+            'relations_in_school' => ['nullable', 'array'],
+            'relations_in_school.*' => ['exists:students,id'],
             'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
             'school_class_id' => ['required', 'integer', 'exists:classes,id'],
         ];

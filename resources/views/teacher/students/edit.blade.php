@@ -36,6 +36,28 @@
                 </x-form.grid>
             </x-form.section>
 
+            <x-form.section :title="__('Other details')">
+                <x-form.grid>
+                    <flux:textarea name="address" :label="__('Address')" :value="old('address', $student->address)" rows="3" />
+                    <flux:input name="grama_niladari_division" :label="__('Grama Niladari Division')" :value="old('grama_niladari_division', $student->grama_niladari_division)" />
+                    <flux:input name="travel_method" :label="__('Come to school by')" :value="old('travel_method', $student->travel_method)" />
+                    <flux:input name="town" :label="__('Town')" :value="old('town', $student->town)" />
+                    <div x-data="{ search: '' }" class="space-y-2">
+                        <flux:label>{{ __('Relations in school') }}</flux:label>
+                        <flux:input x-model="search" icon="magnifying-glass" placeholder="{{ __('Search students...') }}" />
+                        <div class="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3 space-y-2">
+                            @foreach ($students as $otherStudent)
+                                @if ($otherStudent->id !== $student->id)
+                                    <div x-show="search === '' || '{{ strtolower(addslashes($otherStudent->admission_no . ' ' . $otherStudent->user->name)) }}'.includes(search.toLowerCase())">
+                                        <flux:checkbox name="relations_in_school[]" value="{{ $otherStudent->id }}" :label="$otherStudent->admission_no . ' - ' . $otherStudent->user->name" :checked="in_array($otherStudent->id, old('relations_in_school', $student->relations_in_school ?? []))" />
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </x-form.grid>
+            </x-form.section>
+
             <x-form.actions>
                 <flux:button type="submit" variant="primary">{{ __('Save changes') }}</flux:button>
                 <flux:button :href="route('teacher.students.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>

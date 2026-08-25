@@ -14,6 +14,7 @@
 <link href="https://fonts.bunny.net/css?family=noto-sans-sinhala:400,500,600,700|noto-sans-tamil:400,500,600,700" rel="stylesheet" />
 
 @fonts
+@stack('styles')
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance

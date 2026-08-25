@@ -42,6 +42,26 @@
                 </x-form.grid>
             </x-form.section>
 
+            <x-form.section :title="__('Other details')">
+                <x-form.grid>
+                    <flux:textarea name="address" :label="__('Address')" :value="old('address')" rows="3" />
+                    <flux:input name="grama_niladari_division" :label="__('Grama Niladari Division')" :value="old('grama_niladari_division')" />
+                    <flux:input name="travel_method" :label="__('Come to school by')" :value="old('travel_method')" />
+                    <flux:input name="town" :label="__('Town')" :value="old('town')" />
+                    <div x-data="{ search: '' }" class="space-y-2">
+                        <flux:label>{{ __('Relations in school') }}</flux:label>
+                        <flux:input x-model="search" icon="magnifying-glass" placeholder="{{ __('Search students...') }}" />
+                        <div class="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3 space-y-2">
+                            @foreach ($students as $otherStudent)
+                                <div x-show="search === '' || '{{ strtolower(addslashes($otherStudent->admission_no . ' ' . $otherStudent->user->name)) }}'.includes(search.toLowerCase())">
+                                    <flux:checkbox name="relations_in_school[]" value="{{ $otherStudent->id }}" :label="$otherStudent->admission_no . ' - ' . $otherStudent->user->name" :checked="in_array($otherStudent->id, old('relations_in_school', []))" />
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </x-form.grid>
+            </x-form.section>
+
             <x-form.section :title="__('Enrollment')">
                 <x-form.grid>
                     <flux:select name="academic_year_id" :label="__('Academic year')" required>

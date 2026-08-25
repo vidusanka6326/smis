@@ -29,6 +29,11 @@ class Student extends Model
         'guardian_email',
         'guardian_relationship',
         'current_class_id',
+        'address',
+        'grama_niladari_division',
+        'travel_method',
+        'town',
+        'relations_in_school',
     ];
 
     /**
@@ -39,6 +44,7 @@ class Student extends Model
         return [
             'date_of_birth' => 'date',
             'gender' => Gender::class,
+            'relations_in_school' => 'array',
         ];
     }
 

@@ -5,14 +5,14 @@ use App\Models\Teacher;
 use App\Models\TeacherDataSheet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
 it('renders the data sheet form for a teacher', function () {
     $teacher = Teacher::factory()->create();
-    
+
     actingAs($teacher->user)
         ->get(route('teacher.data-sheet.index'))
         ->assertOk()
