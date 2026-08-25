@@ -52,8 +52,10 @@ use App\Http\Controllers\Teacher\PerformanceReportController as TeacherPerforman
 use App\Http\Controllers\Teacher\ReportDashboardController as TeacherReportDashboardController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherAttendanceController as TeacherSelfAttendanceController;
+use App\Http\Controllers\Teacher\TeacherDataSheetController;
 use App\Http\Controllers\Teacher\TimetableController as TeacherTimetableController;
 use App\Livewire\Agent\Chat as AgentChat;
+use App\Livewire\Teacher\DataSheet\Form;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -147,6 +149,9 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::get('dashboard', TeacherDashboardController::class)->name('dashboard');
         Route::resource('students', TeacherStudentController::class)->except(['show', 'destroy']);
         Route::get('timetable', TeacherTimetableController::class)->name('timetable');
+
+        Route::get('data-sheet', Form::class)->name('data-sheet.index');
+        Route::get('data-sheet/pdf', [TeacherDataSheetController::class, 'pdf'])->name('data-sheet.pdf');
 
         Route::get('attendance/sessions', [TeacherAttendanceSessionController::class, 'index'])->name('attendance.sessions.index');
         Route::get('attendance/sessions/create', [TeacherAttendanceSessionController::class, 'create'])->name('attendance.sessions.create');

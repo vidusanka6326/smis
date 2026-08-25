@@ -85,6 +85,9 @@
                         <flux:sidebar.item icon="chart-bar" :href="route('teacher.reports.dashboard')" :current="request()->routeIs('teacher.reports.*')" wire:navigate>
                             {{ __('Reports') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="identification" :href="route('teacher.data-sheet.index')" :current="request()->routeIs('teacher.data-sheet.*')" wire:navigate>
+                            {{ __('EMIS Data Sheet') }}
+                        </flux:sidebar.item>
                     @endrole
 
                     @role('student')

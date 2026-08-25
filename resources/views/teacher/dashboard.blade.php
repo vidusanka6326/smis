@@ -29,6 +29,7 @@
                             <flux:button :href="route('teacher.students.index')" variant="filled" class="!bg-white !text-primary" wire:navigate>{{ __('My students') }}</flux:button>
                             <flux:button :href="route('teacher.attendance.sessions.index')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Take attendance') }}</flux:button>
                             <flux:button :href="route('teacher.reports.dashboard')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Reports') }}</flux:button>
+                            <flux:button :href="route('teacher.data-sheet.index')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('EMIS Data Sheet') }}</flux:button>
                         </div>
                     </div>
 

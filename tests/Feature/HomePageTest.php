@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 test('homepage presents smis branding and sign-in call to action', function () {
     $this->get(route('home'))
         ->assertOk()
@@ -16,7 +18,7 @@ test('homepage presents smis branding and sign-in call to action', function () {
 });
 
 test('authenticated users see dashboard call to action on homepage', function () {
-    $user = \App\Models\User::factory()->admin()->create();
+    $user = User::factory()->admin()->create();
 
     $this->actingAs($user)
         ->get(route('home'))

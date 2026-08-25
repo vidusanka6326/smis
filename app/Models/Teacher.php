@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Teacher extends Model
@@ -31,6 +32,22 @@ class Teacher extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return HasMany<TeacherDataSheet, $this>
+     */
+    public function dataSheets(): HasMany
+    {
+        return $this->hasMany(TeacherDataSheet::class);
+    }
+
+    /**
+     * @return HasOne<TeacherDataSheet, $this>
+     */
+    public function dataSheetForYear(int $year): HasOne
+    {
+        return $this->hasOne(TeacherDataSheet::class)->where('year', $year);
     }
 
     /**
