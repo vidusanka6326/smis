@@ -19,6 +19,8 @@ class Profile extends Component
 
     public string $email = '';
 
+    public ?string $croppedPhoto = null;
+
     /**
      * Mount the component.
      */
@@ -38,6 +40,11 @@ class Profile extends Component
         $validated = $this->validate($this->profileRules($user->id));
 
         $user->fill($validated);
+
+        if ($this->croppedPhoto) {
+            $user->updateProfilePhoto($this->croppedPhoto);
+            $this->croppedPhoto = null;
+        }
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

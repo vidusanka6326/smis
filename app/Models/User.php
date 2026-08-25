@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -34,7 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['name', 'email', 'password', 'status', 'locale'])]
+#[Fillable(['name', 'email', 'password', 'status', 'locale', 'profile_photo_path'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -152,5 +153,55 @@ class User extends Authenticatable
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /**
+     * Get the URL to the user's profile photo.
+     */
+    public function profilePhotoUrl(): string
+    {
+        if ($this->profile_photo_path) {
+            return Storage::disk('public')->url($this->profile_photo_path);
+        }
+
+        return $this->defaultProfilePhotoUrl();
+    }
+
+    /**
+     * Get the default profile photo URL if no profile photo has been uploaded.
+     */
+    protected function defaultProfilePhotoUrl(): string
+    {
+        $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
+            return mb_substr($segment, 0, 1);
+        })->join(' '));
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
+     * Update the user's profile photo using a base64 string.
+     */
+    public function updateProfilePhoto(string $base64Image): void
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, gif
+
+            if (! in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
+                throw new \Exception('invalid image type');
+            }
+            $base64Image = str_replace(' ', '+', $base64Image);
+            $imageName = 'profile-photos/'.$this->id.'_'.time().'.'.$type;
+
+            Storage::disk('public')->put($imageName, base64_decode($base64Image));
+
+            if ($this->profile_photo_path) {
+                Storage::disk('public')->delete($this->profile_photo_path);
+            }
+
+            $this->profile_photo_path = $imageName;
+            $this->save();
+        }
     }
 }
