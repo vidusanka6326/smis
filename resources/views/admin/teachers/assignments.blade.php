@@ -19,6 +19,12 @@
             </flux:callout>
         @endif
 
+        @error('assignments')
+            <flux:callout variant="danger" icon="exclamation-triangle">
+                <flux:callout.heading>{{ $message }}</flux:callout.heading>
+            </flux:callout>
+        @enderror
+
         <x-form.section :title="__('Academic year')">
             <form method="GET" action="{{ route('admin.teachers.assignments.edit', $teacher) }}">
                 <x-form.grid>

@@ -7,6 +7,7 @@ use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\TeacherAssignment;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -29,6 +30,8 @@ class SyncTeacherAssignments
                 ->where('class_teacher_id', $teacher->id)
                 ->where('academic_year_id', $academicYearId)
                 ->update(['class_teacher_id' => null]);
+
+            $seen = [];
 
             foreach ($assignments as $assignment) {
                 $role = TeacherAssignmentRole::tryFrom($assignment['role_in_assignment']);
@@ -73,13 +76,29 @@ class SyncTeacherAssignments
                     $subjectId = null;
                 }
 
-                TeacherAssignment::query()->create([
-                    'teacher_id' => $teacher->id,
-                    'school_class_id' => $schoolClass->id,
-                    'subject_id' => $subjectId,
-                    'academic_year_id' => $academicYearId,
-                    'role_in_assignment' => $role,
-                ]);
+                $key = implode('|', [$schoolClass->id, (string) $subjectId, $role->value]);
+
+                if (isset($seen[$key])) {
+                    throw ValidationException::withMessages([
+                        'assignments' => __('Duplicate assignment detected: the same class, role, and subject combination cannot be added more than once.'),
+                    ]);
+                }
+
+                $seen[$key] = true;
+
+                try {
+                    TeacherAssignment::query()->create([
+                        'teacher_id' => $teacher->id,
+                        'school_class_id' => $schoolClass->id,
+                        'subject_id' => $subjectId,
+                        'academic_year_id' => $academicYearId,
+                        'role_in_assignment' => $role,
+                    ]);
+                } catch (UniqueConstraintViolationException) {
+                    throw ValidationException::withMessages([
+                        'assignments' => __('Duplicate assignment detected: the same class, role, and subject combination already exists.'),
+                    ]);
+                }
 
                 if ($role === TeacherAssignmentRole::ClassTeacher) {
                     $schoolClass->forceFill(['class_teacher_id' => $teacher->id])->save();
