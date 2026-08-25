@@ -1,0 +1,29 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor': '#4CAF50', 'primaryTextColor': '#fff', 'primaryBorderColor': '#388E3C', 'lineColor': '#2E7D32', 'secondaryColor': '#81C784', 'tertiaryColor': '#C8E6C9'}}}%%
+graph TD
+    subgraph Client [Client Tier]
+        B[Web Browser]
+        M[Mobile Browser]
+    end
+    
+    subgraph App [Application Tier - Laravel 13]
+        UI[Livewire / Alpine.js UI]
+        C[Controllers / Policies]
+        S[Services / Business Logic]
+        E[Eloquent ORM]
+    end
+    
+    subgraph Data [Data Tier]
+        DB[(MySQL Database)]
+    end
+    
+    subgraph External [External Services]
+        GEMINI[Google Gemini API]
+    end
+    
+    B --> UI
+    M --> UI
+    UI <--> C
+    C <--> S
+    S <--> E
+    E <--> DB
+    S <--> GEMINI

@@ -1,0 +1,37 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor': '#4CAF50', 'primaryTextColor': '#fff', 'primaryBorderColor': '#388E3C', 'lineColor': '#2E7D32', 'secondaryColor': '#81C784', 'tertiaryColor': '#C8E6C9'}}}%%
+flowchart LR
+    Admin([Administrator])
+    Officer([Officer])
+    Teacher([Teacher])
+    Student([Student])
+    
+    subgraph SMIS [Smart School Data Gathering & Management System]
+        UC1(Manage System Users)
+        UC2(Configure Academic Structure)
+        UC3(Manage Enrollments)
+        UC4(Create Timetables)
+        UC5(Record Attendance)
+        UC6(Enter Exam Marks)
+        UC7(View Results & Schedule)
+        UC8(Generate Reports)
+        UC9(Interact with SMIS Agent)
+    end
+    
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC8
+    Admin --> UC9
+    
+    Officer --> UC3
+    Officer --> UC4
+    Officer --> UC8
+    Officer --> UC9
+    
+    Teacher --> UC5
+    Teacher --> UC6
+    Teacher --> UC7
+    Teacher --> UC8
+    Teacher --> UC9
+    
+    Student --> UC7
+    Student --> UC9

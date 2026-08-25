@@ -1,0 +1,62 @@
+@startuml
+skinparam ClassBackgroundColor #E8F5E9
+skinparam ClassBorderColor #4CAF50
+skinparam ArrowColor #2E7D32
+skinparam BackgroundColor #FFFFFF
+
+class User {
+  +int id
+  +string name
+  +string email
+  +string role
+}
+
+class Teacher {
+  +int id
+  +int user_id
+}
+
+class Student {
+  +int id
+  +int user_id
+  +string admission_no
+}
+
+class SchoolClass {
+  +int id
+  +string name
+  +int grade_id
+}
+
+class Subject {
+  +int id
+  +string name
+}
+
+class TimetableEntry {
+  +int id
+  +int day_of_week
+  +int period_number
+}
+
+class Attendance {
+  +int id
+  +date session_date
+  +string status
+}
+
+class Mark {
+  +int id
+  +int marks_obtained
+  +string grade
+}
+
+User <|-- Teacher
+User <|-- Student
+SchoolClass "1" *-- "*" Student : contains
+Teacher "1" *-- "*" TimetableEntry : assigned to
+SchoolClass "1" *-- "*" TimetableEntry : has
+Subject "1" *-- "*" TimetableEntry : scheduled
+Student "1" *-- "*" Attendance : logged in
+Student "1" *-- "*" Mark : achieves
+@enduml

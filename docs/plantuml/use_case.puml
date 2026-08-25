@@ -1,0 +1,46 @@
+@startuml
+skinparam UsecaseBackgroundColor #81C784
+skinparam UsecaseBorderColor #388E3C
+skinparam ActorBackgroundColor #4CAF50
+skinparam ActorBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+skinparam BackgroundColor #FFFFFF
+
+left to right direction
+actor "Administrator" as Admin
+actor "Officer" as Officer
+actor "Teacher" as Teacher
+actor "Student" as Student
+
+package "SMIS (Smart School Management System)" {
+  usecase "Manage System Users" as UC1
+  usecase "Configure Academic Structure" as UC2
+  usecase "Manage Enrollments" as UC3
+  usecase "Create Timetables" as UC4
+  usecase "Record Attendance" as UC5
+  usecase "Enter Exam Marks" as UC6
+  usecase "View Results & Schedule" as UC7
+  usecase "Generate Reports" as UC8
+  usecase "Interact with SMIS Agent" as UC9
+}
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC8
+Admin --> UC9
+
+Officer --> UC3
+Officer --> UC4
+Officer --> UC8
+Officer --> UC9
+
+Teacher --> UC5
+Teacher --> UC6
+Teacher --> UC7
+Teacher --> UC8
+Teacher --> UC9
+
+Student --> UC7
+Student --> UC9
+
+@enduml

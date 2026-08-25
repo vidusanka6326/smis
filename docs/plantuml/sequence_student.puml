@@ -1,0 +1,35 @@
+@startuml
+skinparam SequenceLifeLineBackgroundColor #E8F5E9
+skinparam SequenceLifeLineBorderColor #4CAF50
+skinparam ParticipantBackgroundColor #4CAF50
+skinparam ParticipantBorderColor #388E3C
+skinparam ParticipantFontColor #FFFFFF
+skinparam ActorBackgroundColor #4CAF50
+skinparam ActorBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+
+actor Student
+participant "Student Portal" as UI
+participant Controller
+database Database as DB
+participant "Gemini API" as AI
+
+Student -> UI: View Timetable
+UI -> Controller: GET /my-timetable
+Controller -> DB: Fetch Timetable for Student Class
+DB --> Controller: Timetable Data
+Controller --> UI: Render Timetable View
+
+Student -> UI: Check Exam Results
+UI -> Controller: GET /my-results
+Controller -> DB: Fetch Published Results
+DB --> Controller: Results Data
+Controller --> UI: Render Results View
+
+Student -> UI: Ask AI "What is my next class?"
+UI -> Controller: POST /api/chat
+Controller -> DB: Fetch Student Context
+Controller -> AI: Send Prompt + Context
+AI --> Controller: Response Text
+Controller --> UI: Show AI Response
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+skinparam DefaultBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+skinparam BackgroundColor #FFFFFF
+skinparam NodeBackgroundColor #C8E6C9
+skinparam DatabaseBackgroundColor #81C784
+skinparam CloudBackgroundColor #E8F5E9
+
+node "Client Tier" {
+  [Web Browser] as web
+  [Mobile Browser] as mobile
+}
+
+node "Application Tier (Laravel 13)" {
+  [Livewire / Alpine.js UI] as ui
+  [Controllers / Policies] as ctrl
+  [Services / Business Logic] as srv
+  [Eloquent ORM] as orm
+}
+
+database "Data Tier" {
+  [MySQL Database] as db
+}
+
+cloud "External Services" {
+  [Google Gemini API] as gemini
+}
+
+web --> ui
+mobile --> ui
+ui <--> ctrl
+ctrl <--> srv
+srv <--> orm
+orm <--> db
+srv <--> gemini
+
+@enduml

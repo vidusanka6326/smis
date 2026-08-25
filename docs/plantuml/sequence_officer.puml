@@ -1,0 +1,28 @@
+@startuml
+skinparam SequenceLifeLineBackgroundColor #E8F5E9
+skinparam SequenceLifeLineBorderColor #4CAF50
+skinparam ParticipantBackgroundColor #4CAF50
+skinparam ParticipantBorderColor #388E3C
+skinparam ParticipantFontColor #FFFFFF
+skinparam ActorBackgroundColor #4CAF50
+skinparam ActorBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+
+actor Officer
+participant "Officer Dashboard" as UI
+participant Controller
+database Database as DB
+
+Officer -> UI: Enroll Student
+UI -> Controller: POST /students/enroll
+Controller -> DB: Create Student Record
+DB --> Controller: Success
+Controller --> UI: Show Success Message
+
+Officer -> UI: Create Timetable
+UI -> Controller: POST /timetables/create
+Controller -> Controller: Check for Conflicts
+Controller -> DB: Save Timetable Entries
+DB --> Controller: Success
+Controller --> UI: Timetable Published
+@enduml

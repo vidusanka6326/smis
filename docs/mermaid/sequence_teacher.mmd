@@ -1,0 +1,24 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor': '#4CAF50', 'primaryTextColor': '#fff', 'primaryBorderColor': '#388E3C', 'lineColor': '#2E7D32', 'secondaryColor': '#81C784', 'tertiaryColor': '#C8E6C9'}}}%%
+sequenceDiagram
+    actor Teacher
+    participant UI as Teacher Dashboard
+    participant Controller
+    participant Policy
+    participant DB as Database
+
+    Teacher->>UI: Mark Attendance
+    UI->>Controller: POST /attendance/mark
+    Controller->>Policy: Verify Class Teacher Role
+    Policy-->>Controller: Authorized
+    Controller->>DB: Save Attendance Records
+    DB-->>Controller: Success
+    Controller-->>UI: Attendance Saved
+    
+    Teacher->>UI: Enter Exam Marks
+    UI->>Controller: POST /marks/enter
+    Controller->>Policy: Verify Subject Teacher Role
+    Policy-->>Controller: Authorized
+    Controller->>Controller: Calculate Grades
+    Controller->>DB: Save Marks and Grades
+    DB-->>Controller: Success
+    Controller-->>UI: Marks Submitted

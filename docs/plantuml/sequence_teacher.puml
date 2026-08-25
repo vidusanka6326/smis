@@ -1,0 +1,33 @@
+@startuml
+skinparam SequenceLifeLineBackgroundColor #E8F5E9
+skinparam SequenceLifeLineBorderColor #4CAF50
+skinparam ParticipantBackgroundColor #4CAF50
+skinparam ParticipantBorderColor #388E3C
+skinparam ParticipantFontColor #FFFFFF
+skinparam ActorBackgroundColor #4CAF50
+skinparam ActorBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+
+actor Teacher
+participant "Teacher Dashboard" as UI
+participant Controller
+participant Policy
+database Database as DB
+
+Teacher -> UI: Mark Attendance
+UI -> Controller: POST /attendance/mark
+Controller -> Policy: Verify Class Teacher Role
+Policy --> Controller: Authorized
+Controller -> DB: Save Attendance Records
+DB --> Controller: Success
+Controller --> UI: Attendance Saved
+
+Teacher -> UI: Enter Exam Marks
+UI -> Controller: POST /marks/enter
+Controller -> Policy: Verify Subject Teacher Role
+Policy --> Controller: Authorized
+Controller -> Controller: Calculate Grades
+Controller -> DB: Save Marks and Grades
+DB --> Controller: Success
+Controller --> UI: Marks Submitted
+@enduml

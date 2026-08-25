@@ -1,0 +1,33 @@
+@startuml
+skinparam SequenceLifeLineBackgroundColor #E8F5E9
+skinparam SequenceLifeLineBorderColor #4CAF50
+skinparam ParticipantBackgroundColor #4CAF50
+skinparam ParticipantBorderColor #388E3C
+skinparam ParticipantFontColor #FFFFFF
+skinparam ActorBackgroundColor #4CAF50
+skinparam ActorBorderColor #388E3C
+skinparam ArrowColor #2E7D32
+
+actor Admin
+participant "Admin Dashboard" as UI
+participant Controller
+database Database as DB
+
+Admin -> UI: Logs into System
+UI -> Controller: POST /login
+Controller -> DB: Verify Credentials & Role
+DB --> Controller: Success (Role: Admin)
+Controller --> UI: Redirect to Admin Dashboard
+
+Admin -> UI: Create new User (Teacher)
+UI -> Controller: POST /users/create
+Controller -> DB: Save User & Assign Role
+DB --> Controller: User Created
+Controller --> UI: Show Success Message
+
+Admin -> UI: Generate School Report
+UI -> Controller: GET /reports/school
+Controller -> DB: Fetch Aggregated Data
+DB --> Controller: Data
+Controller --> UI: Download PDF Report
+@enduml

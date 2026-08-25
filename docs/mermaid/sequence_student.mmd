@@ -1,0 +1,26 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor': '#4CAF50', 'primaryTextColor': '#fff', 'primaryBorderColor': '#388E3C', 'lineColor': '#2E7D32', 'secondaryColor': '#81C784', 'tertiaryColor': '#C8E6C9'}}}%%
+sequenceDiagram
+    actor Student
+    participant UI as Student Portal
+    participant Controller
+    participant DB as Database
+    participant AI as Gemini API
+
+    Student->>UI: View Timetable
+    UI->>Controller: GET /my-timetable
+    Controller->>DB: Fetch Timetable for Student Class
+    DB-->>Controller: Timetable Data
+    Controller-->>UI: Render Timetable View
+    
+    Student->>UI: Check Exam Results
+    UI->>Controller: GET /my-results
+    Controller->>DB: Fetch Published Results
+    DB-->>Controller: Results Data
+    Controller-->>UI: Render Results View
+    
+    Student->>UI: Ask AI "What is my next class?"
+    UI->>Controller: POST /api/chat
+    Controller->>DB: Fetch Student Context
+    Controller->>AI: Send Prompt + Context
+    AI-->>Controller: Response Text
+    Controller-->>UI: Show AI Response
