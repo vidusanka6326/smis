@@ -28,6 +28,7 @@
                         </p>
                         <div class="mt-5 flex flex-wrap gap-2">
                             <flux:button :href="route('student.timetable')" variant="filled" class="!bg-white !text-primary" wire:navigate>{{ __('Timetable') }}</flux:button>
+                            <flux:button :href="route('student.exam-schedule')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Exam schedule') }}</flux:button>
                             <flux:button :href="route('student.reports')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Reports') }}</flux:button>
                             <flux:button :href="route('student.results')" variant="ghost" class="!text-white hover:!bg-white/10" wire:navigate>{{ __('Results') }}</flux:button>
                         </div>

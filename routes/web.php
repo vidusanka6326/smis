@@ -34,6 +34,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\ExamScheduleController as StudentExamScheduleController;
 use App\Http\Controllers\Student\OwnAttendanceReportController as StudentOwnAttendanceReportController;
 use App\Http\Controllers\Student\OwnReportController as StudentOwnReportController;
 use App\Http\Controllers\Student\OwnResultsReportController as StudentOwnResultsReportController;
@@ -182,6 +183,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('dashboard', StudentDashboardController::class)->name('dashboard');
         Route::get('timetable', StudentTimetableController::class)->name('timetable');
+        Route::get('exam-schedule', StudentExamScheduleController::class)->name('exam-schedule');
         Route::get('attendance', StudentAttendanceController::class)->name('attendance');
         Route::get('results', StudentResultController::class)->name('results');
         Route::get('lessons', [App\Http\Controllers\Student\LessonController::class, 'index'])->name('lessons.index');

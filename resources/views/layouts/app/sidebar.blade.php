@@ -100,6 +100,9 @@
                         <flux:sidebar.item icon="table-cells" :href="route('student.timetable')" :current="request()->routeIs('student.timetable')" wire:navigate>
                             {{ __('My timetable') }}
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="calendar-days" :href="route('student.exam-schedule')" :current="request()->routeIs('student.exam-schedule')" wire:navigate>
+                            {{ __('Exam schedule') }}
+                        </flux:sidebar.item>
                         <flux:sidebar.item icon="clipboard-document-check" :href="route('student.attendance')" :current="request()->routeIs('student.attendance')" wire:navigate>
                             {{ __('My attendance') }}
                         </flux:sidebar.item>
