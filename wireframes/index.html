@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SMIS Wireframes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="masthead">
+        <div>
+            <p class="eyebrow">SMIS / interface inventory</p>
+            <h1>Low-fidelity page wireframes</h1>
+            <p class="lede">A structural view of every user-facing screen, organized by role and workflow.</p>
+        </div>
+        <div class="summary" aria-label="Wireframe summary">
+            <strong id="screen-count">0</strong>
+            <span>screens</span>
+        </div>
+    </header>
+
+    <nav class="filters" aria-label="Filter wireframes">
+        <button class="filter active" data-filter="all">All pages</button>
+        <button class="filter" data-filter="auth">Auth</button>
+        <button class="filter" data-filter="admin">Admin</button>
+        <button class="filter" data-filter="teacher">Teacher</button>
+        <button class="filter" data-filter="student">Student</button>
+        <button class="filter" data-filter="settings">Settings</button>
+    </nav>
+
+    <main id="wireframe-board"></main>
+
+    <script>
+        const pages = [
+            { group: 'auth', title: 'Welcome', path: '/', type: 'landing', blocks: ['Brand mark and language switcher', 'System introduction', 'Sign in / register actions'] },
+            { group: 'auth', title: 'Login', path: '/login', type: 'form', blocks: ['Email or username field', 'Password field', 'Remember me and sign-in action', 'Forgot password link'] },
+            { group: 'auth', title: 'Register', path: '/register', type: 'form', blocks: ['Name and contact fields', 'Password and confirmation fields', 'Account role or profile fields', 'Create account action'] },
+            { group: 'auth', title: 'Forgot password', path: '/forgot-password', type: 'form', blocks: ['Email field', 'Send reset link action', 'Return to login link'] },
+            { group: 'auth', title: 'Reset password', path: '/reset-password/{token}', type: 'form', blocks: ['New password field', 'Password confirmation field', 'Reset password action'] },
+            { group: 'auth', title: 'Confirm password', path: '/user/confirm-password', type: 'form', blocks: ['Password field', 'Confirm action'] },
+            { group: 'auth', title: 'Verify email', path: '/email/verify', type: 'status', blocks: ['Verification status message', 'Resend verification action', 'Logout action'] },
+            { group: 'auth', title: 'Two-factor challenge', path: '/two-factor-challenge', type: 'form', blocks: ['Authentication code field', 'Recovery code alternative', 'Verify action'] },
+            { group: 'common', title: 'Dashboard redirect', path: '/dashboard', type: 'dashboard', blocks: ['Role-aware redirect state'] },
+            { group: 'common', title: 'SMIS Agent', path: '/agent', type: 'chat', blocks: ['Conversation list', 'Message thread', 'Prompt composer'] },
+            { group: 'admin', title: 'Admin dashboard', path: '/admin/dashboard', type: 'dashboard', blocks: ['KPI stat row', 'Enrollment and attendance charts', 'Recent activity panel', 'Quick actions'] },
+            { group: 'admin', title: 'Activity logs', path: '/admin/activity-logs', type: 'table', blocks: ['Search and filters', 'Activity log table', 'Pagination'] },
+            { group: 'admin', title: 'Officers', path: '/admin/officers', type: 'table', blocks: ['Search and filters', 'Officer table', 'Create officer action', 'Row actions'] },
+            { group: 'admin', title: 'Create officer', path: '/admin/officers/create', type: 'form', blocks: ['Officer details form', 'Role and status fields', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Academic years', path: '/admin/academic-years', type: 'table', blocks: ['Current year banner', 'Academic year table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create academic year', path: '/admin/academic-years/create', type: 'form', blocks: ['Year name and dates', 'Active state toggle', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Grades', path: '/admin/grades', type: 'table', blocks: ['Search and filters', 'Grade scale table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create grade', path: '/admin/grades/create', type: 'form', blocks: ['Grade name and range fields', 'Description field', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Streams', path: '/admin/streams', type: 'table', blocks: ['Search and filters', 'Stream table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create stream', path: '/admin/streams/create', type: 'form', blocks: ['Stream name field', 'Class selection', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Subjects', path: '/admin/subjects', type: 'table', blocks: ['Search and filters', 'Subject table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create subject', path: '/admin/subjects/create', type: 'form', blocks: ['Subject name and code', 'Description field', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Classes', path: '/admin/classes', type: 'table', blocks: ['Search and filters', 'Class table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create class', path: '/admin/classes/create', type: 'form', blocks: ['Class name field', 'Grade and stream selectors', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Teachers', path: '/admin/teachers', type: 'table', blocks: ['Search and filters', 'Teacher table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create teacher', path: '/admin/teachers/create', type: 'form', blocks: ['Personal details', 'Contact and employment fields', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Teacher detail', path: '/admin/teachers/{teacher}', type: 'detail', blocks: ['Profile summary', 'Assignments overview', 'Attendance and activity'] },
+            { group: 'admin', title: 'Teacher assignments', path: '/admin/teachers/{teacher}/assignments', type: 'form', blocks: ['Teacher summary', 'Class and subject assignment grid', 'Save assignments action'] },
+            { group: 'admin', title: 'Students', path: '/admin/students', type: 'table', blocks: ['Search and filters', 'Student table', 'Create and row actions'] },
+            { group: 'admin', title: 'Create student', path: '/admin/students/create', type: 'form', blocks: ['Personal details', 'Class and guardian fields', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Student detail', path: '/admin/students/{student}', type: 'detail', blocks: ['Profile summary', 'Academic snapshot', 'Attendance and results'] },
+            { group: 'admin', title: 'Lessons', path: '/admin/lessons', type: 'table', blocks: ['Search and filters', 'Lesson table', 'Row actions'] },
+            { group: 'admin', title: 'Lesson detail', path: '/admin/lessons/{lesson}', type: 'detail', blocks: ['Lesson heading and metadata', 'Description/content area', 'Attachments or resources'] },
+            { group: 'admin', title: 'Timetables', path: '/admin/timetables', type: 'calendar', blocks: ['Class and date controls', 'Weekly timetable grid', 'Add entry action'] },
+            { group: 'admin', title: 'Edit timetable entry', path: '/admin/timetables/{entry}/edit', type: 'form', blocks: ['Subject and teacher selectors', 'Day and time fields', 'Save / delete actions'] },
+            { group: 'admin', title: 'Relief assignments', path: '/admin/relief-assignments', type: 'table', blocks: ['Date and status filters', 'Relief assignment table', 'Create assignment action'] },
+            { group: 'admin', title: 'Create relief assignment', path: '/admin/relief-assignments/create', type: 'form', blocks: ['Absent teacher selector', 'Relief teacher selector', 'Lesson and date fields'] },
+            { group: 'admin', title: 'Attendance sessions', path: '/admin/attendance/sessions', type: 'table', blocks: ['Date and class filters', 'Attendance session table', 'Create and finalize actions'] },
+            { group: 'admin', title: 'Create attendance session', path: '/admin/attendance/sessions/create', type: 'form', blocks: ['Class and date selectors', 'Session details', 'Create action'] },
+            { group: 'admin', title: 'Edit attendance session', path: '/admin/attendance/sessions/{session}/edit', type: 'form', blocks: ['Session summary', 'Student attendance checklist', 'Save / finalize actions'] },
+            { group: 'admin', title: 'Monthly attendance', path: '/admin/attendance/monthly', type: 'report', blocks: ['Month and class filters', 'Attendance summary cards', 'Attendance matrix'] },
+            { group: 'admin', title: 'Teacher attendance', path: '/admin/attendance/teachers', type: 'table', blocks: ['Date and teacher filters', 'Staff attendance table', 'Mark attendance action'] },
+            { group: 'admin', title: 'Exams', path: '/admin/exams', type: 'table', blocks: ['Exam status filters', 'Exam table', 'Create, publish, and row actions'] },
+            { group: 'admin', title: 'Create exam', path: '/admin/exams/create', type: 'form', blocks: ['Exam name and dates', 'Academic year selector', 'Save / cancel actions'] },
+            { group: 'admin', title: 'Edit exam', path: '/admin/exams/{exam}/edit', type: 'form', blocks: ['Exam details form', 'Publication status', 'Save / publish actions'] },
+            { group: 'admin', title: 'Exam subjects', path: '/admin/exams/{exam}/subjects', type: 'form', blocks: ['Exam summary', 'Subject and maximum mark grid', 'Save subjects action'] },
+            { group: 'admin', title: 'Mark entry', path: '/admin/marks', type: 'table', blocks: ['Exam and class selectors', 'Subject mark entry table', 'Open entry action'] },
+            { group: 'admin', title: 'Edit marks', path: '/admin/marks/{exam-subject}/edit', type: 'form', blocks: ['Exam subject summary', 'Student marks grid', 'Save marks action'] },
+            { group: 'admin', title: 'Reports catalog', path: '/admin/reports', type: 'catalog', blocks: ['Report category filters', 'Report link grid'] },
+            { group: 'admin', title: 'Demographics report', path: '/admin/reports/demographics', type: 'report', blocks: ['Filters and export actions', 'Demographic stat cards', 'Charts and breakdown table'] },
+            { group: 'admin', title: 'Attendance report', path: '/admin/reports/attendance', type: 'report', blocks: ['Filters and export actions', 'Attendance trend chart', 'Class summary table'] },
+            { group: 'admin', title: 'At-risk report', path: '/admin/reports/at-risk', type: 'report', blocks: ['Threshold filters', 'At-risk student table', 'Summary chart'] },
+            { group: 'admin', title: 'Staff attendance report', path: '/admin/reports/staff-attendance', type: 'report', blocks: ['Date and staff filters', 'Attendance trend chart', 'Staff summary table'] },
+            { group: 'admin', title: 'Enrollment report', path: '/admin/reports/enrollment', type: 'report', blocks: ['Year and class filters', 'Enrollment stat cards', 'Enrollment breakdown chart'] },
+            { group: 'admin', title: 'Examination report', path: '/admin/reports/examination', type: 'report', blocks: ['Exam filters', 'Participation summary', 'Examination analysis table'] },
+            { group: 'admin', title: 'Exam results report', path: '/admin/reports/exam-results', type: 'report', blocks: ['Exam and class filters', 'Results distribution chart', 'Results table'] },
+            { group: 'admin', title: 'Performance report', path: '/admin/reports/performance', type: 'report', blocks: ['Year and subject filters', 'Performance trend chart', 'Ranking table'] },
+            { group: 'admin', title: 'Assignments report', path: '/admin/reports/assignments', type: 'report', blocks: ['Teacher and class filters', 'Assignment coverage cards', 'Assignments table'] },
+            { group: 'teacher', title: 'Teacher dashboard', path: '/teacher/dashboard', type: 'dashboard', blocks: ['KPI stat row', 'Today schedule panel', 'Attendance and lesson charts', 'Quick actions'] },
+            { group: 'teacher', title: 'My students', path: '/teacher/students', type: 'table', blocks: ['Class selector and search', 'Student table', 'Create and row actions'] },
+            { group: 'teacher', title: 'Create student', path: '/teacher/students/create', type: 'form', blocks: ['Student details form', 'Class selector', 'Save / cancel actions'] },
+            { group: 'teacher', title: 'Edit student', path: '/teacher/students/{student}/edit', type: 'form', blocks: ['Student details form', 'Class selector', 'Save / cancel actions'] },
+            { group: 'teacher', title: 'Lessons', path: '/teacher/lessons', type: 'table', blocks: ['Search and class filters', 'Lesson table', 'Create and row actions'] },
+            { group: 'teacher', title: 'Create lesson', path: '/teacher/lessons/create', type: 'form', blocks: ['Lesson title and class', 'Content editor area', 'Save / cancel actions'] },
+            { group: 'teacher', title: 'Lesson detail', path: '/teacher/lessons/{lesson}', type: 'detail', blocks: ['Lesson heading and metadata', 'Lesson content area', 'Student resources'] },
+            { group: 'teacher', title: 'Edit lesson', path: '/teacher/lessons/{lesson}/edit', type: 'form', blocks: ['Lesson details form', 'Content editor area', 'Save / delete actions'] },
+            { group: 'teacher', title: 'My timetable', path: '/teacher/timetable', type: 'calendar', blocks: ['Week navigation', 'Weekly timetable grid', 'Lesson detail links'] },
+            { group: 'teacher', title: 'EMIS data sheet', path: '/teacher/data-sheet', type: 'form', blocks: ['Teacher and school metadata', 'Structured data sections', 'Export PDF action'] },
+            { group: 'teacher', title: 'Attendance sessions', path: '/teacher/attendance/sessions', type: 'table', blocks: ['Class and date filters', 'Session table', 'Create and edit actions'] },
+            { group: 'teacher', title: 'Create attendance session', path: '/teacher/attendance/sessions/create', type: 'form', blocks: ['Class and date selectors', 'Session details', 'Create action'] },
+            { group: 'teacher', title: 'Edit attendance session', path: '/teacher/attendance/sessions/{session}/edit', type: 'form', blocks: ['Session summary', 'Student attendance checklist', 'Save / finalize actions'] },
+            { group: 'teacher', title: 'Monthly attendance', path: '/teacher/attendance/monthly', type: 'report', blocks: ['Month and class filters', 'Attendance summary cards', 'Attendance matrix'] },
+            { group: 'teacher', title: 'My attendance', path: '/teacher/attendance/self', type: 'form', blocks: ['Date selector', 'Attendance status', 'Submit attendance action', 'History table'] },
+            { group: 'teacher', title: 'Mark entry', path: '/teacher/marks', type: 'table', blocks: ['Exam and class selectors', 'Subject mark table', 'Open entry action'] },
+            { group: 'teacher', title: 'Edit marks', path: '/teacher/marks/{exam-subject}/edit', type: 'form', blocks: ['Exam subject summary', 'Student marks grid', 'Save marks action'] },
+            { group: 'teacher', title: 'Reports catalog', path: '/teacher/reports', type: 'catalog', blocks: ['Report category filters', 'Report link grid'] },
+            { group: 'teacher', title: 'Attendance report', path: '/teacher/reports/attendance', type: 'report', blocks: ['Filters and export actions', 'Attendance trend chart', 'Class summary table'] },
+            { group: 'teacher', title: 'At-risk report', path: '/teacher/reports/at-risk', type: 'report', blocks: ['Threshold filters', 'At-risk student table', 'Summary chart'] },
+            { group: 'teacher', title: 'Enrollment report', path: '/teacher/reports/enrollment', type: 'report', blocks: ['Year and class filters', 'Enrollment stat cards', 'Breakdown chart'] },
+            { group: 'teacher', title: 'Examination report', path: '/teacher/reports/examination', type: 'report', blocks: ['Exam filters', 'Participation summary', 'Analysis table'] },
+            { group: 'teacher', title: 'Exam results report', path: '/teacher/reports/exam-results', type: 'report', blocks: ['Exam and class filters', 'Results chart', 'Results table'] },
+            { group: 'teacher', title: 'Performance report', path: '/teacher/reports/performance', type: 'report', blocks: ['Year and subject filters', 'Performance chart', 'Ranking table'] },
+            { group: 'student', title: 'Student dashboard', path: '/student/dashboard', type: 'dashboard', blocks: ['Welcome and KPI row', 'Upcoming lessons panel', 'Attendance and results summary'] },
+            { group: 'student', title: 'Class timetable', path: '/student/timetable', type: 'calendar', blocks: ['Week navigation', 'Class timetable grid', 'Lesson detail links'] },
+            { group: 'student', title: 'My attendance', path: '/student/attendance', type: 'report', blocks: ['Attendance summary cards', 'Monthly attendance chart', 'Attendance history table'] },
+            { group: 'student', title: 'My results', path: '/student/results', type: 'table', blocks: ['Exam selector', 'Results summary', 'Subject results table'] },
+            { group: 'student', title: 'Lessons', path: '/student/lessons', type: 'table', blocks: ['Subject and date filters', 'Lesson list', 'Lesson detail links'] },
+            { group: 'student', title: 'Lesson detail', path: '/student/lessons/{lesson}', type: 'detail', blocks: ['Lesson heading and metadata', 'Lesson content area', 'Resources and navigation'] },
+            { group: 'student', title: 'Reports catalog', path: '/student/reports', type: 'catalog', blocks: ['Personal report link grid'] },
+            { group: 'student', title: 'Attendance report', path: '/student/reports/attendance', type: 'report', blocks: ['Date filters', 'Attendance summary', 'Attendance detail table'] },
+            { group: 'student', title: 'Results report', path: '/student/reports/results', type: 'report', blocks: ['Exam filters', 'Results summary', 'Subject breakdown table'] },
+            { group: 'student', title: 'Combined personal report', path: '/student/report', type: 'report', blocks: ['Report filters', 'Attendance and results summary', 'Export actions'] },
+            { group: 'settings', title: 'Profile settings', path: '/settings/profile', type: 'form', blocks: ['Profile details form', 'Email verification status', 'Save profile action'] },
+            { group: 'settings', title: 'Appearance settings', path: '/settings/appearance', type: 'form', blocks: ['Language selector', 'Theme preferences', 'Save preferences action'] },
+            { group: 'settings', title: 'Security settings', path: '/settings/security', type: 'form', blocks: ['Current password field', 'New password fields', 'Two-factor settings', 'Save security action'] }
+        ];
+
+        const board = document.querySelector('#wireframe-board');
+        const count = document.querySelector('#screen-count');
+
+        function drawShape(type) {
+            if (type === 'table') return '<div class="shape filters-shape"></div><div class="shape table-shape"><i></i><i></i><i></i><i></i><i></i></div>';
+            if (type === 'form') return '<div class="shape form-shape"><i></i><i></i><i></i><i></i></div><div class="shape action-shape"></div>';
+            if (type === 'dashboard') return '<div class="shape stats-shape"><i></i><i></i><i></i></div><div class="shape chart-shape"></div><div class="shape chart-shape short"></div>';
+            if (type === 'calendar') return '<div class="shape filters-shape"></div><div class="shape calendar-shape"><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+            if (type === 'chat') return '<div class="shape chat-shape"><i></i><i></i><i></i></div><div class="shape composer-shape"></div>';
+            if (type === 'detail') return '<div class="shape profile-shape"></div><div class="shape content-shape"></div><div class="shape content-shape short"></div>';
+            if (type === 'catalog') return '<div class="shape catalog-shape"><i></i><i></i><i></i><i></i></div>';
+            if (type === 'status') return '<div class="shape status-shape"></div><div class="shape action-shape"></div>';
+            return '<div class="shape report-shape"></div><div class="shape chart-shape"></div><div class="shape table-shape compact"><i></i><i></i><i></i></div>';
+        }
+
+        function render(filter = 'all') {
+            const visible = pages.filter(page => filter === 'all' || page.group === filter || (filter === 'auth' && page.group === 'common'));
+            count.textContent = visible.length;
+            board.innerHTML = visible.map((page, index) => `
+                <article class="wireframe ${page.group}" id="${page.path.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}">
+                    <div class="screen-heading"><span class="number">${String(index + 1).padStart(2, '0')}</span><span class="tag">${page.group}</span></div>
+                    <h2>${page.title}</h2>
+                    <code>${page.path}</code>
+                    <div class="browser-frame">
+                        <div class="browser-bar"><span></span><span></span><span></span></div>
+                        <div class="browser-body"><aside></aside><section>${drawShape(page.type)}</section></div>
+                    </div>
+                    <ul>${page.blocks.map(block => `<li>${block}</li>`).join('')}</ul>
+                </article>
+            `).join('');
+        }
+
+        document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
+            document.querySelector('.filter.active').classList.remove('active');
+            button.classList.add('active');
+            render(button.dataset.filter);
+        }));
+
+        render();
+    </script>
+</body>
+</html>
