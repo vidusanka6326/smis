@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\ResetUserPassword;
+use App\Enums\RoleName;
 use App\Enums\UserStatus;
 use App\Http\Responses\LoginResponse;
 use App\Models\User;
@@ -46,11 +47,15 @@ class FortifyServiceProvider extends ServiceProvider
             $user = User::query()
                 ->where(Fortify::username(), $request->input(Fortify::username()))
                 ->first();
+            $selectedRole = $request->input('role');
+            $hasSelectedRole = $selectedRole === null
+                || (($role = RoleName::tryFrom((string) $selectedRole)) !== null && $user?->hasRole($role->value));
 
             if (
                 $user
                 && $user->status === UserStatus::Active
                 && Hash::check((string) $request->input('password'), $user->password)
+                && $hasSelectedRole
             ) {
                 return $user;
             }

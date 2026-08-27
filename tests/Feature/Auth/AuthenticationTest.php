@@ -24,6 +24,35 @@ test('users can authenticate using the login screen', function () {
     $this->assertAuthenticated();
 });
 
+test('users cannot authenticate with credentials from a different selected role', function () {
+    $student = User::factory()->student()->create();
+
+    $response = $this->post(route('login.store'), [
+        'role' => 'teacher',
+        'email' => $student->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertSessionHasErrorsIn('email');
+    $this->assertGuest();
+});
+
+test('users can authenticate when their selected role matches their account', function () {
+    $teacher = User::factory()->teacher()->create();
+
+    $response = $this->post(route('login.store'), [
+        'role' => 'teacher',
+        'email' => $teacher->email,
+        'password' => 'password',
+    ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('teacher.dashboard', absolute: false));
+
+    $this->assertAuthenticatedAs($teacher);
+});
+
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
