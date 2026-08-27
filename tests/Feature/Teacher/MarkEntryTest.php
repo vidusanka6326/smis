@@ -60,6 +60,56 @@ test('subject teacher can enter marks for assigned subject', function () {
     expect(Mark::query()->where('entered_by_teacher_id', $teacher->id)->count())->toBe(1);
 });
 
+test('class teacher can enter marks for every subject in their class', function () {
+    $user = User::factory()->teacher()->create();
+    $teacher = Teacher::factory()->create(['user_id' => $user->id]);
+    $year = AcademicYear::factory()->current()->create();
+    $grade = Grade::factory()->number(10)->create();
+    $subject = Subject::factory()->forGradeRange(1, 13)->create();
+    $schoolClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'class_teacher_id' => $teacher->id,
+    ]);
+    $schoolClass->subjects()->sync([$subject->id]);
+    $student = Student::factory()->create(['current_class_id' => $schoolClass->id]);
+
+    TeacherAssignment::factory()->create([
+        'teacher_id' => $teacher->id,
+        'school_class_id' => $schoolClass->id,
+        'academic_year_id' => $year->id,
+        'role_in_assignment' => TeacherAssignmentRole::ClassTeacher,
+    ]);
+
+    $exam = Exam::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'school_class_id' => $schoolClass->id,
+    ]);
+    $examSubject = ExamSubject::factory()->create([
+        'exam_id' => $exam->id,
+        'subject_id' => $subject->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('teacher.marks.index'))
+        ->assertOk()
+        ->assertSee(route('teacher.marks.edit', $examSubject), false);
+
+    $this->actingAs($user)
+        ->put(route('teacher.marks.update', $examSubject), [
+            'records' => [
+                [
+                    'student_id' => $student->id,
+                    'marks_obtained' => 74,
+                ],
+            ],
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect(Mark::query()->where('entered_by_teacher_id', $teacher->id)->count())->toBe(1);
+});
+
 test('subject teacher cannot enter marks for another subject', function () {
     $user = User::factory()->teacher()->create();
     $teacher = Teacher::factory()->create(['user_id' => $user->id]);

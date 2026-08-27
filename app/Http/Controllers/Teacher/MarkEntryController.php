@@ -76,6 +76,8 @@ class MarkEntryController extends Controller
 
     public function update(UpsertMarksRequest $request, ExamSubject $examSubject, UpsertMarks $upsert): RedirectResponse
     {
+        $this->authorize('enterMarks', $examSubject);
+
         $teacher = $request->user()->teacher;
         abort_unless($teacher !== null, 403);
 
