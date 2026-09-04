@@ -64,7 +64,7 @@ class AttendanceSessionPolicy
 
     public function update(User $user, AttendanceSession $attendanceSession): bool
     {
-        if ($attendanceSession->isFinalized() && ! $user->isSchoolOffice()) {
+        if ($attendanceSession->isFinalized() && ! $user->isSchoolOffice() && ! $attendanceSession->date->isToday()) {
             return false;
         }
 

@@ -1,5 +1,6 @@
 @php
     $sessionLabel = ($session->schoolClass?->code ?? '').' — '.$session->date->toDateString().' — '.($session->subject?->name ?? __('Class'));
+    $canUpdate = auth()->user()->can('update', $session);
 @endphp
 
 <x-layouts::app :title="__('Edit attendance')">
@@ -42,7 +43,7 @@
             <x-form.section :title="__('Session details')">
                 <x-form.grid>
                     <x-form.full>
-                        <flux:input name="notes" :label="__('Notes')" :value="old('notes', $session->notes)" />
+                        <flux:input name="notes" :label="__('Notes')" :value="old('notes', $session->notes)" :disabled="! $canUpdate" />
                     </x-form.full>
                 </x-form.grid>
             </x-form.section>
@@ -65,7 +66,7 @@
                                         <input type="hidden" name="records[{{ $index }}][student_id]" value="{{ $student->id }}">
                                     </td>
                                     <td class="px-3 py-2">
-                                        <flux:select name="records[{{ $index }}][status]" size="sm" :disabled="$session->isFinalized()">
+                                        <flux:select name="records[{{ $index }}][status]" size="sm" :disabled="! $canUpdate">
                                             @foreach ($statuses as $status)
                                                 <flux:select.option :value="$status->value" :selected="($current ?? \App\Enums\AttendanceStatus::Present) === $status">
                                                     {{ $status->label() }}
@@ -80,11 +81,11 @@
                 </div>
             </x-form.section>
 
-            @unless ($session->isFinalized())
+            @if ($canUpdate)
                 <x-form.actions>
                     <flux:button type="submit" variant="primary">{{ __('Update') }}</flux:button>
                 </x-form.actions>
-            @endunless
+            @endif
         </form>
     </x-form.page>
 </x-layouts::app>

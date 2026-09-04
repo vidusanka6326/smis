@@ -48,7 +48,7 @@ class AttendanceSessionController extends Controller
         ]);
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
         $this->authorize('create', AttendanceSession::class);
 
@@ -73,12 +73,25 @@ class AttendanceSessionController extends Controller
             : null;
 
         $subjectId = $request->filled('subject_id') ? (int) $request->integer('subject_id') : null;
+        $date = $request->string('date')->toString() ?: now()->toDateString();
 
         if ($schoolClass !== null) {
             abort_unless(
                 $request->user()->can('createForClass', [AttendanceSession::class, $schoolClass, $subjectId]),
                 403,
             );
+
+            $existingSession = AttendanceSession::query()
+                ->where('school_class_id', $schoolClass->id)
+                ->whereDate('date', $date)
+                ->where('scope', AttendanceSession::scopeKey($subjectId))
+                ->first();
+
+            if ($existingSession !== null) {
+                $this->authorize('view', $existingSession);
+
+                return redirect()->route('teacher.attendance.sessions.edit', $existingSession);
+            }
         }
 
         $students = $schoolClass
@@ -95,7 +108,7 @@ class AttendanceSessionController extends Controller
             'selectedSubjectId' => $subjectId,
             'schoolClass' => $schoolClass,
             'students' => $students,
-            'date' => $request->string('date')->toString() ?: now()->toDateString(),
+            'date' => $date,
         ]);
     }
 
@@ -113,7 +126,7 @@ class AttendanceSessionController extends Controller
 
     public function edit(Request $request, AttendanceSession $attendanceSession): View
     {
-        $this->authorize('update', $attendanceSession);
+        $this->authorize('view', $attendanceSession);
 
         $attendanceSession->load(['schoolClass.subjects', 'studentAttendances']);
 

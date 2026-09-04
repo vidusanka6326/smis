@@ -125,6 +125,58 @@ test('class teacher attendance roster uses flux status selects', function () {
         ->assertSee('data-flux-checkbox', false);
 });
 
+test('loading an existing attendance session opens it for editing', function () {
+    [$user, $teacher, $year, $schoolClass] = classTeacherAttendanceFixtures();
+
+    $session = AttendanceSession::factory()->forClass($schoolClass)->create([
+        'taken_by_teacher_id' => $teacher->id,
+        'date' => now()->toDateString(),
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('teacher.attendance.sessions.create', [
+            'academic_year_id' => $year->id,
+            'school_class_id' => $schoolClass->id,
+            'date' => $session->date->toDateString(),
+        ]))
+        ->assertRedirect(route('teacher.attendance.sessions.edit', $session));
+});
+
+test('teacher can update a finalized attendance session on the current date', function () {
+    [$user, $teacher, $year, $schoolClass, $student] = classTeacherAttendanceFixtures();
+
+    $session = AttendanceSession::factory()->forClass($schoolClass)->finalized()->create([
+        'taken_by_teacher_id' => $teacher->id,
+        'date' => now()->toDateString(),
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('teacher.attendance.sessions.create', [
+            'academic_year_id' => $year->id,
+            'school_class_id' => $schoolClass->id,
+            'date' => $session->date->toDateString(),
+        ]))
+        ->assertRedirect(route('teacher.attendance.sessions.edit', $session));
+
+    $this->get(route('teacher.attendance.sessions.edit', $session))
+        ->assertOk()
+        ->assertSee('Update');
+
+    $this->put(route('teacher.attendance.sessions.update', $session), [
+        'academic_year_id' => $year->id,
+        'school_class_id' => $schoolClass->id,
+        'date' => $session->date->toDateString(),
+        'records' => [
+            [
+                'student_id' => $student->id,
+                'status' => AttendanceStatus::Absent->value,
+            ],
+        ],
+    ])->assertRedirect(route('teacher.attendance.sessions.edit', $session));
+
+    expect($session->studentAttendances()->value('status'))->toBe(AttendanceStatus::Absent);
+});
+
 test('teacher cannot edit finalized attendance session', function () {
     [$user, $teacher, $year, $schoolClass, $student] = classTeacherAttendanceFixtures();
 
