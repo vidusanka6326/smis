@@ -29,6 +29,9 @@ class DashboardController extends Controller
                 'atRiskPreview' => [],
                 'bestPreview' => [],
                 'poorPreview' => [],
+                'isClassTeacher' => false,
+                'isSubjectTeacher' => false,
+                'subjectMetrics' => [],
             ];
 
         return view('teacher.dashboard', [

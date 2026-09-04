@@ -4,6 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Enums\AttendanceStatus;
 use App\Enums\DayOfWeek;
+use App\Enums\TeacherAssignmentRole;
 use App\Models\ActivityLog;
 use App\Models\Exam;
 use App\Models\Mark;
@@ -164,6 +165,51 @@ class RoleDashboardMetrics
             }
         }
 
+        // ── Role detection ──────────────────────────────────────────────────
+        $isClassTeacher = $teacher->homeroomClasses->isNotEmpty()
+            || $teacher->assignments->contains(
+                'role_in_assignment', TeacherAssignmentRole::ClassTeacher
+            );
+
+        $subjectAssignments = $teacher->assignments->filter(
+            fn ($a) => $a->role_in_assignment === TeacherAssignmentRole::SubjectTeacher
+                && $a->subject !== null
+        );
+        $isSubjectTeacher = $subjectAssignments->isNotEmpty();
+
+        // ── Per-subject metrics (for subject teacher dashboard) ─────────────
+        $subjectMetrics = [];
+        if ($isSubjectTeacher && $latestExam !== null) {
+            $distinctSubjects = $subjectAssignments->unique('subject_id')->values();
+            foreach ($distinctSubjects as $assignment) {
+                $subject = $assignment->subject;
+                $subjectStudentIds = $this->teacherScope->accessibleStudentIds($teacher, $subject->id);
+                $subjectStats = $this->examination->forExam($latestExam, $subject->id, $subjectStudentIds);
+
+                // Class distribution for this subject
+                $classCodes = $subjectAssignments
+                    ->where('subject_id', $subject->id)
+                    ->map(fn ($a) => $a->schoolClass?->code)
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                $subjectMetrics[] = [
+                    'subject_id' => $subject->id,
+                    'subject_name' => $subject->name,
+                    'classes' => $classCodes,
+                    'student_count' => count($subjectStudentIds),
+                    'pass_rate' => $subjectStats['pass_rate'] ?? 0.0,
+                    'average' => $subjectStats['average_percentage'] ?? 0.0,
+                    'pass_count' => $subjectStats['pass_count'] ?? 0,
+                    'fail_count' => $subjectStats['fail_count'] ?? 0,
+                    'by_grade_letter' => $subjectStats['by_grade_letter'] ?? [],
+                    'chart_id' => 'subjectChart_'.$subject->id,
+                ];
+            }
+        }
+
         return [
             'stats' => [
                 'students' => $demo['total'],
@@ -188,6 +234,9 @@ class RoleDashboardMetrics
             'atRiskPreview' => array_slice($attendanceSummary['at_risk'], 0, 8),
             'bestPreview' => $ranks['best'],
             'poorPreview' => $ranks['poor'],
+            'isClassTeacher' => $isClassTeacher,
+            'isSubjectTeacher' => $isSubjectTeacher,
+            'subjectMetrics' => $subjectMetrics,
             'charts' => [
                 'gender' => [
                     'labels' => [__('Boys'), __('Girls')],
