@@ -67,6 +67,11 @@
                         <div class="flex flex-wrap gap-2">
                             <flux:button size="sm" :href="route('admin.students.show', $student)" variant="ghost" wire:navigate>{{ __('View') }}</flux:button>
                             <flux:button size="sm" :href="route('admin.students.edit', $student)" variant="ghost" wire:navigate>{{ __('Edit') }}</flux:button>
+                            <form method="POST" action="{{ route('admin.students.destroy', $student) }}" onsubmit="return confirm(@js(__('Delete this student?')))">
+                                @csrf
+                                @method('DELETE')
+                                <flux:button size="sm" type="submit" variant="danger">{{ __('Delete') }}</flux:button>
+                            </form>
                         </div>
                     </td>
                 </tr>

@@ -5,7 +5,14 @@
                 <flux:heading size="xl">{{ $student->user?->name }}</flux:heading>
                 <flux:text class="mt-1">{{ $student->admission_no }} · {{ $student->gender->label() }}</flux:text>
             </div>
-            <flux:button :href="route('admin.students.edit', $student)" variant="primary" wire:navigate>{{ __('Edit') }}</flux:button>
+            <div class="flex flex-wrap gap-2">
+                <flux:button :href="route('admin.students.edit', $student)" variant="primary" wire:navigate>{{ __('Edit') }}</flux:button>
+                <form method="POST" action="{{ route('admin.students.destroy', $student) }}" onsubmit="return confirm(@js(__('Delete this student?')))">
+                    @csrf
+                    @method('DELETE')
+                    <flux:button type="submit" variant="danger">{{ __('Delete') }}</flux:button>
+                </form>
+            </div>
         </div>
 
         @if (session('status'))
