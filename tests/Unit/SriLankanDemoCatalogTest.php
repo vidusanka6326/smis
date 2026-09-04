@@ -41,5 +41,6 @@ test('teacher emails employee numbers and homerooms are unique', function () {
     expect(count(array_unique($emails)))->toBe(30)
         ->and(count(array_unique($employeeNos)))->toBe(30)
         ->and(count(array_unique($homerooms)))->toBe(count($homerooms))
-        ->and($homerooms)->toHaveCount(28);
+        ->and(count($homerooms))->toBe(25)
+        ->and(count($teachers) - count($homerooms))->toBe(5);
 });

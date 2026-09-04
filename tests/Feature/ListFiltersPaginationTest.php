@@ -2,6 +2,7 @@
 
 use App\Enums\ExamType;
 use App\Enums\Gender;
+use App\Enums\TeacherAssignmentRole;
 use App\Enums\UserStatus;
 use App\Models\AcademicYear;
 use App\Models\Exam;
@@ -9,6 +10,7 @@ use App\Models\Grade;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\TeacherAssignment;
 use App\Models\User;
 use App\Support\ListQuery;
 
@@ -54,6 +56,52 @@ test('admin can filter teachers by search', function () {
         ->assertSee($match->user->name)
         ->assertDontSee('TCH-HIDE')
         ->assertSee(__('Clear'));
+});
+
+test('admin teacher class and assignment filters apply to the same class', function () {
+    $admin = User::factory()->admin()->create();
+    $year = AcademicYear::factory()->create();
+    $grade = Grade::factory()->number(10)->create();
+    $targetClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'code' => '10-TARGET',
+    ]);
+    $otherClass = SchoolClass::factory()->create([
+        'academic_year_id' => $year->id,
+        'grade_id' => $grade->id,
+        'code' => '10-OTHER',
+    ]);
+    $classTeacher = Teacher::factory()->create();
+    $unrelatedClassTeacher = Teacher::factory()->create();
+
+    $targetClass->update(['class_teacher_id' => $classTeacher->id]);
+    $otherClass->update(['class_teacher_id' => $unrelatedClassTeacher->id]);
+    TeacherAssignment::factory()->classTeacher()->create([
+        'teacher_id' => $classTeacher->id,
+        'school_class_id' => $targetClass->id,
+        'academic_year_id' => $year->id,
+    ]);
+    TeacherAssignment::factory()->classTeacher()->create([
+        'teacher_id' => $unrelatedClassTeacher->id,
+        'school_class_id' => $otherClass->id,
+        'academic_year_id' => $year->id,
+    ]);
+    TeacherAssignment::factory()->create([
+        'teacher_id' => $unrelatedClassTeacher->id,
+        'school_class_id' => $targetClass->id,
+        'academic_year_id' => $year->id,
+        'role_in_assignment' => TeacherAssignmentRole::PtPdTeacher,
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.teachers.index', [
+            'class_id' => $targetClass->id,
+            'role' => TeacherAssignmentRole::ClassTeacher->value,
+        ]))
+        ->assertOk()
+        ->assertSee($classTeacher->user->name)
+        ->assertDontSee($unrelatedClassTeacher->user->name);
 });
 
 test('admin can filter classes by grade', function () {

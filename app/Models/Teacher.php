@@ -74,10 +74,18 @@ class Teacher extends Model
     public function scopeFilter(Builder $query, array $filters): Builder
     {
         return $query
-            ->when($filters['class_id'] ?? null, function (Builder $q, int|string $classId): void {
-                $q->where(function (Builder $inner) use ($classId): void {
-                    $inner->whereHas('homeroomClasses', fn (Builder $classQuery) => $classQuery->whereKey($classId))
-                        ->orWhereHas('assignments', fn (Builder $assignmentQuery) => $assignmentQuery->where('school_class_id', $classId));
+            ->when($filters['class_id'] ?? null, function (Builder $q, int|string $classId) use ($filters): void {
+                $q->where(function (Builder $inner) use ($classId, $filters): void {
+                    $role = $filters['role'] ?? null;
+
+                    if ($role === null || $role === TeacherAssignmentRole::ClassTeacher->value) {
+                        $inner->whereHas('homeroomClasses', fn (Builder $classQuery) => $classQuery->whereKey($classId));
+                    }
+
+                    $inner->orWhereHas('assignments', function (Builder $assignmentQuery) use ($classId, $role): void {
+                        $assignmentQuery->where('school_class_id', $classId)
+                            ->when($role, fn (Builder $roleQuery, string $assignmentRole) => $roleQuery->where('role_in_assignment', $assignmentRole));
+                    });
                 });
             })
             ->when($filters['subject_id'] ?? null, function (Builder $q, int|string $subjectId): void {

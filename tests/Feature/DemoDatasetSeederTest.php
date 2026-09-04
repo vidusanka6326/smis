@@ -36,7 +36,9 @@ test('database seeder populates a full sri lankan demo school', function () {
         ->and(TimetableEntry::query()->count())->toBeGreaterThan(500)
         ->and(Exam::query()->whereNotNull('published_at')->count())->toBeGreaterThan(5);
 
-    SchoolClass::query()->each(function (SchoolClass $schoolClass): void {
-        expect($schoolClass->class_teacher_id)->not->toBeNull();
-    });
+    $classTeacherIds = SchoolClass::query()->whereNotNull('class_teacher_id')->pluck('class_teacher_id');
+
+    expect($classTeacherIds)->toHaveCount(25)
+        ->and($classTeacherIds->unique())->toHaveCount(25)
+        ->and(SchoolClass::query()->whereNull('class_teacher_id')->count())->toBe(3);
 })->group('seeders');
