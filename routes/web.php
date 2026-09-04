@@ -51,6 +51,7 @@ use App\Http\Controllers\Teacher\ExaminationReportController as TeacherExaminati
 use App\Http\Controllers\Teacher\ExamResultsReportController as TeacherExamResultsReportController;
 use App\Http\Controllers\Teacher\MarkEntryController as TeacherMarkEntryController;
 use App\Http\Controllers\Teacher\PerformanceReportController as TeacherPerformanceReportController;
+use App\Http\Controllers\Teacher\ReliefAssignmentController as TeacherReliefAssignmentController;
 use App\Http\Controllers\Teacher\ReportDashboardController as TeacherReportDashboardController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherAttendanceController as TeacherSelfAttendanceController;
@@ -153,6 +154,7 @@ Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::resource('students', TeacherStudentController::class)->except(['show', 'destroy']);
         Route::resource('lessons', App\Http\Controllers\Teacher\LessonController::class);
         Route::get('timetable', TeacherTimetableController::class)->name('timetable');
+        Route::get('relief-assignments', [TeacherReliefAssignmentController::class, 'index'])->name('relief-assignments.index');
 
         Route::get('data-sheet', Form::class)->name('data-sheet.index');
         Route::get('data-sheet/pdf', [TeacherDataSheetController::class, 'pdf'])->name('data-sheet.pdf');

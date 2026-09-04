@@ -73,6 +73,22 @@
                     @endrole
 
                     @role('teacher')
+                        @php
+                            $hasRelief = false;
+                            if (auth()->check() && auth()->user()->teacher) {
+                                $hasRelief = \App\Models\ReliefTeacherAssignment::where('relief_teacher_id', auth()->user()->teacher->id)
+                                    ->whereDate('date', '>=', today())
+                                    ->exists();
+                            }
+                        @endphp
+                        <flux:sidebar.item icon="arrows-right-left" :href="route('teacher.relief-assignments.index')" :current="request()->routeIs('teacher.relief-assignments.*')" wire:navigate>
+                            <span class="{{ $hasRelief ? 'text-red-500 animate-pulse font-medium inline-block' : '' }}">
+                                {{ __('Relief') }}
+                            </span>
+                            @if($hasRelief)
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                            @endif
+                        </flux:sidebar.item>
                         <flux:sidebar.item icon="users" :href="route('teacher.students.index')" :current="request()->routeIs('teacher.students.*')" wire:navigate>
                             {{ __('My students') }}
                         </flux:sidebar.item>
